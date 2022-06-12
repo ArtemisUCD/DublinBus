@@ -38,5 +38,12 @@
   
   .header {
     background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     
+  }
+
+  .header-icons{
+    display: block;
   }

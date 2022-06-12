@@ -1,0 +1,8 @@
+.weather-item{
+    padding:0.25rem;
+    text-align: center;
+}
+
+.weather-item p{
+    margin: 0;
+}
