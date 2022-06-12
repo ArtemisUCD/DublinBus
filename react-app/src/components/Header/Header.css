@@ -1,0 +1,42 @@
+.logo {
+    padding-top: 10px;
+    padding-left: 10px;
+    width: 220px;
+    height: 60px;
+    pointer-events: none;
+    text-align: left;
+    float: left;
+  }
+  
+  .glc {
+    padding-right: 10px;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    text-align: right;
+    float: right;
+  }
+  
+  .print {
+    padding-right: 10px;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    text-align: right;
+    float: right;
+  }
+  
+  .login {
+    padding-right: 10px;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    text-align: right;
+    float: right;
+  }
+  
+  
+  .header {
+    background-color: #ffffff;
+    
+  }
