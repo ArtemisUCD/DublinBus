@@ -1,3 +1,4 @@
+import './Map.css'
 import { useState, useRef, useEffect } from "react";
 
 
@@ -15,7 +16,7 @@ const Map = () => {
     }
   }, [ref, map]);
 
-  return <div ref={ref} style={{height: '500px', width: '1000px', float: 'right'}}/>
+  return <div className="map" ref={ref}/>
   
 }
 
