@@ -4,8 +4,9 @@ import os
 
 meta = MetaData()
 
-db_password = os.environ['LOCAL_DB_PASSWORD']
-engine = create_engine('mysql+mysqlconnector://root:'+db_password+'@localhost:3306/artemis')
+db_password = os.environ['DUBLIN_BUS_PASSWORD']
+db_location = os.environ['DUBLIN_BUS_ENDPOINT']
+engine = create_engine('mysql+mysqlconnector://admin:'+db_password+'@'+db_location+':3306/artemis')
 dbConnection = engine.connect()
 
 df = pd.read_csv('calendar_dates.txt')
