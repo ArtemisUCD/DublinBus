@@ -17,3 +17,14 @@
     display: flex;
     justify-content: space-around;
 }
+
+#change-direction-button{
+    background-image: url(./img/switch_arrows.png);
+    background-size: cover;
+    width: 3rem;
+    height:3rem;
+    background-color: transparent;
+}
+#change-direction-button:hover{
+    cursor: pointer;
+}

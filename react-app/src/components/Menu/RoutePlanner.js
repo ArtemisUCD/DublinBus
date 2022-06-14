@@ -9,7 +9,7 @@ const RoutePlanner = () => {
             <br/>
             <input type="text" id="destination" placeholder="Enter destination"/>
             </div>
-            <button>Change Direction</button>
+            <button id = "change-direction-button" />
             </div>
             <br/>
             <div className='depart-arrive-toggle'>
