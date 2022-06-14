@@ -1,0 +1,19 @@
+.route-form{
+    width: 70%;
+    padding: 1rem;
+}
+
+.route-details{
+    display: flex;
+    margin-top: 1rem;
+}
+
+.route-textbox{
+    margin-right: auto;
+}
+
+
+.depart-arrive-toggle{
+    display: flex;
+    justify-content: space-around;
+}
