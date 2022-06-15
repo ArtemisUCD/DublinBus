@@ -13,5 +13,3 @@ def getHistoricalWeather():
     r = requests.get(url) 
     json_data = json.loads(r.text)
     return json_data
-
-
