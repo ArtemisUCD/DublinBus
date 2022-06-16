@@ -1,4 +1,5 @@
 import './MenuItem.css';
+import BusRoute from './BusRoute';
 import RealTime from './RealTime';
 import RoutePlanner from './RoutePlanner'
 import { useState } from 'react';
@@ -18,7 +19,12 @@ const MenuItem = (props) => {
     else if(props.title==="Real Time Information"){
         dropdownContent = <RealTime/>
     }
-    
+    else if(props.title==="Bus Route"){
+        dropdownContent = <BusRoute/>
+    }
+    else {
+        dropdownContent = <Favorites />
+    }
 
     return (
         <div>
