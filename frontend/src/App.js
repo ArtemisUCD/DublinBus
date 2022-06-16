@@ -8,11 +8,10 @@ const render = Status => {
   return <h1>{Status}</h1>
 }
 
-fetch("/api/stop_")
-.then(response => response.json())
-.then(data => console.log("Bus stop data",data))
-
 function App() {
+
+
+
   return (
     <div className="App">
       <Header />
