@@ -99,3 +99,12 @@ class Trips(models.Model):
     class Meta:
         managed = False
         db_table = 'trips'
+
+class DailyWeather(models.Model):
+    date = models.CharField(primary_key=True, max_length=32)
+    temperature = models.CharField(max_length=32, blank=True, null=True)
+    weather_icon = models.CharField(max_length=32, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'daily_weather'

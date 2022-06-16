@@ -20,6 +20,7 @@ from buses import views
 
 router = routers.DefaultRouter()
 router.register(r'stop_', views.StopsView, 'stop')
+router.register(r'forecast', views.WeatherView, 'weather_forecast')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

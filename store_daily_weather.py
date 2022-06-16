@@ -3,6 +3,7 @@ from sqlalchemy import Column, Date, Integer, String,create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import urllib.parse
+from datetime import datetime
 import os
 from dotenv import load_dotenv
 
@@ -25,6 +26,7 @@ conn = engine.connect()
 Base = declarative_base()
 class Date(Base):
     __tablename__ = 'daily_weather'
+    id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(String(32), primary_key=True, unique=True)
     temperature = Column(String(32), default="0")
     weather_icon=Column(String(32), default="None")
@@ -39,11 +41,12 @@ Session = sessionmaker(engine)
 db_session = Session()
 date_list = weather_data["list"]
 for day in date_list:
-    date= day["dt"]
+    date = datetime.fromtimestamp(day["dt"]).strftime("%A")
     temperature = day["temp"]["day"]
     weather_icon = day["weather"][0]["icon"]
 
     row = Date(
+    id=id,
     date = date,
     temperature = temperature,
     weather_icon=weather_icon,

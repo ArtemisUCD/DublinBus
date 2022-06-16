@@ -16,7 +16,7 @@ def getHistoricalWeather():
 
 def getDailyWeather():
     datapointCount = 7
-    url = f"http://api.openweathermap.org/data/2.5/forecast/daily?lat=53.303&lon=-6.232&cnt={datapointCount}&appid={api_key}"
+    url = f"http://api.openweathermap.org/data/2.5/forecast/daily?lat=53.303&lon=-6.232&cnt={datapointCount}&appid={api_key}&units=metric"
     r = requests.get(url) 
     json_data = json.loads(r.text)
     return json_data

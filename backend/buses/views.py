@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
-from .models import Stops
+from .models import Stops, DailyWeather
 from rest_framework import viewsets
-from .serializers import StopsSerializer
+from .serializers import StopsSerializer, WeatherForecastSerializer
 
 
 
@@ -25,3 +25,7 @@ def stops(request,id_stop):
 class StopsView(viewsets.ModelViewSet):
     serializer_class = StopsSerializer
     queryset = Stops.objects.all()
+
+class WeatherView(viewsets.ModelViewSet):
+    serializer_class = WeatherForecastSerializer
+    queryset = DailyWeather.objects.all()
