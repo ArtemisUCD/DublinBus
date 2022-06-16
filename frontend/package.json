@@ -1,7 +1,8 @@
 {
-  "name": "react-app",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8000",
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.0.7",
     "@googlemaps/react-wrapper": "^1.1.34",
