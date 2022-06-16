@@ -1,6 +1,9 @@
 import WeatherItem from './WeatherItem'
 import './Weather.css'
 import { useEffect, useState } from 'react';
+import ReactLoading from "react-loading";
+  
+
 
 const Weather = () => {
 
@@ -16,6 +19,10 @@ const Weather = () => {
     
     if(weatherData){
         weatherDetails= weatherData.map(day =>  <WeatherItem title={day.date} temperature = {day.temperature} icon ={day.weather_icon}/>)
+    }
+    else{
+        weatherDetails=<div><p>Weather Loading</p><ReactLoading type="bubbles" color="#000000"
+        height={100} width={50} /></div>
     }
 
     
