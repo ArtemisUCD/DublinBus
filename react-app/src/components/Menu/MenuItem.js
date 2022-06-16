@@ -1,7 +1,8 @@
 import './MenuItem.css';
 import BusRoute from './BusRoute';
 import RealTime from './RealTime';
-import RoutePlanner from './RoutePlanner'
+import RoutePlanner from './RoutePlanner';
+import Favorites from './Favorites'
 import { useState } from 'react';
 
 const MenuItem = (props) => {

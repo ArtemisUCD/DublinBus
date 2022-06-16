@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@googlemaps/markerclustererplus": "^1.2.10",
+    "@googlemaps/markerclusterer": "^2.0.7",
     "@googlemaps/react-wrapper": "^1.1.34",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",

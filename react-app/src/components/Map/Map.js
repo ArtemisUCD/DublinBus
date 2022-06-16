@@ -1,6 +1,6 @@
 import './Map.css'
 import { useState, useRef, useEffect } from "react";
-import MarkerClusterer from "@googlemaps/markerclustererplus";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 const locations = [
     { lat: 53.306221160468205, lng: -6.219147554043488},
@@ -27,7 +27,7 @@ const Map = () => {
     });
   });
 
-  new MarkerClusterer(map, markers, {});
+  const markerCluster = new MarkerClusterer({ map, markers });
 
 
   return <div className="map" ref={ref}/>
