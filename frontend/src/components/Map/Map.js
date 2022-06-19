@@ -1,39 +1,105 @@
 import './Map.css'
-import { useState, useRef, useEffect } from "react";
-// import { MarkerClusterer } from "@googlemaps/markerclusterer";
-
-// const locations = [
-//     { lat: 53.306221160468205, lng: -6.219147554043488},
-//     { lat: 53.304970, lng: -6.202636},
-
-// ];
+import {GoogleMap, useJsApiLoader,Marker, MarkerClusterer, InfoWindow} from '@react-google-maps/api';
+import { useEffect, useState } from 'react';
+// import AddMarker from './AddMarker';
 
 const Map = () => {
-  const ref = useRef(null);
-  const [map, setMap] = useState();
+
+  const [stopData, setstopData] = useState();
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [mapRef] = useState(null);
+  const [center, setCenter] = useState({lat: 53.306221, lng: -6.21914755});
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [markerMap, setMarkerMap] = useState({});
 
   useEffect(() => {
-    if (ref.current && !map) {
-      setMap(new window.google.maps.Map(ref.current, {}))
+    fetch("/api/stop_")
+    .then(response => response.json())
+    .then(data => setstopData(data))
+  },[]);
+
+  
+  const {isLoaded} = useJsApiLoader({
+    googleMapsApiKey: " "
+  })
+
+  if(! isLoaded){
+    return <div>Not Loaded</div>
+  }
+
+  const options = {
+    imagePath:
+    "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m",
+    styles: []}
+
+  const markerLoadHandler = (marker, place) => {
+    return setMarkerMap(prevState => {
+      return { ...prevState, [place.stop_id]: marker };
+    });
+  };
+
+  const markerClickHandler = (event, place) => {
+    
+    setSelectedPlace(place);
+
+    if (!infoOpen) {
+      setInfoOpen(true);
+    }else{
+      setInfoOpen(false);
     }
-    if (map) {
-      map.setOptions({ zoom: 13, center: { lat: 53.307165, lng: -6.201473 }});
+    
+    
+
+  };
+
+  const onCenterChanged = mapRef => {
+    if (mapRef && mapRef.getCenter()) {
+      const ccenter = mapRef.getCenter().toJSON();
+      if (ccenter.lat !== center.lat && ccenter.lng !== center.lng) {
+        setCenter(mapRef.getCenter().toJSON());
+      }
     }
-  }, [ref, map]);
-
-  // const markers = locations.map((position, i) => {
-  //   return new window.google.maps.Marker({
-  //       position,
-
-  //   });
-  // });
-
-  // new MarkerClusterer({ map, markers });
+  };
 
 
-  return <div className="map" ref={ref}/>
+  return (
+    <div className='map'>
+      
+        <GoogleMap
+          center={center}
+          onCenterChanged={() => onCenterChanged(mapRef)}
+          zoom={13}
+          mapContainerStyle={{width: '1000px', height:'800px'}}>
+          
+          <MarkerClusterer options={options}>
+            {(clusterer) =>
+              stopData && stopData.map((place) => (
+                <Marker 
+                  key={place.stop_id}
+                  position={{ lat: Number(place.stop_lat), lng: Number(place.stop_lon) }}
+                  clusterer={clusterer}
+                  onLoad={marker => markerLoadHandler(marker, place)}
+                  onClick={event => markerClickHandler(event, place)} />   
+            ))}
+          </MarkerClusterer>
+
+          {infoOpen && selectedPlace && (
+            <InfoWindow
+              anchor={markerMap[selectedPlace.stop_id]}
+              onCloseClick={() => setInfoOpen(false)}
+            >
+              <div>
+                <h3>{selectedPlace.stop_name}</h3>
+              </div>
+            </InfoWindow>
+          )}
+      
+        </GoogleMap>
+      
+      
+    </div>
+  )
   
 }
 
 export default Map;
-
