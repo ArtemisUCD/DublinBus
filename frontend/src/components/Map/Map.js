@@ -20,7 +20,7 @@ const Map = () => {
 
   
   const {isLoaded} = useJsApiLoader({
-    googleMapsApiKey: " "
+    googleMapsApiKey: ""
   })
 
   if(! isLoaded){
