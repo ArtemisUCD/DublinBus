@@ -1,5 +1,5 @@
 import './MenuItem.css';
-import BusRoute from './BusRoute';
+import BusRouteList from './BusRouteList';
 import RealTime from './RealTime';
 import RoutePlanner from './RoutePlanner';
 import Favorites from './Favorites'
@@ -21,10 +21,10 @@ const MenuItem = (props) => {
         dropdownContent = <RealTime/>
     }
     else if(props.title==="Bus Route"){
-        dropdownContent = <BusRoute/>
+        dropdownContent = <BusRouteList onLike={props.onLike} onUnlike={props.onUnlike} favourites = {props.favourites}/>
     }
     else {
-        dropdownContent = <Favorites />
+        dropdownContent = <Favorites onLike={props.onLike} onUnlike={props.onUnlike} favourites = {props.favourites} />
     }
 
     return (
