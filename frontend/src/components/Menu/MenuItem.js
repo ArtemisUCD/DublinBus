@@ -13,7 +13,7 @@ const MenuItem = (props) => {
         setShowContent(!showContent);
     }
 
-    let dropdownContent = props.title;
+    let dropdownContent;
     if(props.title==="Plan Route"){
     dropdownContent = <RoutePlanner />;
     }

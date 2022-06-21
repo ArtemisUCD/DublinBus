@@ -9,7 +9,6 @@ const BusRouteItem = (props) => {
 
     let toggleFavourite = (busRoute) =>{
         if(!favouritedRoute){
-            console.log("This is the route",busRoute)
             props.onLike(busRoute)
         }
         else{
@@ -19,7 +18,7 @@ const BusRouteItem = (props) => {
     }
 
     return(<div>
-        {props.route} {favouritedRoute ? <FaHeart className={"heart full"}onClick={()=>toggleFavourite(props.route)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavourite(props.route)}/>}
+        {props.route} {favouritedRoute ? <FaHeart className={"heart full"} onClick={()=>toggleFavourite(props.route)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavourite(props.route)}/>}
     </div>)
 
 }

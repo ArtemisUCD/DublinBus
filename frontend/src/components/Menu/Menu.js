@@ -19,7 +19,6 @@ const Menu = () => {
           return [...prevFavouriteRoutes,newRoute]
         })
         }
-        console.log("local storage",favouriteRoutes);
       }
       
     // function to remove bus route from list of favourites

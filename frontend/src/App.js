@@ -15,7 +15,7 @@ function App() {
       <Header />
       <div className='main-content'>
         <Menu />
-      <Wrapper apiKey={"API_KEY"} render={render}>
+      <Wrapper apiKey={"AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA"} render={render}>
         <Map />
       </Wrapper>
       </div>
