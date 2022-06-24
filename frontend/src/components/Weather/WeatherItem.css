@@ -1,8 +1,15 @@
 .weather-item{
-    padding:0.25rem;
     text-align: center;
+    background-color: transparent;
+    height: 64px;
 }
 
 .weather-item p{
     margin: 0;
+    font-size: small;
+}
+
+.weather-item img{
+    height: 50px;
+
 }

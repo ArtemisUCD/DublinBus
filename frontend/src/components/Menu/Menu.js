@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 const Menu = () => {
 
-    const menuItems = ["Plan Route","Real Time Information","Bus Route","Favourites"];
+    const menuItems = ["Real Time Information","Bus Route","Favourites"];
     const [favouriteRoutes, setFavouriteRoutes] = useState(JSON.parse(localStorage.getItem('favouriteRoutes')) ?? []);
 
     // update favourites in local storage when the state updates
@@ -27,7 +27,7 @@ const Menu = () => {
           return prevFavouriteRoutes.filter(route => route!== busRoute)
         })}
       
-      let menuContent = menuItems.map(item => <MenuItem onLike={addFavourite} onUnlike={removeFavourite} favourites= {favouriteRoutes} title = {item}/>)
+      let menuContent = menuItems.map(item => <MenuItem key ={item} onLike={addFavourite} onUnlike={removeFavourite} favourites= {favouriteRoutes} title = {item}/>)
       console.log("Initial local",favouriteRoutes)
     return (
         <div className="main-menu">
