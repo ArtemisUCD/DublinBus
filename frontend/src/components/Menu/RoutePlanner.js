@@ -13,6 +13,10 @@ const RoutePlanner = (props) => {
     const clearDetails = () => {
         props.clearDetails();
     }
+
+    const getAddress = ()=>{
+        props.getAddress();
+    }
     return(
         <Box sx={{ display:'flex', flexDirection:"column", height:"15%",minWidth:400,width:"70%", maxWidth:800,position:"absolute",zIndex:"1",backgroundColor:"white",marginTop:"120px",
         borderRadius:"10px;"}}>
@@ -21,7 +25,7 @@ const RoutePlanner = (props) => {
                 <Autocomplete >
                 <TextField size="small"style={{minWidth:100,maxWidth:400,width:"90%"}}id="outlined-basic" label="Origin" variant="outlined"  inputRef={props.origin} />
                 </Autocomplete>
-                <IconButton>
+                <IconButton onClick={getAddress}>
                 <MyLocationIcon/>
                 </IconButton>
                 </Box>

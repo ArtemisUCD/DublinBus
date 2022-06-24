@@ -8,6 +8,7 @@ import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
 import { useState, useRef } from 'react';
 import NewMap from './components/Map/NewMap';
+import Geocode from "react-geocode";
 
 const googleLibraries = ["places"];
 
@@ -18,6 +19,36 @@ function App() {
   const [directions,setDirections] = useState(null);
   const originRef = useRef()
   const destinationRef = useRef()
+
+
+  Geocode.setApiKey("AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA");
+
+  const showPosition = (position) => {
+  const geolocation = ({lat:position.coords.latitude,
+  lng:position.coords.longitude});
+  
+
+  // Get address from latitude & longitude.
+  Geocode.fromLatLng(geolocation.lat, geolocation.lng).then(
+  (response) => {
+    const address = response.results[0].formatted_address;
+    console.log(address);
+    originRef.current.value=address;
+  },
+  (error) => {
+    console.error(error);
+  }
+  );
+  }
+
+const getAddress = () =>{
+
+    if (navigator.geolocation) {
+     navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+      console.log("Geolocation not enabled")
+    }
+}
 
   const {isLoaded} = useJsApiLoader({
     googleMapsApiKey: "AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA",
@@ -73,11 +104,13 @@ console.log("direction steps",results.routes[0].legs[0].steps)
        }}}>
         <IconButton color="primary" onClick={toggleDrawer}>
           <CloseIcon/>
-          </IconButton><Menu/></Drawer>
+          </IconButton>
+          <Menu/>
+          </Drawer>
     <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
   flexDirection:'column',
   alignItems:'center'}}>
-      <RoutePlanner origin={originRef} destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails}/>
+      <RoutePlanner origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails}/>
       <NewMap directions={directions}/>
 </Box>
 </ThemeProvider>
