@@ -80,8 +80,8 @@ class Stops(models.Model):
 
 
 class Transfers(models.Model):
-    from_stop = models.ForeignKey(Stops, models.DO_NOTHING, blank=True, null=True)
-    to_stop = models.ForeignKey(Stops, models.DO_NOTHING, blank=True, null=True)
+    from_stop = models.ForeignKey(Stops, models.DO_NOTHING, blank=True, null=True , related_name='from_stop_FK')
+    to_stop = models.ForeignKey(Stops, models.DO_NOTHING, blank=True, null=True , related_name='to_stop_FK')
     transfer_type = models.IntegerField(blank=True, null=True)
     min_transfer_time = models.IntegerField(blank=True, null=True)
 
