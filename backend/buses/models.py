@@ -22,7 +22,7 @@ class Calendar(models.Model):
 
 
 class CalendarDates(models.Model):
-    service_id = models.IntegerField(primary_key=True)
+    service = models.OneToOneField(Calendar, models.DO_NOTHING, primary_key=True)
     date = models.IntegerField(blank=True, null=True)
     exception_type = models.IntegerField(blank=True, null=True)
 
@@ -52,11 +52,12 @@ class Shapes(models.Model):
         managed = False
         db_table = 'shapes'
 
+
 class StopTimes(models.Model):
     trip_id = models.CharField(max_length=40, blank=True, null=True)
     arrival_time = models.CharField(max_length=40, blank=True, null=True)
     departure_time = models.CharField(max_length=40, blank=True, null=True)
-    stop_id = models.CharField(max_length=20, blank=True, null=True)
+    stop = models.ForeignKey('Stops', models.DO_NOTHING, blank=True, null=True)
     stop_sequence = models.IntegerField(blank=True, null=True)
     stop_headsign = models.CharField(max_length=50, blank=True, null=True)
     pickup_type = models.IntegerField(blank=True, null=True)
@@ -77,9 +78,10 @@ class Stops(models.Model):
         managed = False
         db_table = 'stops'
 
+
 class Transfers(models.Model):
-    from_stop_id = models.CharField(max_length=20, blank=True, null=True)
-    to_stop_id = models.CharField(max_length=20, blank=True, null=True)
+    from_stop = models.ForeignKey(Stops, models.DO_NOTHING, blank=True, null=True)
+    to_stop = models.ForeignKey(Stops, models.DO_NOTHING, blank=True, null=True)
     transfer_type = models.IntegerField(blank=True, null=True)
     min_transfer_time = models.IntegerField(blank=True, null=True)
 
@@ -89,8 +91,8 @@ class Transfers(models.Model):
 
 
 class Trips(models.Model):
-    route_id = models.CharField(max_length=20, blank=True, null=True)
-    service_id = models.CharField(max_length=5, blank=True, null=True)
+    route = models.ForeignKey(Routes, models.DO_NOTHING, blank=True, null=True)
+    service = models.ForeignKey(Calendar, models.DO_NOTHING, blank=True, null=True)
     trip_id = models.CharField(max_length=50, blank=True, null=True)
     shape_id = models.CharField(max_length=20, blank=True, null=True)
     trip_headsign = models.CharField(max_length=100, blank=True, null=True)
