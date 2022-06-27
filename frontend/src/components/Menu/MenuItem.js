@@ -2,7 +2,8 @@ import './MenuItem.css';
 import BusRouteList from './BusRouteList';
 import RealTime from './RealTime';
 import RoutePlanner from './RoutePlanner';
-import Favorites from './Favorites'
+import Favorites from './Favorites';
+import Print from './Print';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -27,8 +28,10 @@ const MenuItem = (props) => {
     else if(props.title==="Bus Route"){
         dropdownContent = <BusRouteList onLike={props.onLike} onUnlike={props.onUnlike} favourites = {props.favourites}/>
     }
-    else {
+    else if(props.title==="Favorites"){
         dropdownContent = <Favorites onLike={props.onLike} onUnlike={props.onUnlike} favourites = {props.favourites} />
+    }else {
+        dropdownContent =<Print />
     }
 
     return (

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 const Menu = () => {
 
-    const menuItems = ["Real Time Information","Bus Route","Favourites"];
+    const menuItems = ["Real Time Information","Bus Route","Favourites", "Traffic Network PDF"];
     const [favouriteRoutes, setFavouriteRoutes] = useState(JSON.parse(localStorage.getItem('favouriteRoutes')) ?? []);
 
     // update favourites in local storage when the state updates
