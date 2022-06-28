@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
-from .models import Stops, DailyWeather
+from .models import Stops, DailyWeather, BusesUpdates
 from rest_framework import viewsets
-from .serializers import StopsSerializer, WeatherForecastSerializer
+from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdatesSerializer
 
 
 
@@ -29,3 +29,12 @@ class StopsView(viewsets.ModelViewSet):
 class WeatherView(viewsets.ModelViewSet):
     serializer_class = WeatherForecastSerializer
     queryset = DailyWeather.objects.all()
+
+class BusesUpdatesView(viewsets.ModelViewSet):
+    serializer_class = BusesUpdatesSerializer
+    queryset = BusesUpdates.objects.all()
+
+    # 13477.3.60-39A-b12-1.213.I to try
+    tripId = '13477.3.60-39A-b12-1.213.I'
+    if tripId is not None:
+        queryset = queryset.filter(trip_id=tripId)
