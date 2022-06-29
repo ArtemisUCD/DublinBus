@@ -30,6 +30,8 @@ class WeatherView(viewsets.ModelViewSet):
     serializer_class = WeatherForecastSerializer
     queryset = DailyWeather.objects.all()
 
+
+#try with hard coded trip id 
 class BusesUpdatesView(viewsets.ModelViewSet):
     serializer_class = BusesUpdatesSerializer
     queryset = BusesUpdates.objects.all()
