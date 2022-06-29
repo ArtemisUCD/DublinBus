@@ -96,6 +96,12 @@ console.log("direction steps",results.routes[0].legs[0].steps)
     destinationRef.current.value = ''
   }
 
+  const swapInputFields = () => {
+    const temp = originRef.current.value;
+    originRef.current.value = destinationRef.current.value;
+    destinationRef.current.value = temp; 
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Header toggleDrawer={toggleDrawer}/>
@@ -110,7 +116,7 @@ console.log("direction steps",results.routes[0].legs[0].steps)
     <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
   flexDirection:'column',
   alignItems:'center'}}>
-      <RoutePlanner origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails}/>
+      <RoutePlanner origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields}/>
       <NewMap directions={directions}/>
 </Box>
 </ThemeProvider>
