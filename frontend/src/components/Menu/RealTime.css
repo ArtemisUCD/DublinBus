@@ -18,15 +18,25 @@
     position: absolute;
     }
     
-.btn {
-    height: 32px;
-    width: 32px;
-    position: absolute;
-    background-image: url('./img/search.png') ;
-    background-size: 2rem;
-    top: 6px;
-    left: 285px;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    }
+.searchIcon{
+    margin-left: 280px;
+}
+.container{
+    background-color: #ffffff;
+    margin-top: 5px;
+    overflow: hidden;
+    overflow-y: auto;
+    width: 380px;
+    height: 300px;
+
+}
+.container::-webkit-scrollbar{
+    display: none;
+}
+.stopdataresult {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+
