@@ -4,6 +4,11 @@ class RealTime extends Component {
     state = {
       todos: []
     };
+
+    handleChange(event) {
+        // this.setState({value: event.target.value});
+        console.log({value: event.target.value});
+      }
   
     async componentDidMount() {
       try {
@@ -19,6 +24,13 @@ class RealTime extends Component {
     render() {
       return (
         <div>
+            <form onSubmit={this.handleSubmit}>
+            <label>
+          bus stop:
+          <input type="text" value={this.state.value} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
           <table class="table table-bordered table-hover table-striped">
             <thead>
               <tr class="bg-gray text-white">
