@@ -3,6 +3,10 @@ import BusRouteList from './BusRouteList';
 import RealTime from './RealTime';
 import RoutePlanner from './RoutePlanner';
 import Favorites from './Favorites'
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import { useState } from 'react';
 
 const MenuItem = (props) => {
@@ -28,14 +32,17 @@ const MenuItem = (props) => {
     }
 
     return (
-        <div>
-        <button onClick={toggleContent}className={showContent ? "accordion-button collapsed" : "accordion-button"}>
+        <Accordion>
+            <AccordionSummary onClick={toggleContent} 
+            expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id="panel1a-header">
             {props.title}
-        </button>
-        <div>
+        </AccordionSummary>
+        <AccordionDetails>
             {showContent ? dropdownContent : null}
-        </div>
-        </div>
+            </AccordionDetails>
+        </Accordion>
     )
 }
 

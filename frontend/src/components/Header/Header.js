@@ -1,19 +1,29 @@
 import './Header.css'
 import Weather from '../Weather/Weather'
 import logo from './img/db_logo.png';
-import glc from './img/Geolocation.png';
-import print from './img/Print.jpeg';
-import login from './img/Login.jpeg';
+import {AppBar, Toolbar, IconButton, Box} from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu';
 
-const Header = () => {
+const Header = (props) => {
+
+  const toggleDrawer = () =>{
+    props.toggleDrawer()
+  }
     return (
-      <header className="header">
-      <div><img src={logo} className="logo" alt="logo" /></div>
-        <Weather />
-      <div className='header-icons'><img src={login} className="login" alt="login" />
-      <img src={print} className="print" alt="print" />
-      <img src={glc} className="glc" alt="geolocation" /></div>
-    </header>
+    <AppBar sx={{display:"flex",minHeight:100,alignItems:"center",flexDirection:"row"}}>
+    <Toolbar sx={{justifyContent:"space-between",alignItems:"center",height:100}}>
+      <Box sx={{display:"flex",alignItems:"center"}}>
+      <IconButton onClick={toggleDrawer}>
+        <MenuIcon />
+      </IconButton>
+      <img src={logo} className="logo" alt="logo"/>
+      </Box>
+      <Box sx={{height:"100%",width:"70%"}}>
+      <Weather/>
+      </Box>
+    </Toolbar>
+  
+    </AppBar>
     )
 }
 

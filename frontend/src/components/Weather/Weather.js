@@ -2,7 +2,7 @@ import WeatherItem from './WeatherItem'
 import './Weather.css'
 import { useEffect, useState } from 'react';
 import ReactLoading from "react-loading";
-  
+import {Box} from '@mui/material'
 
 
 const Weather = () => {
@@ -18,7 +18,7 @@ const Weather = () => {
     let weatherDetails;
     
     if(weatherData){
-        weatherDetails= weatherData.map(day =>  <WeatherItem title={day.date} temperature = {day.temperature} icon ={day.weather_icon}/>)
+        weatherDetails= weatherData.map(day =>  <WeatherItem key ={day.date} title={day.date} temperature = {day.temperature} icon ={day.weather_icon}/>)
     }
     else{
         weatherDetails=<div><p>Weather Loading</p><ReactLoading type="bubbles" color="#000000"
@@ -28,9 +28,9 @@ const Weather = () => {
     
     
     return (
-        <div className='weather'>
+        <Box sx={{display:"flex",justifyContent:"space-between"}}>
             {weatherDetails}
-        </div>
+        </Box>
     )
 
 }

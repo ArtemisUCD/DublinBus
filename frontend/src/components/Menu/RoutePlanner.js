@@ -1,36 +1,43 @@
+import { IconButton, Box, TextField, Button} from '@mui/material'
+import MyLocationIcon from '@mui/icons-material/MyLocation';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import {Autocomplete} from '@react-google-maps/api'
 import './RoutePlanner.css'
 
-const RoutePlanner = () => {
+const RoutePlanner = (props) => {
+
+    const calcRoute = () => {
+        props.calcRoute()
+    }
+
+    const clearDetails = () => {
+        props.clearDetails();
+    }
+
+    const getAddress = ()=>{
+        props.getAddress();
+    }
     return(
-        <form className='route-form'>
-            <div className='route-details'>
-            <div className="route-textbox">
-            <input type="text" id="origin" placeholder="Enter starting point"/>
-            <br/>
-            <input type="text" id="destination" placeholder="Enter destination"/>
-            </div>
-            <button id = "change-direction-button" />
-            </div>
-            <br/>
-            <div className='depart-arrive-toggle'>
-            <div>
-            <input type="radio" id="depart" name="direction" defaultChecked/>
-            <label htmlFor="depart">Depart</label>
-            </div>
-            <div>
-            <input type="radio" id = "arrive" name = "direction"/>
-            <label htmlFor ="arrive">Arrive</label>
-            </div>
-            </div>
-            <br/>
-            <label htmlFor="travel-date">Date:</label>
-            <input type="date" id="travel-date" required/>
-            <br/>
-            <label htmlFor="travel-time">Time:</label>
-            <input type="time" id="travel-time"  required/>
-            <br/>
-            <input type="submit" value="Search"/>
-        </form>
+        <Box sx={{ display:'flex', flexDirection:"column", height:"15%",minWidth:400,width:"70%", maxWidth:800,position:"absolute",zIndex:"1",backgroundColor:"white",marginTop:"120px",
+        borderRadius:"10px;"}}>
+                <Box sx={{height:"50%",width:"100%",display:"flex",marginTop:"1rem",justifyContent:"space-evenly",alignItems:"center"}}>
+                <Box sx={{display:"flex",alignItems:"center"}}>
+                <Autocomplete >
+                <TextField size="small"style={{minWidth:100,maxWidth:400,width:"90%"}}id="outlined-basic" label="Origin" variant="outlined"  inputRef={props.origin} />
+                </Autocomplete>
+                <IconButton onClick={getAddress}>
+                <MyLocationIcon/>
+                </IconButton>
+                </Box>
+                <Autocomplete>
+                <TextField size="small" sx={{ minWidth:100,maxWidth:400, width:"90%"}}id="outlined-basic" label="Destination" variant="outlined" inputRef={props.destination}/>
+                </Autocomplete>
+                <Button onClick={calcRoute}variant="outlined" size="small" >Calculate Route</Button>
+                <IconButton onClick={clearDetails}>
+                <HighlightOffOutlinedIcon/>
+                </IconButton>
+                </Box>
+        </Box>
     )
 }
 
