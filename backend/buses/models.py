@@ -4,6 +4,27 @@ from django.db import models
 # all the table from the data alreeady imported on DB 
 # python manage.py inspectdb  => gives all the models !
 
+class BusesUpdates(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    timestamp = models.BigIntegerField(blank=True, null=True)
+    trip_id = models.TextField(blank=True, null=True)
+    route_id = models.TextField(blank=True, null=True)
+    start_time = models.TextField(blank=True, null=True)
+    start_date = models.TextField(blank=True, null=True)
+    schedule_relationship = models.TextField(blank=True, null=True)
+    is_deleted = models.IntegerField(blank=True, null=True)
+    stop_sequence = models.BigIntegerField(blank=True, null=True)
+    stop_id = models.TextField(blank=True, null=True)
+    arrival_delay = models.BigIntegerField(blank=True, null=True)
+    arrival_time = models.BigIntegerField(blank=True, null=True)
+    departure_delay = models.BigIntegerField(blank=True, null=True)
+    departure_time = models.BigIntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'buses_updates'
+
+
 class Calendar(models.Model):
     service_id = models.CharField(primary_key=True, max_length=5)
     monday = models.IntegerField(blank=True, null=True)
