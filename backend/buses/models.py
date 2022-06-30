@@ -113,7 +113,11 @@ class Transfers(models.Model):
 
 class Trips(models.Model):
     route = models.ForeignKey(Routes, models.DO_NOTHING, blank=True, null=True)
+    # route_id = models.CharField(primary_key=True, max_length=20)
+    
     service = models.ForeignKey(Calendar, models.DO_NOTHING, blank=True, null=True)
+    # service_id = models.CharField(max_length=5, blank=True, null=True)
+
     trip_id = models.CharField(max_length=50, blank=True, null=True)
     shape_id = models.CharField(max_length=20, blank=True, null=True)
     trip_headsign = models.CharField(max_length=100, blank=True, null=True)
