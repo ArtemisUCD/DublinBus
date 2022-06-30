@@ -69,14 +69,15 @@ def getShape(request):
 
 #test for route 46A = route-id : 60-46A-b12-1
 @api_view(['GET'])
-def getStopsForRoute(request):
-    route_id_selected = '60-46A-b12-1' # harcoded trips
+def getStopsForRoute(request, route_id_requested):
+    # route_id_selected = '60-46A-b12-1' # harcoded trips
+    print(route_id_requested)
     trips_set = Trips.objects.all()
 
 
     # queryset = Shapes.objects.all()
-    if route_id_selected is not None:
-        trips_set = trips_set.filter(route=route_id_selected)
+    if route_id_requested is not None:
+        trips_set = trips_set.filter(route=route_id_requested)
         first_trip = trips_set.first()
         first_trip_id = first_trip.trip_id # retrieve and trip ID
 
