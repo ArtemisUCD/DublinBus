@@ -43,41 +43,10 @@ class BusesUpdatesView(viewsets.ModelViewSet):
     if tripId is not None:
         queryset = queryset.filter(trip_id=tripId)
 
-#test for route 46A = route-id : 60-46A-b12-1
-class StopForRouteView(viewsets.ModelViewSet):
-    route_id_selected = '60-46A-b12-1'
-
-    # get all trips !
-    serializer_class = TripsSerializer
-    # serializer_class = StopTimesSerializer
-    # queryset = StopTimes.objects.all()
-    # for star in queryset.iterator():
-    #     if star.id == 1 :
-    #         print('first object ')
-    #         break
-    #queryset = StopTimes.objects.first()
- #   queryset = queryset.filter(id='1')
-  #  queryset = queryset.first(trip_id='13250.y1001.60-1-d12-1.1.O')
-
-    #only keep the trips with that route id 
-    # if route_id_selected is not None:
-    #     queryset = queryset.filter(route=route_id_selected)
-    #     first_trip = queryset.first()
-    #     trip_id_used = first_trip['trip_id']
-        #print(first_trip)
-        # trip_id_used = first_trip('trip_id')
-
-    # if trip_id_used is not None:
-    #     queryset = queryset.filter(route=route_id_selected)
-    #     first_trip = queryset[1]
-    #     trip_id_used = first_trip('trip_id')
-
-
 
 @api_view(['GET'])
 def getShape(request):
     trips_set = Trips.objects.all()
-    serializer_class = TripsSerializer
 
     # get all trips !
     route_id_selected = '60-46A-b12-1'
@@ -88,13 +57,43 @@ def getShape(request):
         trips_set = trips_set.filter(route=route_id_selected)
         first_trip = trips_set.first()
         first_trip_id = first_trip.shape_id
-        print('first_trip_id : ',first_trip_id)
+        #print('first_trip_id : ',first_trip_id)
 
     bus_route_shape = []
     bus_route_shape = shape_set.filter(shape_id=first_trip_id)
-   
-    print(len(bus_route_shape),len(shape_set))
-    print(bus_route_shape)
+    # print(len(bus_route_shape),len(shape_set))
+    # print(bus_route_shape)
     serializer = ShapesSerializer(bus_route_shape,many=True) 
+
+    return Response(serializer.data) #return the data 
+
+#test for route 46A = route-id : 60-46A-b12-1
+@api_view(['GET'])
+def getStopsForRoute(request):
+    route_id_selected = '60-46A-b12-1' # harcoded trips
+    trips_set = Trips.objects.all()
+
+
+    # queryset = Shapes.objects.all()
+    if route_id_selected is not None:
+        trips_set = trips_set.filter(route=route_id_selected)
+        first_trip = trips_set.first()
+        first_trip_id = first_trip.trip_id # retrieve and trip ID
+
+    stop_times_set = StopTimes.objects.all()
+    # get all stops !
+    bus_route_stops_times = []
+    bus_route_stops_times = stop_times_set.filter(trip_id=first_trip_id)
+
+    
+    bus_route_stops = []
+    stop_set = Stops.objects.all()
+
+    for stop in bus_route_stops_times.iterator():
+        current_stop_id = stop.stop_id
+        current_stop = stop_set.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
+        bus_route_stops.append(current_stop)
+
+    serializer = StopsSerializer(bus_route_stops,many=True) 
 
     return Response(serializer.data) #return the data 
