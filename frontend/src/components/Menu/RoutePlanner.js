@@ -23,13 +23,15 @@ const RoutePlanner = (props) => {
         props.swap();
     }
 
+    const mapBounds = {componentRestrictions:{country:["ie"]}}
+
 
     return(
         <Box sx={{ display:'flex', flexDirection:"column", height:"15%",minWidth:400,width:"70%", maxWidth:800,position:"absolute",zIndex:"1",backgroundColor:"white",marginTop:"120px",
         borderRadius:"10px;"}}>
                 <Box sx={{height:"50%",width:"100%",display:"flex",marginTop:"1rem",justifyContent:"space-evenly",alignItems:"center"}}>
                 <Box sx={{display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <Autocomplete >
+                <Autocomplete options={mapBounds}>
                 <TextField size="small"style={{minWidth:100,maxWidth:400,width:"90%"}}id="outlined-basic" label="Origin" variant="outlined"  inputRef={props.origin} />
                 </Autocomplete>
                 <IconButton size="small" onClick={getAddress} sx={{border: "2px solid gray", borderRadius: 1}}>
@@ -37,7 +39,7 @@ const RoutePlanner = (props) => {
                 </IconButton>
                 </Box>
                 <Box sx={{display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <Autocomplete >
+                <Autocomplete options={mapBounds}>
                 <TextField size="small" sx={{ minWidth:100,maxWidth:400, width:"90%"}}id="outlined-basic" label="Destination" variant="outlined" inputRef={props.destination}/>
                 </Autocomplete>
                 <IconButton size ="small" onClick={swapInputFields} sx={{border: "2px solid gray", borderRadius: 1}}>
