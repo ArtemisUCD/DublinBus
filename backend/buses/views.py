@@ -75,8 +75,14 @@ def getShape(request, route_id_requested):
 def getStopsForRoute(request, route_id_requested):
     # route_id_selected = '60-46A-b12-1' # harcoded trips
     
-    string_list = route_id_requested.split()
-    print(string_list[0])
+    # incase need to split the string !! just change name argument var to route_var_requested
+    ###################################
+    # string_list = route_id_requested.split()
+    # route_set =  Routes.objects.filter(route_short_name=string_list[0])
+    # route_id_requested = route_set.first().route_id
+    # print(route_id_requested)
+    ###################################
+    
     trips_set = Trips.objects.all()
 
 
