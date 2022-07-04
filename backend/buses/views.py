@@ -106,7 +106,26 @@ def getStopsForRoute(request, route_id_requested):
 @api_view(['GET'])
 def getBusRouteList(request):
     route_set = Routes.objects.all()
+    trips_set = Trips.objects.all()
+    # route_set_short_name = Routes.objects.values('route_id','route_short_name') #still a query set 
+    # print(len(route_set_short_name))
+    route_set_short_name = Routes.objects.order_by('route_short_name').values('route_short_name').distinct() #select all unique name 
+    # print(len(route_set_short_name))
 
-    serializer = RoutesSerializer(route_set,many=True) 
+    unique_routes = []
+    for stop in route_set_short_name.iterator():
+        route_set_actu = route_set.filter(route_short_name=stop['route_short_name'])
+        
+        current_route_id =route_set_actu[0].route_id
+      
+        trip_set_actu = trips_set.filter(route_id = current_route_id).first()
+        concat_name_str = stop['route_short_name'] + ' - ' + trip_set_actu.trip_headsign
+        concat_name = {'concat_name': concat_name_str }
 
-    return Response(serializer.data) #return the data 
+        unique_routes.append(concat_name)
+        # print(concat_name_str) #get one of the id of this trip 
+        # print()
+    # print(len(unique_routes))
+    # serializer = RoutesSerializer(route_set_short_name,many=True) 
+
+    return Response(unique_routes) #return the data 

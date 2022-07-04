@@ -43,3 +43,8 @@ class RoutesSerializer(serializers.ModelSerializer):
             fields = '__all__'
 
    
+class RouteNameConcatSerializer(object):
+    def __init__(self, email, content, created=None):
+        self.email = email
+        self.content = content
+      
