@@ -21,11 +21,15 @@ from buses import views
 router = routers.DefaultRouter()
 router.register(r'stop_', views.StopsView, 'stop')
 router.register(r'forecast', views.WeatherView, 'weather_forecast')
-router.register(r'busesUpdates', views.BusesUpdatesView, 'busesUpdates')
+# router.register(r'busesUpdates', views.BusesUpdatesView, 'busesUpdates')
+# router.register(r'StopForRoute', views.StopForRouteView, 'StopForRoute')
+# router.register(r'get', views.getShape, basename='MyModel')
 
-
+# ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('buses/', include('buses.urls')),
     path('api/', include(router.urls)),
+   # path('',include('buses.urls'))
+    # path('api/trips', views.TripsSerializer.as_view()),
 ]
