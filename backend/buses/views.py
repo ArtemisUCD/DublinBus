@@ -122,7 +122,7 @@ def getBusRouteList(request):
       
         trip_set_actu = trips_set.filter(route_id = current_route_id).first()
         concat_name_str = stop['route_short_name'] + ' - ' + trip_set_actu.trip_headsign
-        print(current_route_id)
+        #print(current_route_id)
         concat_name = {'route_id': current_route_id, 'concat_name': concat_name_str }
 
         unique_routes.append(concat_name)
