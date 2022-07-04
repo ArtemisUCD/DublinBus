@@ -104,7 +104,7 @@ console.log("direction steps",results.routes[0].legs[0].steps)
 
   return (
     <ThemeProvider theme={theme}>
-      <Header toggleDrawer={toggleDrawer}/>
+      {/* <Header toggleDrawer={toggleDrawer}/> */}
       <Drawer open={drawerOpen} PaperProps={{sx:{
         backgroundColor: "#000000"
        }}}>
@@ -115,8 +115,8 @@ console.log("direction steps",results.routes[0].legs[0].steps)
           </Drawer>
     <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
   flexDirection:'column',
-  alignItems:'center'}}>
-      <RoutePlanner origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields}/>
+  alignItems:'flex-start'}}>
+      <RoutePlanner origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
       <NewMap directions={directions}/>
 </Box>
 </ThemeProvider>

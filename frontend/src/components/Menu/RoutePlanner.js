@@ -4,6 +4,7 @@ import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import {Autocomplete} from '@react-google-maps/api'
 import './RoutePlanner.css'
+import MenuIcon from '@mui/icons-material/Menu';
 
 const RoutePlanner = (props) => {
 
@@ -22,15 +23,23 @@ const RoutePlanner = (props) => {
     const swapInputFields = () => {
         props.swap();
     }
+    const toggleDrawer = () =>{
+        props.toggleDrawer()
+      }
 
     const mapBounds = {componentRestrictions:{country:["ie"]}}
 
 
     return(
-        <Box sx={{ display:'flex', flexDirection:"column", height:"15%",minWidth:400,width:"70%", maxWidth:800,position:"absolute",zIndex:"1",backgroundColor:"white",marginTop:"120px",
-        borderRadius:"10px;"}}>
-                <Box sx={{height:"50%",width:"100%",display:"flex",marginTop:"1rem",justifyContent:"space-evenly",alignItems:"center"}}>
-                <Box sx={{display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <Box sx={{ display:'flex', flexDirection:"column",
+        position:"absolute",zIndex:"1",backgroundColor:"white",marginTop:"2rem",marginLeft:"1rem",
+        borderRadius:"10px;",alignItems:"flex-start"}}>
+                <Box sx={{height:"50%",width:"100%",display:"flex",marginTop:"1rem",
+                flexDirection:"column",justifyContent:"space-evenly",alignItems:"flex-end"}}>
+                <Box sx={{display:"flex",alignItems:"center",justifyContent:"center",padding:"1rem"}}>
+                <IconButton onClick={toggleDrawer}>
+                <MenuIcon />
+            </IconButton>
                 <Autocomplete options={mapBounds}>
                 <TextField size="small"style={{minWidth:100,maxWidth:400,width:"90%"}}id="outlined-basic" label="Origin" variant="outlined"  inputRef={props.origin} />
                 </Autocomplete>
@@ -38,7 +47,7 @@ const RoutePlanner = (props) => {
                 <MyLocationIcon/>
                 </IconButton>
                 </Box>
-                <Box sx={{display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <Box sx={{display:"flex",alignItems:"center",justifyContent:"flex-end",padding:"1rem"}}>
                 <Autocomplete options={mapBounds}>
                 <TextField size="small" sx={{ minWidth:100,maxWidth:400, width:"90%"}}id="outlined-basic" label="Destination" variant="outlined" inputRef={props.destination}/>
                 </Autocomplete>
