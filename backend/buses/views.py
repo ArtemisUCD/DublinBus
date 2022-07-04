@@ -2,9 +2,9 @@ from turtle import Shape
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
-from .models import Stops, DailyWeather, BusesUpdates, Trips, StopTimes, Shapes
+from .models import Stops, DailyWeather, BusesUpdates, Trips, StopTimes, Shapes, Routes
 from rest_framework import viewsets,generics
-from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer
+from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer, RoutesSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -32,29 +32,32 @@ class WeatherView(viewsets.ModelViewSet):
     serializer_class = WeatherForecastSerializer
     queryset = DailyWeather.objects.all()
 
+@api_view(['GET'])
+def getUpdatesForStop(request):
+    route_id_selected = '60-46A-b12-1' # harcoded trips 
+    stop_id_selected = '8220DB000326' 
+    update_set = BusesUpdates.objects.all()
 
-#try with hard coded trip id 
-class BusesUpdatesView(viewsets.ModelViewSet):
-    serializer_class = BusesUpdatesSerializer
-    queryset = BusesUpdates.objects.all()
+    if stop_id_selected is not None:
+        update_set = update_set.filter(stop_id=stop_id_selected)
+        print(len(update_set))
 
-    # 13477.3.60-39A-b12-1.213.I to try
-    tripId = '13477.3.60-39A-b12-1.213.I'
-    if tripId is not None:
-        queryset = queryset.filter(trip_id=tripId)
+    serializer = BusesUpdatesSerializer(update_set,many=True) 
+
+    return Response(serializer.data) #return the data 
 
 
 @api_view(['GET'])
-def getShape(request):
+def getShape(request, route_id_requested):
     trips_set = Trips.objects.all()
 
     # get all trips !
-    route_id_selected = '60-46A-b12-1'
+    # route_id_selected = '60-46A-b12-1'
     shape_set = Shapes.objects.all()
 
     # queryset = Shapes.objects.all()
-    if route_id_selected is not None:
-        trips_set = trips_set.filter(route=route_id_selected)
+    if route_id_requested is not None:
+        trips_set = trips_set.filter(route=route_id_requested)
         first_trip = trips_set.first()
         first_trip_id = first_trip.shape_id
         #print('first_trip_id : ',first_trip_id)
@@ -96,5 +99,14 @@ def getStopsForRoute(request, route_id_requested):
         bus_route_stops.append(current_stop)
 
     serializer = StopsSerializer(bus_route_stops,many=True) 
+
+    return Response(serializer.data) #return the data 
+
+    
+@api_view(['GET'])
+def getBusRouteList(request):
+    route_set = Routes.objects.all()
+
+    serializer = RoutesSerializer(route_set,many=True) 
 
     return Response(serializer.data) #return the data 

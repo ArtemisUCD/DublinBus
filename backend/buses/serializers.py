@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Stops, DailyWeather,BusesUpdates, Trips, StopTimes, Shapes
+from .models import Stops, DailyWeather,BusesUpdates, Trips, StopTimes, Shapes,Routes
 
 class StopsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,5 +34,12 @@ class ShapesSerializer(serializers.ModelSerializer):
     class Meta:
             model = Shapes
             fields = ( 'shape_id' , 'shape_pt_lat' , 'shape_pt_lon',  'shape_pt_sequence',  'shape_dist_traveled')
+
+   
+
+class RoutesSerializer(serializers.ModelSerializer): 
+    class Meta:
+            model = Routes
+            fields = '__all__'
 
    
