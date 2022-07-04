@@ -34,12 +34,14 @@ const RoutePlanner = (props) => {
         <Box sx={{ display:'flex', flexDirection:"column",
         position:"absolute",zIndex:"1",backgroundColor:"white",marginTop:"2rem",marginLeft:"1rem",
         borderRadius:"10px;",alignItems:"flex-start"}}>
-                <Box sx={{height:"50%",width:"100%",display:"flex",marginTop:"1rem",
-                flexDirection:"column",justifyContent:"space-evenly",alignItems:"flex-end"}}>
-                <Box sx={{display:"flex",alignItems:"center",justifyContent:"center",padding:"1rem"}}>
+                            <Box>
                 <IconButton onClick={toggleDrawer}>
                 <MenuIcon />
             </IconButton>
+                </Box>
+                <Box sx={{height:"50%",width:"100%",display:"flex",marginTop:"1rem",
+                flexDirection:"column",justifyContent:"space-evenly",alignItems:"center"}}>
+                <Box sx={{display:"flex",alignItems:"center",justifyContent:"center",paddingBottom:"1rem"}}>
                 <Autocomplete options={mapBounds}>
                 <TextField size="small"style={{minWidth:100,maxWidth:400,width:"90%"}}id="outlined-basic" label="Origin" variant="outlined"  inputRef={props.origin} />
                 </Autocomplete>
@@ -55,10 +57,12 @@ const RoutePlanner = (props) => {
                 <SwapHorizIcon/>
                 </IconButton>
                 </Box>
+                <Box>
                 <Button onClick={calcRoute}variant="outlined" size="small" >Calculate Route</Button>
                 <IconButton onClick={clearDetails}>
                 <HighlightOffOutlinedIcon/>
                 </IconButton>
+                </Box>
                 </Box>
         </Box>
     )
