@@ -18,7 +18,7 @@ const Menu = (props) => {
   };
 
 return(
-  <Box className="main-menu" sx={{ zIndex:"1", position:"absolute", typography: 'body1', backgroundColor:"white",borderRadius:"10px"}}>
+  <Box className="main-menu" sx={{ zIndex:"1", position:"absolute", typography: 'body1', backgroundColor:"white"}}>
   <TabContext value={value}>
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
       <Tabs value={value} variant="scrollable" onChange={handleChange} aria-label="lab API tabs example">
