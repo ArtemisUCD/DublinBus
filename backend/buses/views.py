@@ -74,7 +74,9 @@ def getShape(request, route_id_requested):
 @api_view(['GET'])
 def getStopsForRoute(request, route_id_requested):
     # route_id_selected = '60-46A-b12-1' # harcoded trips
-    print(route_id_requested)
+    
+    string_list = route_id_requested.split()
+    print(string_list[0])
     trips_set = Trips.objects.all()
 
 
@@ -120,7 +122,8 @@ def getBusRouteList(request):
       
         trip_set_actu = trips_set.filter(route_id = current_route_id).first()
         concat_name_str = stop['route_short_name'] + ' - ' + trip_set_actu.trip_headsign
-        concat_name = {'concat_name': concat_name_str }
+        print(current_route_id)
+        concat_name = {'route_id': current_route_id, 'concat_name': concat_name_str }
 
         unique_routes.append(concat_name)
         # print(concat_name_str) #get one of the id of this trip 
