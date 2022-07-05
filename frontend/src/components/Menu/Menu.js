@@ -8,6 +8,8 @@ import TabPanel from '@mui/lab/TabPanel';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import BusRouteList from './BusRouteList';
+import RealTime from './RealTime';
 
 const Menu = (props) => {
 
@@ -29,8 +31,8 @@ return(
     </Box>
     <TabPanel value="1" ><RoutePlanner origin={props.origin} getAddress ={props.getAddress}destination={props.destination} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} toggleDrawer={props.toggleDrawer}/>
   </TabPanel>
-    <TabPanel value="2">Plot Bus Routes</TabPanel>
-    <TabPanel value="3">Real Time Information</TabPanel>
+    <TabPanel value="2"><BusRouteList /></TabPanel>
+    <TabPanel value="3"><RealTime /></TabPanel>
   </TabContext>
 </Box>
     )
