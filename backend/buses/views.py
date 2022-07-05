@@ -33,13 +33,13 @@ class WeatherView(viewsets.ModelViewSet):
     queryset = DailyWeather.objects.all()
 
 @api_view(['GET'])
-def getUpdatesForStop(request):
-    route_id_selected = '60-46A-b12-1' # harcoded trips 
-    stop_id_selected = '8220DB000326' 
+def getUpdatesForStop(request,stop_id_requested):
+    # route_id_selected = '60-46A-b12-1' # harcoded trips 
+    # stop_id_selected = '8220DB000326' 
     update_set = BusesUpdates.objects.all()
 
-    if stop_id_selected is not None:
-        update_set = update_set.filter(stop_id=stop_id_selected)
+    if stop_id_requested is not None:
+        update_set = update_set.filter(stop_id=stop_id_requested)
         print(len(update_set))
 
     serializer = BusesUpdatesSerializer(update_set,many=True) 
