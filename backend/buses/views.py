@@ -138,3 +138,24 @@ def getBusRouteList(request):
     # serializer = RoutesSerializer(route_set_short_name,many=True) 
 
     return Response(unique_routes) #return the data 
+
+
+@api_view(['GET'])
+def getBusStopList(request):
+    stop_set = Stops.objects.all()
+
+    stop_list = []
+    for stop in stop_set.iterator():
+        stop_name_str = stop.stop_name
+        stop_name_str_short = stop_name_str.split(", ")
+        concat_name = {'stop_name': stop_name_str_short[0]}
+        stop_list.append(stop_name_str_short[0])
+        
+    unique_stop_list = []
+    unique_stop_dict = []
+    for i in stop_list:
+        if i not in unique_stop_list:
+            unique_stop_list.append(i)
+            unique_stop_dict.append({'stop_name':i})
+
+    return Response(unique_stop_dict) #return the data 

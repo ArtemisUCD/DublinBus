@@ -7,5 +7,6 @@ urlpatterns = [
     path('getStopsForRoute/<route_id_requested>/',views.getStopsForRoute),
     path('getUpdatesForStop',views.getUpdatesForStop),
     path('getBusRouteList',views.getBusRouteList),
+    path('getBusStopList',views.getBusStopList),
 
 ]
