@@ -33,18 +33,41 @@ class WeatherView(viewsets.ModelViewSet):
     queryset = DailyWeather.objects.all()
 
 @api_view(['GET'])
-def getUpdatesForStop(request):
-    route_id_selected = '60-46A-b12-1' # harcoded trips 
-    stop_id_selected = '8220DB000326' 
+def getUpdatesForStop(request,stop_id_requested):
+    # route_id_selected = '60-46A-b12-1' # harcoded trips 
+    # stop_id_selected = '8220DB000326' 
     update_set = BusesUpdates.objects.all()
+    trips_set = Trips.objects.all()
+    stop_times_set = StopTimes.objects.all()
+    route_set = Routes.objects.all()
 
-    if stop_id_selected is not None:
-        update_set = update_set.filter(stop_id=stop_id_selected)
-        print(len(update_set))
+    if stop_id_requested is not None:
+        update_set = update_set.filter(stop_id=stop_id_requested)
+        print('this is leng ',len(update_set))
+    
+    all_next_buses = []
+    for stop in update_set.iterator():
+        current_trip_id = stop.trip_id
+        current_trip  = trips_set.filter(trip_id=current_trip_id)
+        if current_trip.exists(): #when the trip id doesn't match 
+            current_trip  = trips_set.filter(trip_id=current_trip_id).first()
+            current_trip_headsign = current_trip.trip_headsign
+            current_route = route_set.filter(route_id=stop.route_id).first()
+            current_route_num = current_route.route_short_name
+            concat_name = current_route_num + " - " + current_trip_headsign
+            current_stop_time = stop_times_set.filter(trip_id=current_trip_id, stop_sequence=stop.stop_sequence ).first()
+            planned_arrival_time = current_stop_time.arrival_time
+            planned_departure_time = current_stop_time.departure_time
+            estimated_arrival_delay = stop.arrival_delay
+            estimated_departure_delay = stop.departure_delay
+            current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay':estimated_arrival_delay,
+                              'planned_departure_time':planned_departure_time, 'estimated_departure_delay':estimated_departure_delay }
+            all_next_buses.append(current_dict)  
+            
 
     serializer = BusesUpdatesSerializer(update_set,many=True) 
 
-    return Response(serializer.data) #return the data 
+    return Response(all_next_buses) #return the data 
 
 
 @api_view(['GET'])
@@ -74,7 +97,15 @@ def getShape(request, route_id_requested):
 @api_view(['GET'])
 def getStopsForRoute(request, route_id_requested):
     # route_id_selected = '60-46A-b12-1' # harcoded trips
-    print(route_id_requested)
+    
+    # incase need to split the string !! just change name argument var to route_var_requested
+    ###################################
+    # string_list = route_id_requested.split()
+    # route_set =  Routes.objects.filter(route_short_name=string_list[0])
+    # route_id_requested = route_set.first().route_id
+    # print(route_id_requested)
+    ###################################
+    
     trips_set = Trips.objects.all()
 
 
@@ -120,7 +151,8 @@ def getBusRouteList(request):
       
         trip_set_actu = trips_set.filter(route_id = current_route_id).first()
         concat_name_str = stop['route_short_name'] + ' - ' + trip_set_actu.trip_headsign
-        concat_name = {'concat_name': concat_name_str }
+        #print(current_route_id)
+        concat_name = {'route_id': current_route_id, 'concat_name': concat_name_str }
 
         unique_routes.append(concat_name)
         # print(concat_name_str) #get one of the id of this trip 
@@ -129,3 +161,24 @@ def getBusRouteList(request):
     # serializer = RoutesSerializer(route_set_short_name,many=True) 
 
     return Response(unique_routes) #return the data 
+
+
+@api_view(['GET'])
+def getBusStopList(request):
+    stop_set = Stops.objects.all()
+
+    stop_list = []
+    for stop in stop_set.iterator():
+        stop_name_str = stop.stop_name
+        stop_name_str_short = stop_name_str.split(", ")
+        concat_name = {'stop_name': stop_name_str_short[0]}
+        stop_list.append(stop_name_str_short[0])
+        
+    unique_stop_list = []
+    unique_stop_dict = []
+    for i in stop_list:
+        if i not in unique_stop_list:
+            unique_stop_list.append(i)
+            unique_stop_dict.append({'stop_name':i})
+
+    return Response(unique_stop_dict) #return the data 
