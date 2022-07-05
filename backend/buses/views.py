@@ -37,14 +37,37 @@ def getUpdatesForStop(request,stop_id_requested):
     # route_id_selected = '60-46A-b12-1' # harcoded trips 
     # stop_id_selected = '8220DB000326' 
     update_set = BusesUpdates.objects.all()
+    trips_set = Trips.objects.all()
+    stop_times_set = StopTimes.objects.all()
+    route_set = Routes.objects.all()
 
     if stop_id_requested is not None:
         update_set = update_set.filter(stop_id=stop_id_requested)
-        print(len(update_set))
+        print('this is leng ',len(update_set))
+    
+    all_next_buses = []
+    for stop in update_set.iterator():
+        current_trip_id = stop.trip_id
+        current_trip  = trips_set.filter(trip_id=current_trip_id)
+        if current_trip.exists(): #when the trip id doesn't match 
+            current_trip  = trips_set.filter(trip_id=current_trip_id).first()
+            current_trip_headsign = current_trip.trip_headsign
+            current_route = route_set.filter(route_id=stop.route_id).first()
+            current_route_num = current_route.route_short_name
+            concat_name = current_route_num + " - " + current_trip_headsign
+            current_stop_time = stop_times_set.filter(trip_id=current_trip_id, stop_sequence=stop.stop_sequence ).first()
+            planned_arrival_time = current_stop_time.arrival_time
+            planned_departure_time = current_stop_time.departure_time
+            estimated_arrival_delay = stop.arrival_delay
+            estimated_departure_delay = stop.departure_delay
+            current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay':estimated_arrival_delay,
+                              'planned_departure_time':planned_departure_time, 'estimated_departure_delay':estimated_departure_delay }
+            all_next_buses.append(current_dict)  
+            
 
     serializer = BusesUpdatesSerializer(update_set,many=True) 
 
-    return Response(serializer.data) #return the data 
+    return Response(all_next_buses) #return the data 
 
 
 @api_view(['GET'])
