@@ -1,9 +1,7 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { IconButton, Box, Drawer} from '@mui/material'
+import { Box} from '@mui/material'
 import Header from './components/Header/Header'
-import RoutePlanner from './components/Menu/RoutePlanner';
 import Menu from './components/Menu/Menu'
-import CloseIcon from '@mui/icons-material/Close';
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
 import { useState, useRef } from 'react';
@@ -96,21 +94,20 @@ console.log("direction steps",results.routes[0].legs[0].steps)
     destinationRef.current.value = ''
   }
 
+  const swapInputFields = () => {
+    const temp = originRef.current.value;
+    originRef.current.value = destinationRef.current.value;
+    destinationRef.current.value = temp; 
+  }
+
   return (
     <ThemeProvider theme={theme}>
-      <Header toggleDrawer={toggleDrawer}/>
-      <Drawer open={drawerOpen} PaperProps={{sx:{
-        backgroundColor: "#000000"
-       }}}>
-        <IconButton color="primary" onClick={toggleDrawer}>
-          <CloseIcon/>
-          </IconButton>
-          <Menu/>
-          </Drawer>
+      {/* <Header toggleDrawer={toggleDrawer}/> */}
+          <Menu origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
+
     <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
   flexDirection:'column',
-  alignItems:'center'}}>
-      <RoutePlanner origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails}/>
+  alignItems:'flex-start'}}>
       <NewMap directions={directions}/>
 </Box>
 </ThemeProvider>

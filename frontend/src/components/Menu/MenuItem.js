@@ -28,7 +28,7 @@ const MenuItem = (props) => {
     else if(props.title==="Bus Route"){
         dropdownContent = <BusRouteList onLike={props.onLike} onUnlike={props.onUnlike} favourites = {props.favourites}/>
     }
-    else if(props.title==="Favorites"){
+    else if(props.title==="Favourites"){
         dropdownContent = <Favorites onLike={props.onLike} onUnlike={props.onUnlike} favourites = {props.favourites} />
     }else {
         dropdownContent =<Print />
