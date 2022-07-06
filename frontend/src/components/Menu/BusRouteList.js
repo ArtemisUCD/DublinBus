@@ -19,7 +19,7 @@ const RealTime = () => {
     const [showinfo, setShowinfo] = useState(false);
     // const [showsearch, setShowsearch] = useState(true);
     const [value, setValue] = useState("");
-    const [routeId, setRouteId] = useState("");
+    // const [routeId, setRouteId] = useState("");
     const [busroute, setBusroute] = useState([]);
     
     useEffect(() => {
@@ -61,7 +61,7 @@ const RealTime = () => {
                         isOptionEqualToValue={(option, value) =>
                             option.concat_name === value.concat_name
                         }
-                        onChange={(e,value) => {setValue(value.concat_name); setRouteId(value.route_id)}}
+                        onChange={(e,value) => {setValue(value.concat_name)}}
                         noOptionsText={"Stop name/number"}
                         renderOption={(props, routeList) => (
                             <Box component="li" {...props} key={routeList.route_name}>
