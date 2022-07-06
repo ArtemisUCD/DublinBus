@@ -33,7 +33,7 @@ const RealTime = () => {
         fetch("/buses/getUpdatesForStop/"+stopId+"/")
         .then(response => response.json())
         .then(data => setStopupdate(data))
-      },[]);
+      },[stopId]);
 
 
 
@@ -102,9 +102,9 @@ const RealTime = () => {
                             </TableRow>
                             </TableHead>
                             <TableBody>
-                            {stopupdate.map((row) => (
+                            {stopupdate.map((row, index) => (
                                 <TableRow
-                                key={row.concat_name}
+                                key={index}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                 <TableCell component="th" scope="row">
