@@ -78,17 +78,17 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 
 # Database
-# # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-db_password = os.environ['DUBLIN_BUS_PASSWORD']
-db_location = os.environ['DUBLIN_BUS_ENDPOINT']
+# # # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+# db_password = os.environ['DUBLIN_BUS_PASSWORD']
+# db_location = os.environ['DUBLIN_BUS_ENDPOINT']
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'artemis',
         'USER': 'admin',
-        'PASSWORD': db_password,
-        'HOST': db_location,
+        'PASSWORD': 'dublinBus55!',
+        'HOST': 'dublinbus.cgaizveb7ftf.us-east-1.rds.amazonaws.com',
         'PORT': '3306',
     }
 }
