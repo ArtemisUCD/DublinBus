@@ -8,7 +8,6 @@ from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdate
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-
 def index(request):
     return HttpResponse("Hello, world. You're at the bus app index.")
 
@@ -137,27 +136,46 @@ def getStopsForRoute(request, route_id_requested):
 @api_view(['GET'])
 def getBusRouteList(request):
     route_set = Routes.objects.all()
-    trips_set = Trips.objects.all()
-    # route_set_short_name = Routes.objects.values('route_id','route_short_name') #still a query set 
-    # print(len(route_set_short_name))
+    # trips_set = Trips.objects.all()
+   
     route_set_short_name = Routes.objects.order_by('route_short_name').values('route_short_name').distinct() #select all unique name 
-    # print(len(route_set_short_name))
+    # route_set_short_name = Routes.objects.values('route_short_name')
 
     unique_routes = []
     for stop in route_set_short_name.iterator():
         route_set_actu = route_set.filter(route_short_name=stop['route_short_name'])
+        current_route_id = route_set_actu[0].route_id
+        direction=0
         
-        current_route_id =route_set_actu[0].route_id
-      
-        trip_set_actu = trips_set.filter(route_id = current_route_id).first()
-        concat_name_str = stop['route_short_name'] + ' - ' + trip_set_actu.trip_headsign
-        #print(current_route_id)
-        concat_name = {'route_id': current_route_id, 'concat_name': concat_name_str }
+        for direction in range(0,2):
+            trip_set_actu = Trips.objects.filter(route_id = current_route_id,direction_id=direction).first()
+            if trip_set_actu is not None:
+                # print(trip_set_actu)
+                concat_name_str = stop['route_short_name'] + ' - ' + trip_set_actu.trip_headsign
+                concat_name = {'route_id': current_route_id, 'concat_name': concat_name_str }
+                unique_routes.append(concat_name)
 
-        unique_routes.append(concat_name)
-        # print(concat_name_str) #get one of the id of this trip 
-        # print()
-    # print(len(unique_routes))
+            # else:
+                # print('NOOOOOOOOOOOOOOOOOOOOO')
+            
+
+        # for current_route in route_set_actu.iterator():
+        #     # current_route_id = route_set_actu[0].route_id
+        #     current_route_id = current_route.route_id
+        #     print(current_route_id,direction)
+        #     full_trip_set_actu = trips_set.filter(route_id = current_route_id)
+
+        #     if direction >=1 & len(full_trip_set_actu)>1 :
+        #         trip_set_actu = full_trip_set_actu[1]
+        #     else :
+        #         trip_set_actu = full_trip_set_actu.first()
+        #     # print(current_route_id, trip_set_actu)
+            
+        #     #print(current_route_id)
+            
+        #     direction+=1
+            
+      
     # serializer = RoutesSerializer(route_set_short_name,many=True) 
 
     return Response(unique_routes) #return the data 

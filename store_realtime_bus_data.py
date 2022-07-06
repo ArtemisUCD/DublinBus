@@ -1,5 +1,7 @@
 import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Boolean,TIMESTAMP
+from sqlalchemy.sql import select
+
 import urllib.request, json
 import os
 
@@ -11,6 +13,8 @@ engine = create_engine('mysql+mysqlconnector://admin:'+db_password+'@'+db_locati
 dbConnection = engine.connect()
 
 
+# s = select(trips)
+# result = dbConnection.execute(s)
 
 api_key = os.environ['GTFSR_API_KEY']
 try:
