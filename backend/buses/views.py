@@ -111,14 +111,14 @@ def getStopsForRoute(request, route_id_requested):
     # print(route_id_requested)
     ###################################
     
-    trips_set = Trips.objects.all()
-
+    df_trips = pd.DataFrame(list(Trips.objects.all().values('route','trip_id')))
 
     # queryset = Shapes.objects.all()
     if route_id_requested is not None:
-        trips_set = trips_set.filter(route=route_id_requested)
-        first_trip = trips_set.first()
-        first_trip_id = first_trip.trip_id # retrieve and trip ID
+        # trips_set = trips_set.filter(route=route_id_requested)
+        first_trip_id = df_trips[df_trips['route'] == route_id_requested]['trip_id'].iloc[0]
+        # first_trip = trips_set.first()
+        # first_trip_id = first_trip.trip_id # retrieve and trip ID
 
     stop_times_set = StopTimes.objects.all()
     # get all stops !
@@ -127,15 +127,15 @@ def getStopsForRoute(request, route_id_requested):
 
     
     bus_route_stops = []
-    stop_set = Stops.objects.all()
+    # stop_set = Stops.objects.all()
 
     for stop in bus_route_stops_times.iterator():
         current_stop_id = stop.stop_id
-        current_stop = stop_set.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
+        current_stop = Stops.objects.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
         bus_route_stops.append(current_stop)
 
     serializer = StopsSerializer(bus_route_stops,many=True) 
-
+    print(connection.queries)
     return Response(serializer.data) #return the data 
 
 # @api_view(['GET'])
