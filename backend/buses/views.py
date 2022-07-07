@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.cache import cache
 from django.db import connection
+import pandas as pd
+
 
 def index(request):
     return HttpResponse("Hello, world. You're at the bus app index.")
@@ -136,81 +138,53 @@ def getStopsForRoute(request, route_id_requested):
 
     return Response(serializer.data) #return the data 
 
-
-# def getTripsAll():
-#     trips_set = Trips.objects.all()
-#     serializer = TripsSerializer(trips_set,many=True) 
-#     print(connection.queries,'tesnulle')
-#     return (trips_set) 
-
 # @api_view(['GET'])
 # def getBusRouteList(request):
-#     route_set = Routes.objects.all()
-#     trips_set = Trips.objects.all()
+#     # route_set = .all()
+#     # trips_set = all()
     
-#     route_set_short_name = route_set.order_by('route_short_name').values('route_short_name').distinct() #select all unique name 
+#     trip_set_unique_headsign = Trips.objects.order_by('trip_headsign').values('trip_headsign').distinct() #select all unique trip headsign 
+#     print(len(trip_set_unique_headsign))
 #     # route_set_short_name = Routes.objects.values('route_short_name')
 
-#     unique_routes = []
-#     for stop in route_set_short_name.iterator():
-#         route_set_actu = route_set.filter(route_short_name=stop['route_short_name']).first()
-#         current_route_id = route_set_actu.route_id
-#         direction=0
-        
-#         for direction in range(0,2):
-#             trip_set_actu = trips_set.filter(route_id = current_route_id,direction_id=direction).first()
-#             if trip_set_actu is not None:
-#                 # print(trip_set_actu)
-#                 concat_name_str = stop['route_short_name'] + ' - ' + trip_set_actu.trip_headsign
-#                 concat_name = {'route_id': current_route_id, 'concat_name': concat_name_str }
-#                 unique_routes.append(concat_name)
+#     routes = []
+#     for trip in trip_set_unique_headsign.iterator():
+#         route_long_name = trip['trip_headsign']
+#         route_id = Trips.objects.filter(trip_headsign = route_long_name).values('route_id').first()['route_id']
+#         route_short_name = Routes.objects.filter(route_id = route_id).values('route_short_name').first()['route_short_name']
+#         concat_name_str = route_short_name + ' - ' + route_long_name
+#         route_dict = {'route_id': route_id, 'concat_name': concat_name_str }
+#         routes.append(route_dict)
 
-#             # else:
-#                 # print('NOOOOOOOOOOOOOOOOOOOOO')
-            
-
-#         # for current_route in route_set_actu.iterator():
-#         #     # current_route_id = route_set_actu[0].route_id
-#         #     current_route_id = current_route.route_id
-#         #     print(current_route_id,direction)
-#         #     full_trip_set_actu = trips_set.filter(route_id = current_route_id)
-
-#         #     if direction >=1 & len(full_trip_set_actu)>1 :
-#         #         trip_set_actu = full_trip_set_actu[1]
-#         #     else :
-#         #         trip_set_actu = full_trip_set_actu.first()
-#         #     # print(current_route_id, trip_set_actu)
-            
-#         #     #print(current_route_id)
-            
-#         #     direction+=1
-            
-      
-#     # serializer = RoutesSerializer(route_set_short_name,many=True) 
 #     print(connection.queries)
-#     return Response(unique_routes) #return the data 
+#     print(len(routes))
+#     return Response(routes) #return the data 
+
 
 @api_view(['GET'])
 def getBusRouteList(request):
-    # route_set = .all()
-    # trips_set = all()
+    df_trips = pd.DataFrame(list(Trips.objects.all().values()))
+    df_route = pd.DataFrame(list(Routes.objects.all().values()))
     
     trip_set_unique_headsign = Trips.objects.order_by('trip_headsign').values('trip_headsign').distinct() #select all unique trip headsign 
     print(len(trip_set_unique_headsign))
-    # route_set_short_name = Routes.objects.values('route_short_name')
+    print(df_trips.columns.values.tolist())
 
     routes = []
     for trip in trip_set_unique_headsign.iterator():
         route_long_name = trip['trip_headsign']
-        route_id = Trips.objects.filter(trip_headsign = route_long_name).values('route_id').first()['route_id']
-        route_short_name = Routes.objects.filter(route_id = route_id).values('route_short_name').first()['route_short_name']
+        route_id = df_trips[df_trips['trip_headsign'] == route_long_name]['route_id'].iloc[0] #Trips.objects.filter(trip_headsign = route_long_name).values('route_id').first()['route_id']
+        route_short_name =  df_route[df_route['route_id'] == route_id]['route_short_name'].iloc[0] #Routes.objects.filter(route_id = route_id).values('route_short_name').first()['route_short_name']
         concat_name_str = route_short_name + ' - ' + route_long_name
         route_dict = {'route_id': route_id, 'concat_name': concat_name_str }
         routes.append(route_dict)
+        # print(route_short_name)
 
     print(connection.queries)
     print(len(routes))
     return Response(routes) #return the data 
+
+
 
 @api_view(['GET'])
 def getBusStopList(request):
