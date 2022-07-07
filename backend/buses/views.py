@@ -163,8 +163,8 @@ def getStopsForRoute(request, route_id_requested):
 
 @api_view(['GET'])
 def getBusRouteList(request):
-    df_trips = pd.DataFrame(list(Trips.objects.all().values()))
-    df_route = pd.DataFrame(list(Routes.objects.all().values()))
+    df_trips = pd.DataFrame(list(Trips.objects.all().values('trip_headsign','route_id')))
+    df_route = pd.DataFrame(list(Routes.objects.all().values('route_id','route_short_name')))
     
     trip_set_unique_headsign = Trips.objects.order_by('trip_headsign').values('trip_headsign').distinct() #select all unique trip headsign 
     print(len(trip_set_unique_headsign))
