@@ -75,17 +75,24 @@ const getAddress = () =>{
   }
 
   const directionsService = new window.google.maps.DirectionsService();
-  const results = await directionsService.route({
+  let results = await directionsService.route({
     origin: originRef.current.value,
     destination: destinationRef.current.value,
     travelMode: window.google.maps.TravelMode.TRANSIT,
+    provideRouteAlternatives:true,
     transitOptions:{
       modes: ['BUS']
     }
     }
 )
+// remove any non Dublin Bus operators from viable routes
+const notDublinBus = (el)=>el.transit.line.agencies[0].name!=="Dublin Bus";
+let filteredRoutes = results.routes.filter(route => !route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").some(notDublinBus));
+results.routes = filteredRoutes;
+console.log("final routes",results)
 setDirections(results)
-console.log("direction steps",results.routes[0].legs[0].steps)
+
+
   }
 
   const clearDetails = () => {
