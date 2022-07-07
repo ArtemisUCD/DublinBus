@@ -7,6 +7,8 @@ from rest_framework import viewsets,generics
 from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer, RoutesSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.core.cache import cache
+from django.db import connection
 
 def index(request):
     return HttpResponse("Hello, world. You're at the bus app index.")
@@ -30,6 +32,8 @@ class StopsView(viewsets.ModelViewSet):
 class WeatherView(viewsets.ModelViewSet):
     serializer_class = WeatherForecastSerializer
     queryset = DailyWeather.objects.all()
+
+
 
 @api_view(['GET'])
 def getUpdatesForStop(request,stop_id_requested):
@@ -132,23 +136,29 @@ def getStopsForRoute(request, route_id_requested):
 
     return Response(serializer.data) #return the data 
 
-    
+
+# def getTripsAll():
+#     trips_set = Trips.objects.all()
+#     serializer = TripsSerializer(trips_set,many=True) 
+#     print(connection.queries,'tesnulle')
+#     return (trips_set) 
+
 @api_view(['GET'])
 def getBusRouteList(request):
     route_set = Routes.objects.all()
-    # trips_set = Trips.objects.all()
-   
-    route_set_short_name = Routes.objects.order_by('route_short_name').values('route_short_name').distinct() #select all unique name 
+    trips_set = Trips.objects.all()
+    
+    route_set_short_name = route_set.order_by('route_short_name').values('route_short_name').distinct() #select all unique name 
     # route_set_short_name = Routes.objects.values('route_short_name')
 
     unique_routes = []
     for stop in route_set_short_name.iterator():
-        route_set_actu = route_set.filter(route_short_name=stop['route_short_name'])
-        current_route_id = route_set_actu[0].route_id
+        route_set_actu = route_set.filter(route_short_name=stop['route_short_name']).first()
+        current_route_id = route_set_actu.route_id
         direction=0
         
         for direction in range(0,2):
-            trip_set_actu = Trips.objects.filter(route_id = current_route_id,direction_id=direction).first()
+            trip_set_actu = trips_set.filter(route_id = current_route_id,direction_id=direction).first()
             if trip_set_actu is not None:
                 # print(trip_set_actu)
                 concat_name_str = stop['route_short_name'] + ' - ' + trip_set_actu.trip_headsign
@@ -177,7 +187,7 @@ def getBusRouteList(request):
             
       
     # serializer = RoutesSerializer(route_set_short_name,many=True) 
-
+    print(connection.queries)
     return Response(unique_routes) #return the data 
 
 
@@ -198,5 +208,5 @@ def getBusStopList(request):
         if i not in unique_stop_list:
             unique_stop_list.append(i)
             unique_stop_dict.append({'stop_name':i})
-
+    print(connection.queries)
     return Response(unique_stop_dict) #return the data 
