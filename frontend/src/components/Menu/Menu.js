@@ -29,7 +29,7 @@ return(
         <Tab icon={<AccessTimeIcon />} label="Real Time Info" value="3" />
       </Tabs>
     </Box>
-    <TabPanel value="1" ><RoutePlanner origin={props.origin} getAddress ={props.getAddress}destination={props.destination} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} toggleDrawer={props.toggleDrawer}/>
+    <TabPanel value="1" ><RoutePlanner directions = {props.directions} origin={props.origin} getAddress ={props.getAddress}destination={props.destination} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} toggleDrawer={props.toggleDrawer}/>
   </TabPanel>
     <TabPanel value="2"><BusRouteList /></TabPanel>
     <TabPanel value="3"><RealTime /></TabPanel>

@@ -2,6 +2,7 @@ import { IconButton, Box, TextField, Button} from '@mui/material'
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import ListIcon from '@mui/icons-material/List';
 import {Autocomplete} from '@react-google-maps/api'
 import './RoutePlanner.css'
 
@@ -26,6 +27,22 @@ const RoutePlanner = (props) => {
 
 
     const mapBounds = {componentRestrictions:{country:["ie"]}}
+
+    let journeyDetails;
+
+    if(props.directions)
+{
+    journeyDetails = props.directions.routes[0].legs[0].steps.map((step)=>{if(step.travel_mode==="TRANSIT"){return {distance:step.distance.text,
+        duration:step.duration.text,
+        mode:step.travel_mode,
+    busNumber:step.transit.line.short_name}}
+        else{
+            return {distance:step.distance.text,
+                duration:step.duration.text,
+                mode:step.travel_mode}
+        }})
+    journeyDetails =journeyDetails.map((stepObj) =>{return <Box>{stepObj.distance} {stepObj.duration} {stepObj.mode} {stepObj.busNumber?stepObj.busNumber:null}</Box>})
+}
 
     return(
 
@@ -54,7 +71,13 @@ borderRadius:"10px;"}}>
         <IconButton onClick={clearDetails}>
         <HighlightOffOutlinedIcon/>
         </IconButton>
+        
         </Box>
+        {/* <IconButton>
+        <ListIcon/>
+        </IconButton> */}
+        {journeyDetails ? <Box>{journeyDetails}</Box>:null}
+        
         </Box>
 </Box>
 

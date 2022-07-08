@@ -89,8 +89,8 @@ const getAddress = () =>{
 const notDublinBus = (el)=>el.transit.line.agencies[0].name!=="Dublin Bus";
 let filteredRoutes = results.routes.filter(route => !route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").some(notDublinBus));
 results.routes = filteredRoutes;
-console.log("final routes",results)
 setDirections(results)
+console.log("breakdown", results.routes[0].legs[0].steps)
 
 
   }
@@ -110,7 +110,7 @@ setDirections(results)
   return (
     <ThemeProvider theme={theme}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
-          <Menu origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
+          <Menu origin={originRef} directions ={directions}getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
 
     <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
   flexDirection:'column',
