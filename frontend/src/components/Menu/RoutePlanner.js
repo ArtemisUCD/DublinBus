@@ -4,6 +4,8 @@ import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import ListIcon from '@mui/icons-material/List';
 import {Autocomplete} from '@react-google-maps/api'
+import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import './RoutePlanner.css'
 
 
@@ -41,7 +43,7 @@ const RoutePlanner = (props) => {
                 duration:step.duration.text,
                 mode:step.travel_mode}
         }})
-    journeyDetails =journeyDetails.map((stepObj) =>{return <Box>{stepObj.distance} {stepObj.duration} {stepObj.mode} {stepObj.busNumber?stepObj.busNumber:null}</Box>})
+    journeyDetails =journeyDetails.map((stepObj) =>{return<Box sx={{display:"flex",alignItems:"center",padding:"0.2rem"}}>{stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"yellow",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])
 }
 
     return(
@@ -76,7 +78,8 @@ borderRadius:"10px;"}}>
         {/* <IconButton>
         <ListIcon/>
         </IconButton> */}
-        {journeyDetails ? <Box>{journeyDetails}</Box>:null}
+        {journeyDetails ? <Box sx={{display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid black",borderRadius:"10px",
+    boxShadow:"2px 2px 2px 2px #F9F9F9"}}>{journeyDetails}</Box>:null}
         
         </Box>
 </Box>
