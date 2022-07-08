@@ -85,7 +85,7 @@ const getAddress = () =>{
     }
     }
 )
-// remove any non Dublin Bus operators from viable routes
+// remove any non Dublin Bus operators from viable route
 const notDublinBus = (el)=>el.transit.line.agencies[0].name!=="Dublin Bus";
 let filteredRoutes = results.routes.filter(route => !route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").some(notDublinBus));
 results.routes = filteredRoutes;
