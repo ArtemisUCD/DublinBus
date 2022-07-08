@@ -1,8 +1,11 @@
 import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Boolean,TIMESTAMP
+from sqlalchemy.sql import select
+
 import urllib.request, json
 import os
-
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning) # hide all warnings from panda future updates !
 
 db_password = os.environ['DUBLIN_BUS_PASSWORD']
 db_location = os.environ['DUBLIN_BUS_ENDPOINT']
@@ -11,6 +14,15 @@ engine = create_engine('mysql+mysqlconnector://admin:'+db_password+'@'+db_locati
 dbConnection = engine.connect()
 
 
+metadata = MetaData(dbConnection)
+
+trips = Table('trips', metadata, autoload_with=engine)
+
+s = select([trips.c.trip_id]) # c to say it's a colun 
+result = dbConnection.execute(s)
+
+trip_id_list = [r for r, in result]
+print(len(trip_id_list))
 
 api_key = os.environ['GTFSR_API_KEY']
 try:
@@ -48,68 +60,69 @@ try:
         #save all the value specific to the trip
         current_trip = bus['TripUpdate']['Trip']
         TripId = current_trip['TripId']
-        RouteId = current_trip['RouteId']
-        StartTime = current_trip['StartTime']
-        StartDate = current_trip['StartDate']
-        ScheduleRelationship = current_trip['ScheduleRelationship']
-        IsDeleted = bus['IsDeleted']
+        if TripId in trip_id_list : #check if trip is dublin bus 
+            RouteId = current_trip['RouteId']
+            StartTime = current_trip['StartTime']
+            StartDate = current_trip['StartDate']
+            ScheduleRelationship = current_trip['ScheduleRelationship']
+            IsDeleted = bus['IsDeleted']
 
-        if ScheduleRelationship=='Canceled':
-            StopSequence, StopId, ArrivalDelay,DepartureDelay, ArrivalTime,DepartureTime,ScheduleRelationship = -1,-1,-1,-1,-1,-1,-1
-            index += 1
-            df_buses_updates = df_buses_updates.append({'id':index,'timestamp':Timestamp,'trip_id':TripId,'route_id':RouteId,'start_time':StartTime,
-                                'start_date':StartDate,'schedule_relationship':ScheduleRelationship,'is_deleted':IsDeleted,
-                                'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
-                                'departure_delay':DepartureDelay,'departure_time':DepartureTime}, ignore_index=True )
-
-
-        else:
-            current_bus = bus['TripUpdate']['StopTimeUpdate']
-            for update in current_bus:
-                StopSequence = update['StopSequence']
-                StopId = update['StopId']
-                keys = update.keys()
-                if 'Arrival' in keys:
-                    keys2 = update['Arrival'].keys()
-                    if 'Delay' in keys2:
-                        ArrivalDelay = update['Arrival']['Delay']
-                    else:
-                        ArrivalDelay = -1
-                    if 'Time' in keys2:
-                        ArrivalTime = update['Arrival']['Time']
-                    else:
-                        ArrivalTime = -1
-                else:
-                    ArrivalDelay = -1
-                    ArrivalTime = -1
-
-                if 'Departure' in keys:
-                    keys3 = update['Departure'].keys()
-                    if 'Delay' in keys3:
-                        DepartureDelay = update['Departure']['Delay']
-                    else:
-                        DepartureDelay = -1
-                    if 'Time' in keys3:
-                        DepartureTime = update['Departure']['Time']
-                    else:
-                        DepartureTime = -1
-                    
-                else:
-                    DepartureDelay = -1
-                    DepartureTime = -1
-
-
-                #append row to dataframe
-                # new_row = pd.DataFrame({'Timestamp':Timestamp,'TripId':TripId,'RouteId':RouteId,'StartTime':StartTime,
-                #                 'StartDate':StartDate,'ScheduleRelationship':ScheduleRelationship,'IsDeleted':IsDeleted,
-                #                 'StopSequence':StopSequence,'StopId':StopId,'ArrivalDelay':ArrivalDelay,
-                #                 'DepartureDelay':DepartureDelay})
-                #print[new_row]
+            if ScheduleRelationship=='Canceled':
+                StopSequence, StopId, ArrivalDelay,DepartureDelay, ArrivalTime,DepartureTime,ScheduleRelationship = -1,-1,-1,-1,-1,-1,-1
                 index += 1
                 df_buses_updates = df_buses_updates.append({'id':index,'timestamp':Timestamp,'trip_id':TripId,'route_id':RouteId,'start_time':StartTime,
-                                'start_date':StartDate,'schedule_relationship':ScheduleRelationship,'is_deleted':IsDeleted,
-                                'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
-                                'departure_delay':DepartureDelay,'departure_time':DepartureTime}, ignore_index=True )
+                                    'start_date':StartDate,'schedule_relationship':ScheduleRelationship,'is_deleted':IsDeleted,
+                                    'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
+                                    'departure_delay':DepartureDelay,'departure_time':DepartureTime}, ignore_index=True )
+
+
+            else:
+                current_bus = bus['TripUpdate']['StopTimeUpdate']
+                for update in current_bus:
+                    StopSequence = update['StopSequence']
+                    StopId = update['StopId']
+                    keys = update.keys()
+                    if 'Arrival' in keys:
+                        keys2 = update['Arrival'].keys()
+                        if 'Delay' in keys2:
+                            ArrivalDelay = update['Arrival']['Delay']
+                        else:
+                            ArrivalDelay = -1
+                        if 'Time' in keys2:
+                            ArrivalTime = update['Arrival']['Time']
+                        else:
+                            ArrivalTime = -1
+                    else:
+                        ArrivalDelay = -1
+                        ArrivalTime = -1
+
+                    if 'Departure' in keys:
+                        keys3 = update['Departure'].keys()
+                        if 'Delay' in keys3:
+                            DepartureDelay = update['Departure']['Delay']
+                        else:
+                            DepartureDelay = -1
+                        if 'Time' in keys3:
+                            DepartureTime = update['Departure']['Time']
+                        else:
+                            DepartureTime = -1
+                        
+                    else:
+                        DepartureDelay = -1
+                        DepartureTime = -1
+
+
+                    #append row to dataframe
+                    # new_row = pd.DataFrame({'Timestamp':Timestamp,'TripId':TripId,'RouteId':RouteId,'StartTime':StartTime,
+                    #                 'StartDate':StartDate,'ScheduleRelationship':ScheduleRelationship,'IsDeleted':IsDeleted,
+                    #                 'StopSequence':StopSequence,'StopId':StopId,'ArrivalDelay':ArrivalDelay,
+                    #                 'DepartureDelay':DepartureDelay})
+                    #print[new_row]
+                    index += 1
+                    df_buses_updates = df_buses_updates.append({'id':index,'timestamp':Timestamp,'trip_id':TripId,'route_id':RouteId,'start_time':StartTime,
+                                    'start_date':StartDate,'schedule_relationship':ScheduleRelationship,'is_deleted':IsDeleted,
+                                    'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
+                                    'departure_delay':DepartureDelay,'departure_time':DepartureTime}, ignore_index=True )
 
     print('fini')
 

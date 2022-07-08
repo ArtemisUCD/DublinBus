@@ -7,6 +7,9 @@ from rest_framework import viewsets,generics
 from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer, RoutesSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.core.cache import cache
+from django.db import connection
+import pandas as pd
 
 
 def index(request):
@@ -31,6 +34,8 @@ class StopsView(viewsets.ModelViewSet):
 class WeatherView(viewsets.ModelViewSet):
     serializer_class = WeatherForecastSerializer
     queryset = DailyWeather.objects.all()
+
+
 
 @api_view(['GET'])
 def getUpdatesForStop(request,stop_id_requested):
@@ -106,14 +111,14 @@ def getStopsForRoute(request, route_id_requested):
     # print(route_id_requested)
     ###################################
     
-    trips_set = Trips.objects.all()
-
+    df_trips = pd.DataFrame(list(Trips.objects.all().values('route','trip_id')))
 
     # queryset = Shapes.objects.all()
     if route_id_requested is not None:
-        trips_set = trips_set.filter(route=route_id_requested)
-        first_trip = trips_set.first()
-        first_trip_id = first_trip.trip_id # retrieve and trip ID
+        # trips_set = trips_set.filter(route=route_id_requested)
+        first_trip_id = df_trips[df_trips['route'] == route_id_requested]['trip_id'].iloc[0]
+        # first_trip = trips_set.first()
+        # first_trip_id = first_trip.trip_id # retrieve and trip ID
 
     stop_times_set = StopTimes.objects.all()
     # get all stops !
@@ -122,45 +127,63 @@ def getStopsForRoute(request, route_id_requested):
 
     
     bus_route_stops = []
-    stop_set = Stops.objects.all()
+    # stop_set = Stops.objects.all()
 
     for stop in bus_route_stops_times.iterator():
         current_stop_id = stop.stop_id
-        current_stop = stop_set.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
+        current_stop = Stops.objects.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
         bus_route_stops.append(current_stop)
 
     serializer = StopsSerializer(bus_route_stops,many=True) 
-
+    print(connection.queries)
     return Response(serializer.data) #return the data 
 
+# @api_view(['GET'])
+# def getBusRouteList(request):
+#     # route_set = .all()
+#     # trips_set = all()
     
+#     trip_set_unique_headsign = Trips.objects.order_by('trip_headsign').values('trip_headsign').distinct() #select all unique trip headsign 
+#     print(len(trip_set_unique_headsign))
+#     # route_set_short_name = Routes.objects.values('route_short_name')
+
+#     routes = []
+#     for trip in trip_set_unique_headsign.iterator():
+#         route_long_name = trip['trip_headsign']
+#         route_id = Trips.objects.filter(trip_headsign = route_long_name).values('route_id').first()['route_id']
+#         route_short_name = Routes.objects.filter(route_id = route_id).values('route_short_name').first()['route_short_name']
+#         concat_name_str = route_short_name + ' - ' + route_long_name
+#         route_dict = {'route_id': route_id, 'concat_name': concat_name_str }
+#         routes.append(route_dict)
+
+#     print(connection.queries)
+#     print(len(routes))
+#     return Response(routes) #return the data 
+
+
 @api_view(['GET'])
 def getBusRouteList(request):
-    route_set = Routes.objects.all()
-    trips_set = Trips.objects.all()
-    # route_set_short_name = Routes.objects.values('route_id','route_short_name') #still a query set 
-    # print(len(route_set_short_name))
-    route_set_short_name = Routes.objects.order_by('route_short_name').values('route_short_name').distinct() #select all unique name 
-    # print(len(route_set_short_name))
+    df_trips = pd.DataFrame(list(Trips.objects.all().values('trip_headsign','route_id')))
+    df_route = pd.DataFrame(list(Routes.objects.all().values('route_id','route_short_name')))
+    
+    trip_set_unique_headsign = Trips.objects.order_by('trip_headsign').values('trip_headsign').distinct() #select all unique trip headsign 
+    print(len(trip_set_unique_headsign))
+    print(df_trips.columns.values.tolist())
 
-    unique_routes = []
-    for stop in route_set_short_name.iterator():
-        route_set_actu = route_set.filter(route_short_name=stop['route_short_name'])
-        
-        current_route_id =route_set_actu[0].route_id
-      
-        trip_set_actu = trips_set.filter(route_id = current_route_id).first()
-        concat_name_str = stop['route_short_name'] + ' - ' + trip_set_actu.trip_headsign
-        #print(current_route_id)
-        concat_name = {'route_id': current_route_id, 'concat_name': concat_name_str }
+    routes = []
+    for trip in trip_set_unique_headsign.iterator():
+        route_long_name = trip['trip_headsign']
+        route_id = df_trips[df_trips['trip_headsign'] == route_long_name]['route_id'].iloc[0] #Trips.objects.filter(trip_headsign = route_long_name).values('route_id').first()['route_id']
+        route_short_name =  df_route[df_route['route_id'] == route_id]['route_short_name'].iloc[0] #Routes.objects.filter(route_id = route_id).values('route_short_name').first()['route_short_name']
+        concat_name_str = route_short_name + ' - ' + route_long_name
+        route_dict = {'route_id': route_id, 'concat_name': concat_name_str }
+        routes.append(route_dict)
+        # print(route_short_name)
 
-        unique_routes.append(concat_name)
-        # print(concat_name_str) #get one of the id of this trip 
-        # print()
-    # print(len(unique_routes))
-    # serializer = RoutesSerializer(route_set_short_name,many=True) 
+    print(connection.queries)
+    print(len(routes))
+    return Response(routes) #return the data 
 
-    return Response(unique_routes) #return the data 
 
 
 @api_view(['GET'])
@@ -180,5 +203,5 @@ def getBusStopList(request):
         if i not in unique_stop_list:
             unique_stop_list.append(i)
             unique_stop_dict.append({'stop_name':i})
-
+    print(connection.queries)
     return Response(unique_stop_dict) #return the data 
