@@ -8,7 +8,7 @@
 @media only screen and (min-width: 420px){
     .main-menu {
     width: 35%;
-    height:35%;
+    height:inherit;
     margin: 1rem;
     min-width:300px;
     max-width: 400px;
