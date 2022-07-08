@@ -1,2 +1,7 @@
 weatherKey.txt
 .env
+backend\buses\1_1_model.pkl
+understand_pickle.py
+backend\backend\__pycache__
+backend\buses\__pycache__
+backend\buses\migrations\__pycache__
