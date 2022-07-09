@@ -7,6 +7,7 @@ import {Autocomplete} from '@react-google-maps/api'
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import './RoutePlanner.css'
+import { useState } from 'react'
 
 
 const RoutePlanner = (props) => {
@@ -17,6 +18,8 @@ const RoutePlanner = (props) => {
 
     const clearDetails = () => {
         props.clearDetails();
+        setJourneyFurtherDetails(!journeyFurtherDetails)
+
     }
 
     const getAddress = ()=>{
@@ -27,30 +30,46 @@ const RoutePlanner = (props) => {
         props.swap();
     }
 
+    const [journeyFurtherDetails, setJourneyFurtherDetails] = useState(false)
+
+    const testing = () => {
+        console.log("props",props.directions)
+        console.log("steps in journey",journeyDetails)
+        setJourneyFurtherDetails(!journeyFurtherDetails)
+    }
+
 
     const mapBounds = {componentRestrictions:{country:["ie"]}}
 
     let journeyDetails;
+    let journeySummary;
 
     if(props.directions)
 {
-    journeyDetails = props.directions.routes[0].legs[0].steps.map((step)=>{if(step.travel_mode==="TRANSIT"){return {distance:step.distance.text,
+    journeyDetails = props.directions.routes[0].legs[0].steps.map((step)=>
+    {if(step.travel_mode==="TRANSIT")
+    {return {distance:step.distance.text,
         duration:step.duration.text,
         mode:step.travel_mode,
-    busNumber:step.transit.line.short_name}}
+    busNumber:step.transit.line.short_name,
+    headsign:step.transit.headsign,
+    stopCount:step.transit.num_stops,
+    departure:step.transit.departure_stop.name,
+    arrival:step.transit.arrival_stop.name}}
         else{
             return {distance:step.distance.text,
                 duration:step.duration.text,
                 mode:step.travel_mode}
         }})
-    journeyDetails =journeyDetails.map((stepObj) =>{return<Box sx={{display:"flex",alignItems:"center",padding:"0.2rem"}}>{stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"yellow",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])
+
+    journeySummary =journeyDetails.map((stepObj) =>{return<Box sx={{display:"flex",alignItems:"center",padding:"0.2rem"}}>{stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"yellow",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])
 }
 
     return(
 
         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",marginLeft:"1rem",
 borderRadius:"10px;"}}>
-        <Box sx={{height:"50%",display:"flex",marginTop:"1rem",
+        <Box sx={{display:"flex",marginTop:"1rem",
         flexDirection:"column",}}>
         <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
         <Autocomplete options={mapBounds}>
@@ -78,13 +97,19 @@ borderRadius:"10px;"}}>
         {/* <IconButton>
         <ListIcon/>
         </IconButton> */}
-        {journeyDetails ? <Box sx={{display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid black",borderRadius:"10px",
-    boxShadow:"2px 2px 2px 2px #F9F9F9"}}>{journeyDetails}</Box>:null}
+        {journeyDetails ? <Box role="button" tabIndex="0" onClick={testing} sx={{display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid black",borderRadius:"10px",
+    boxShadow:"2px 2px 2px 2px #F9F9F9", "&:hover": {
+        cursor:"pointer",
+      }}}>{journeySummary}</Box>:null}
+
+
+{journeyFurtherDetails ? <Box sx={{display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid black",borderRadius:"10px",
+    boxShadow:"2px 2px 2px 2px #F9F9F9", "&:hover": {
+        cursor:"pointer",
+      }}}><span>Destination: {journeyDetails[1].headsign} No. stops: {journeyDetails[1].stopCount}</span></Box>:null}
         
         </Box>
 </Box>
-
-   
     )
 }
 
