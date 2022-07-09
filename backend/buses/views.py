@@ -48,7 +48,7 @@ def getUpdatesForStop(request,stop_id_requested):
 
     if stop_id_requested is not None:
         update_set = update_set.filter(stop_id=stop_id_requested)
-        print('this is leng ',len(update_set))
+        # print('this is leng ',len(update_set))
     
     all_next_buses = []
     for stop in update_set.iterator():
@@ -98,7 +98,6 @@ def getShape(request, route_id_requested):
 
     return Response(serializer.data) #return the data 
 
-#test for route 46A = route-id : 60-46A-b12-1
 @api_view(['GET'])
 def getStopsForRoute(request, route_id_requested):
     # route_id_selected = '60-46A-b12-1' # harcoded trips
@@ -120,23 +119,23 @@ def getStopsForRoute(request, route_id_requested):
         # first_trip = trips_set.first()
         # first_trip_id = first_trip.trip_id # retrieve and trip ID
 
-    stop_times_set = StopTimes.objects.all()
+    # df_stop_times = pd.DataFrame(list(StopTimes.objects.all().value()))
     # get all stops !
-    bus_route_stops_times = []
-    bus_route_stops_times = stop_times_set.filter(trip_id=first_trip_id)
+    # bus_route_stops_times = []
+    bus_route_stops_times = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))#all stops on a route 
 
-    
     bus_route_stops = []
-    # stop_set = Stops.objects.all()
+    df_stop = pd.DataFrame(list(Stops.objects.all().values()))
 
-    for stop in bus_route_stops_times.iterator():
-        current_stop_id = stop.stop_id
-        current_stop = Stops.objects.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
-        bus_route_stops.append(current_stop)
+    for stop in bus_route_stops_times.iterrows():
+        current_stop_id = stop[1]['stop_id']
+    #     current_stop = Stops.objects.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
+        current_stop = df_stop[df_stop['stop_id'] == current_stop_id].iloc[0]
+        bus_route_stops.append(current_stop.to_dict())
 
-    serializer = StopsSerializer(bus_route_stops,many=True) 
-    print(connection.queries)
-    return Response(serializer.data) #return the data 
+    # serializer = StopsSerializer(bus_route_stops,many=True) 
+    # print(connection.queries)
+    return Response(bus_route_stops) #return the data 
 
 # @api_view(['GET'])
 # def getBusRouteList(request):
