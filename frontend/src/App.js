@@ -109,13 +109,13 @@ console.log("breakdown", results.routes[0].legs[0].steps)
 
   return (
     <ThemeProvider theme={theme}>
+      <Box className="testing" sx={{display:"flex"}}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
-          <Menu origin={originRef} directions ={directions}getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
+          <Menu origin={originRef} directions ={directions} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
 
-    <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
-  flexDirection:'column',
-  alignItems:'flex-start'}}>
+    <Box className="main-map" sx={{ display:'flex'}}>
       <NewMap directions={directions}/>
+</Box>
 </Box>
 </ThemeProvider>
   )
