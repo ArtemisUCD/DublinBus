@@ -12,7 +12,7 @@ from django.db import connection
 import pandas as pd
 import datetime as dt
 from django.db.models import F
-
+import pickle
 from datetime import datetime  
 from datetime import timedelta 
 
@@ -229,3 +229,24 @@ def getBusStopList(request):
             unique_stop_dict.append({'stop_name':i})
     # print(connection.queries)
     return Response(unique_stop_dict) #return the data 
+
+
+
+
+
+@api_view(['GET'])
+def getEstimateTime(request):
+    pickled_model = pickle.load(open(r'C:\Users\elisebrard\Documents\GitHub\DublinBus\model.pkl', 'rb'))
+    d = {'WEEKDAY_Monday': [0], 'WEEKDAY_Saturday': [1],'WEEKDAY_Sunday': [0], 'WEEKDAY_Thursday': [0],
+            'WEEKDAY_Tuesday': [0], 'WEEKDAY_Wednesday': [1], 'HOUROFDAY_7': [0], 'HOUROFDAY_7': [0],
+            'HOUROFDAY_8': [0],'HOUROFDAY_9': [1],'HOUROFDAY_10': [0],'HOUROFDAY_11': [0],'HOUROFDAY_12': [0],
+            'HOUROFDAY_13': [0],'HOUROFDAY_14': [0],'HOUROFDAY_15': [0],'HOUROFDAY_16': [0],'HOUROFDAY_17': [0],
+            'HOUROFDAY_18': [0],'HOUROFDAY_19': [0],'HOUROFDAY_20': [0],'HOUROFDAY_21': [0],
+            'HOUROFDAY_22': [0],'HOUROFDAY_23': [0], 'HOUROFDAY_24': [0],'MONTHOFYEAR_August': [0],
+            'MONTHOFYEAR_December': [0],'MONTHOFYEAR_February': [1],'MONTHOFYEAR_January': [0],
+            'MONTHOFYEAR_July': [0],'MONTHOFYEAR_June': [0],'MONTHOFYEAR_March': [0],
+            'MONTHOFYEAR_May': [0],'MONTHOFYEAR_November': [0],'MONTHOFYEAR_October': [0],
+            'MONTHOFYEAR_September': [0],'BANKHOLIDAY_True': [0]}
+    df = pd.DataFrame(data=d)
+    result = pickled_model.predict(df)
+    return Response(result)
