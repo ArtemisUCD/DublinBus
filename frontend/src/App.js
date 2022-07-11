@@ -74,7 +74,7 @@ const getAddress = () =>{
     if(originRef.current.value === '' || destinationRef.current.value === ''){
       return ;
   }
-  console.log("type of datetime:",typeof value)
+  console.log("departure time being used:",value)
 
   const directionsService = new window.google.maps.DirectionsService();
   let results = await directionsService.route({
@@ -83,7 +83,7 @@ const getAddress = () =>{
     travelMode: window.google.maps.TravelMode.TRANSIT,
     provideRouteAlternatives:true,
     transitOptions:{
-      departureTime: value.date,
+      departureTime: value,
       modes: ['BUS']
     }
     }
@@ -93,7 +93,7 @@ const notDublinBus = (el)=>el.transit.line.agencies[0].name!=="Dublin Bus";
 let filteredRoutes = results.routes.filter(route => !route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").some(notDublinBus));
 results.routes = filteredRoutes;
 setDirections(results)
-console.log("breakdown", results.routes[0].legs[0].steps)
+console.log("breakdown", results.routes)
 
 
   }

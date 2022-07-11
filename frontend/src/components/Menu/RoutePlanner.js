@@ -13,11 +13,10 @@ import './RoutePlanner.css'
 
 const RoutePlanner = (props) => {
 
-    const [value,setValue] = useState({date:new Date('2014-08-18T21:11:54')})
+    const [value,setValue] = useState(new Date())
 
-    const calcRoute = (value) => {
-        console.log("in route planner",typeof value )
-        console.log("testing",typeof new Date())
+    const calcRoute = () => {
+        console.log("in route planner",value)
         props.calcRoute(value)
     }
 
@@ -63,9 +62,9 @@ borderRadius:"10px;"}}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DesktopDateTimePicker
             label="For desktop"
-            value={value.date}
+            value={value}
             onChange={(newValue) => {
-                setValue({date:newValue});
+                setValue(newValue);
             }}
             renderInput={(params) => <TextField {...params} />}
             />
