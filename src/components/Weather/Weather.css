@@ -1,0 +1,6 @@
+.weather {
+    background-color: transparent;
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
+  }

@@ -1,0 +1,42 @@
+.container {
+    height: 70px;
+    width: 100%;
+    margin: 20px auto 0 auto;
+    }
+
+.parent {
+    position: relative;
+    }
+
+.search {
+    width: 300px;
+    height: 40px;
+    border-radius: 18px;
+    outline: none;
+    border: 1px solid #ccc;
+    padding-left: 20px;
+    position: absolute;
+    }
+    
+.searchIcon{
+    margin-left: 280px;
+}
+.container{
+    background-color: #ffffff;
+    margin-top: 5px;
+    overflow: hidden;
+    overflow-y: auto;
+    width: 380px;
+    height: 300px;
+
+}
+.container::-webkit-scrollbar{
+    display: none;
+}
+.stopdataresult {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+

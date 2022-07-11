@@ -1,0 +1,38 @@
+.accordion-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    background-color: #fff;
+    border: 0;
+    border-radius: 0;
+    overflow-anchor: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,border-radius .15s ease;
+    box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+    
+}
+
+.accordion-button:hover{
+    cursor: pointer;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #0c63e4;
+    background-color: #e7f1ff;
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 13%);
+}
+
+.accordion-button::after {
+    background-image: url('./img/arrow.png');
+    width: 1.5rem;
+    height:1.5rem;
+    background-repeat: no-repeat;
+    content: "";
+    background-size: 1.25rem;
+    transform: rotate(-180deg);
+}
