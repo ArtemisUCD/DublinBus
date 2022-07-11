@@ -11,6 +11,7 @@ from django.core.cache import cache
 from django.db import connection
 import pandas as pd
 import datetime as dt
+from django.db.models import F
 
 from datetime import datetime  
 from datetime import timedelta 
@@ -128,7 +129,7 @@ def getShape(request, route_id_requested):
 
     # get all trips !
     # route_id_selected = '60-46A-b12-1'
-    shape_set = Shapes.objects.all()
+    # shape_set = Shapes.objects.all()
 
     # queryset = Shapes.objects.all()
     if route_id_requested is not None:
@@ -138,12 +139,12 @@ def getShape(request, route_id_requested):
         #print('first_trip_id : ',first_trip_id)
 
     bus_route_shape = []
-    bus_route_shape = shape_set.filter(shape_id=first_trip_id)
+    bus_route_shape = Shapes.objects.filter(shape_id=first_trip_id).annotate(lat=F('shape_pt_lat'),lng=F('shape_pt_lon')).values('lat','lng')
     # print(len(bus_route_shape),len(shape_set))
     # print(bus_route_shape)
-    serializer = ShapesSerializer(bus_route_shape,many=True) 
-
-    return Response(serializer.data) #return the data 
+    # serializer = ShapesSerializer(bus_route_shape,many=True) 
+    # print(connection.queries)
+    return Response(bus_route_shape) #return the data 
 
 @api_view(['GET'])
 def getStopsForRoute(request, route_id_requested):
