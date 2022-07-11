@@ -8,6 +8,7 @@ import { useState, useRef } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
 
+
 const googleLibraries = ["places"];
 
 function App() {
@@ -69,10 +70,11 @@ const getAddress = () =>{
     setDrawerOpen(!drawerOpen);
   }
 
-  const calcRoute = async () => {
+  const calcRoute = async (value) => {
     if(originRef.current.value === '' || destinationRef.current.value === ''){
       return ;
   }
+  console.log("type of datetime:",typeof value)
 
   const directionsService = new window.google.maps.DirectionsService();
   let results = await directionsService.route({
@@ -81,6 +83,7 @@ const getAddress = () =>{
     travelMode: window.google.maps.TravelMode.TRANSIT,
     provideRouteAlternatives:true,
     transitOptions:{
+      departureTime: value.date,
       modes: ['BUS']
     }
     }
@@ -109,7 +112,7 @@ console.log("breakdown", results.routes[0].legs[0].steps)
 
   return (
     <ThemeProvider theme={theme}>
-      <Box className="testing" sx={{display:"flex"}}>
+      <Box className="testing" sx={{display:"flex",backgroundColor:"red"}}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
           <Menu origin={originRef} directions ={directions} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
 

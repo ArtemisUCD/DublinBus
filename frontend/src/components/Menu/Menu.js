@@ -7,7 +7,11 @@ import Tabs from '@mui/material/Tabs';
 import TabPanel from '@mui/lab/TabPanel';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import Accordion from '@mui/material/Accordion';
 import BusRouteList from './BusRouteList';
 import RealTime from './RealTime';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
@@ -19,16 +23,8 @@ const Menu = (props) => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    setJourneyFurtherDetails(false);
   };
 
-  const [journeyFurtherDetails, setJourneyFurtherDetails] = useState(false)
-
-  const testing = () => {
-      console.log("props",props.directions)
-      console.log("steps in journey",journeyDetails)
-      setJourneyFurtherDetails(!journeyFurtherDetails)
-  }
 
   let journeyDetails;
   let journeySummary;
@@ -52,15 +48,29 @@ const Menu = (props) => {
               mode:step.travel_mode}
       }}))
 
-  journeySummary =journeyDetails.map(route=> {return <Box role="button" tabIndex="0" onClick={testing} sx={{display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid black",borderRadius:"10px",
-  boxShadow:"2px 2px 2px 2px #F9F9F9", "&:hover": {
-      cursor:"pointer",
-    }}}>{route.map((stepObj) =>{return<Box sx={{display:"flex",alignItems:"center",padding:"0.2rem"}}>{stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"yellow",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])}</Box>})
+
+  journeySummary =journeyDetails.map((route,routeIndex)=> {return <Accordion ><AccordionSummary  
+    aria-controls="panel1a-content"
+    sx={{width:"100%",display:"flex",paddingLeft:"2rem"}}
+    >{route.map((stepObj) =>{return <Box sx={{display:"flex"}}> {stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"yellow",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])}</AccordionSummary>
+    <AccordionDetails sx={{backgroundColor:"aqua"}}>
+    {journeyDetails[routeIndex].map(step =>{if(step.mode==="WALKING")
+    { return <p><DirectionsWalkIcon/>{step.distance} {step.duration} {step.mode}</p>}
+    else{
+      return <p><DirectionsBusIcon/>{step.distance} **MODEL VALUE** {step.mode} No. stops:{step.stopCount} {step.departure} {step.arrival}</p>
+    }}
+    )}
+    </AccordionDetails>
+    </Accordion>})
+
+    console.log("journey details",journeyDetails)
+
+
 }
 
 return(
   <Box className="main-menu" sx={{display:"flex", flexDirection:"column",backgroundColor:"black"}}>
-  <Box sx={{ zIndex:"1", typography: 'body1', backgroundColor:"white"}}>
+  <Box sx={{ zIndex:"1", typography: 'body1', backgroundColor:"pink"}}>
   <TabContext value={value}>
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
       <Tabs value={value} variant="scrollable" onChange={handleChange} aria-label="lab API tabs example">
@@ -77,14 +87,9 @@ return(
 </Box>
 
 
-<Box sx={{zIndex:"1", backgroundColor:"white",margin:"1rem",padding:"2rem",borderRadius:"10px"}}>
-{journeyDetails ? journeySummary:null}
+<Box sx={{zIndex:"1", backgroundColor:"green",margin:"1rem",borderRadius:"10px",overflowY:"auto"}}>
+{journeyDetails && value==="1" ? journeySummary:null}
 
-
-{journeyFurtherDetails ? <Box sx={{display:"flex",padding:"2rem",alignItems:"center",justifyContent:"center",border:"1px solid black",borderRadius:"10px",
-    boxShadow:"2px 2px 2px 2px #F9F9F9",margin:"2rem", "&:hover":{
-        cursor:"pointer",
-      }}}><span>Destination: {journeyDetails[1].headsign} No. stops: {journeyDetails[1].stopCount}</span></Box>:null}
 
 </Box>
 </Box>
