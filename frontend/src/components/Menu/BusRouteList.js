@@ -6,14 +6,22 @@ import Autocomplete from '@mui/material/Autocomplete';
 import SearchIcon from '@mui/icons-material/Search';
 
 
-const RealTime = () => {
+const BusRouteList = (props) => {
     
     const [routeList, setRouteList] =useState([]);
     const [showinfo, setShowinfo] = useState(false);
     // const [showsearch, setShowsearch] = useState(true);
     const [value, setValue] = useState("");
-    const [routeId, setRouteId] = useState("");
+    const [routeId, setRouteId] = useState("60-41-b12-1");
     const [busroute, setBusroute] = useState([]);
+
+    const getData = () => {
+        props.getData(busroute);
+    }
+
+    const getRouteId =() =>{
+        props.getRouteId(routeId);
+    }
     
     useEffect(() => {
         fetch("/buses/getBusRouteList")
@@ -35,6 +43,10 @@ const RealTime = () => {
     const searchresult = ()=>{
         if (value !== ""){
             setShowinfo(true);
+            getData(busroute)
+            getRouteId(routeId)
+            console.log(routeId)
+            console.log(busroute)
         }else{
             setShowinfo(false);
         }   
@@ -56,20 +68,20 @@ const RealTime = () => {
                             `${routeList.concat_name}`
                         }
                         options={routeList}
-                        sx={{width:200}}
+                        sx={{width:250}}
                         isOptionEqualToValue={(option, value) =>
                             option.concat_name === value.concat_name
                         }
                         onChange={(e,value) => {setValue(value.concat_name); setRouteId(value.route_id)}}
-                        noOptionsText={"Stop name/number"}
+                        noOptionsText={"No result"}
                         renderOption={(props, routeList) => (
-                            <Box component="li" {...props} key={routeList.route_id}>
+                            <Box component="li" {...props} key={routeList.concat_name}>
                                 {routeList.concat_name}
                             </Box>
                         )}
-                        renderInput={(params)=><TextField {...params} label="Stop name/number" />}
+                        renderInput={(params)=><TextField {...params} label="Route name/number" />}
                     />
-                    <IconButton size ="small" onClick={searchresult} sx={{border: "2px solid gray", borderRadius: 1}}>
+                    <IconButton size ="small" onClick={searchresult} sx={{border: "1px solid gray", borderRadius: 1, marginLeft: 2}}>
                         <SearchIcon />
                     </IconButton>
                     
@@ -90,7 +102,7 @@ const RealTime = () => {
                             bgcolor: 'background.paper',
                             position: 'relative',
                             overflow: 'auto',
-                            maxHeight: 300,
+                            maxHeight: 400,
                             '& ul': { padding: 0 },
                          }}>
                         {busroute.map((item, index) => (
@@ -114,4 +126,4 @@ const RealTime = () => {
                 </Box>
     )
 }
-export default RealTime;
+export default BusRouteList;

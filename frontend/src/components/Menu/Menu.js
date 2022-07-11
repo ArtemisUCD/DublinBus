@@ -20,7 +20,7 @@ const Menu = (props) => {
   };
 
 return(
-  <Box className="main-menu" sx={{ zIndex:"1", position:"absolute", typography: 'body1', backgroundColor:"white",borderRadius:"10px"}}>
+  <Box className="main-menu" sx={{ zIndex:"1", position:"absolute", typography: 'body1', backgroundColor:"white"}}>
   <TabContext value={value}>
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
       <Tabs value={value} variant="scrollable" onChange={handleChange} aria-label="lab API tabs example">
@@ -31,8 +31,8 @@ return(
     </Box>
     <TabPanel value="1" ><RoutePlanner origin={props.origin} getAddress ={props.getAddress}destination={props.destination} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} toggleDrawer={props.toggleDrawer}/>
   </TabPanel>
-    <TabPanel value="2"><BusRouteList /></TabPanel>
-    <TabPanel value="3"><RealTime /></TabPanel>
+    <TabPanel value="2"><BusRouteList getData={props.getData} getRouteId={props.getRouteId} /></TabPanel>
+    <TabPanel value="3"><RealTime getData={props.getData} /></TabPanel>
   </TabContext>
 </Box>
     )

@@ -4,7 +4,7 @@ import Header from './components/Header/Header'
 import Menu from './components/Menu/Menu'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
-import { useState, useRef } from 'react';
+import { useState, useRef, createContext, useContext } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
 
@@ -17,7 +17,20 @@ function App() {
   const [directions,setDirections] = useState(null);
   const originRef = useRef()
   const destinationRef = useRef()
+  const [markerinfo, setMarkerinfo] = useState([]);
+  const [routeId, setRouteId] = useState("")
 
+    const getData = (stopinfo) => {
+      setMarkerinfo(stopinfo);
+      console.log(stopinfo)
+    }
+    console.log(markerinfo)
+
+    const getRouteId = (routeId) => {
+      setRouteId(routeId);
+      console.log(routeId)
+    }
+    console.log(routeId)
 
   Geocode.setApiKey("AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA");
 
@@ -75,17 +88,24 @@ const getAddress = () =>{
   }
 
   const directionsService = new window.google.maps.DirectionsService();
-  const results = await directionsService.route({
+  let results = await directionsService.route({
     origin: originRef.current.value,
     destination: destinationRef.current.value,
     travelMode: window.google.maps.TravelMode.TRANSIT,
+    provideRouteAlternatives:true,
     transitOptions:{
       modes: ['BUS']
     }
     }
 )
+// remove any non Dublin Bus operators from viable route
+const notDublinBus = (el)=>el.transit.line.agencies[0].name!=="Dublin Bus";
+let filteredRoutes = results.routes.filter(route => !route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").some(notDublinBus));
+results.routes = filteredRoutes;
+console.log("final routes",results)
 setDirections(results)
-console.log("direction steps",results.routes[0].legs[0].steps)
+
+
   }
 
   const clearDetails = () => {
@@ -103,12 +123,12 @@ console.log("direction steps",results.routes[0].legs[0].steps)
   return (
     <ThemeProvider theme={theme}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
-          <Menu origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
+          <Menu getData={getData} getRouteId={getRouteId} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
 
     <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
   flexDirection:'column',
   alignItems:'flex-start'}}>
-      <NewMap directions={directions}/>
+      <NewMap directions={directions} markerdetail={markerinfo} routeId={routeId} />
 </Box>
 </ThemeProvider>
   )
