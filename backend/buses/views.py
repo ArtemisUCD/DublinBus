@@ -10,6 +10,11 @@ from rest_framework.decorators import api_view
 from django.core.cache import cache
 from django.db import connection
 import pandas as pd
+import datetime as dt
+from django.db.models import F
+
+from datetime import datetime  
+from datetime import timedelta 
 
 
 def index(request):
@@ -41,37 +46,80 @@ class WeatherView(viewsets.ModelViewSet):
 def getUpdatesForStop(request,stop_id_requested):
     # route_id_selected = '60-46A-b12-1' # harcoded trips 
     # stop_id_selected = '8220DB000326' 
-    update_set = BusesUpdates.objects.all()
-    trips_set = Trips.objects.all()
-    stop_times_set = StopTimes.objects.all()
-    route_set = Routes.objects.all()
+    # update_set = pd.DataFrame(list(BusesUpdates.objects.all().values()))
+    df_trips = pd.DataFrame(list(Trips.objects.all().values()))
+    # df_stop_times = pd.DataFrame(list(StopTimes.objects.all().values('trip_id','stop_sequence','arrival_time')))
+    df_route = pd.DataFrame(list(Routes.objects.all().values()))
 
     if stop_id_requested is not None:
-        update_set = update_set.filter(stop_id=stop_id_requested)
-        print('this is leng ',len(update_set))
+        update_set = BusesUpdates.objects.filter(stop_id=stop_id_requested)
+        # print('this is leng ',len(update_set))
     
     all_next_buses = []
     for stop in update_set.iterator():
         current_trip_id = stop.trip_id
-        current_trip  = trips_set.filter(trip_id=current_trip_id)
-        if current_trip.exists(): #when the trip id doesn't match 
-            current_trip  = trips_set.filter(trip_id=current_trip_id).first()
-            current_trip_headsign = current_trip.trip_headsign
-            current_route = route_set.filter(route_id=stop.route_id).first()
-            current_route_num = current_route.route_short_name
-            concat_name = current_route_num + " - " + current_trip_headsign
-            current_stop_time = stop_times_set.filter(trip_id=current_trip_id, stop_sequence=stop.stop_sequence ).first()
-            planned_arrival_time = current_stop_time.arrival_time
-            planned_departure_time = current_stop_time.departure_time
-            estimated_arrival_delay = stop.arrival_delay
-            estimated_departure_delay = stop.departure_delay
-            current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay':estimated_arrival_delay,
-                              'planned_departure_time':planned_departure_time, 'estimated_departure_delay':estimated_departure_delay }
-            all_next_buses.append(current_dict)  
+        current_trip  = df_trips[df_trips['trip_id'] == current_trip_id].iloc[0] #trips_set.filter(trip_id=current_trip_id)
+        current_trip_headsign = current_trip['trip_headsign']
+        current_route_id = stop.route_id
+        current_route = df_route[df_route['route_id'] == current_route_id].iloc[0] #Routes.objects.filter(route_id=stop.route_id).first()
+        current_route_num = current_route['route_short_name']
+        # current_stop_time = df_stop_times[df_stop_times['trip_id'] == current_trip_id & df_stop_times['stop_sequence'] == stop.stop_sequence].iloc[0]
+        current_stop_time = StopTimes.objects.filter(trip_id=current_trip_id, stop_sequence=stop.stop_sequence ).values('trip_id','stop_sequence','arrival_time').first()
+        planned_arrival_time = current_stop_time['arrival_time']
+        estimated_arrival_delay = stop.arrival_delay
+        
+        if estimated_arrival_delay != -1 :
+            # time_change = datetime.timedelta(minutes=2)
+            print('diff -1', type(estimated_arrival_delay))
+            estimated_arrival_delay_min = int(estimated_arrival_delay/60)
+        else :
+            estimated_arrival_delay_min = 0
+        separator = ":"
+        arr_planned = planned_arrival_time.split(separator)
+        arr_planned[1] = int(arr_planned[1]) + estimated_arrival_delay_min
+   
+        if arr_planned[1] >= 60 :
+            arr_planned[1] = arr_planned[1] - 60
+            arr_planned[0] = int(arr_planned[0]) +1
+            arr_planned[1] = str(arr_planned[1])
+            arr_planned[0] = str(arr_planned[0])
+
+        if arr_planned[1] < 0 :
+            arr_planned[1] = arr_planned[1] + 60
+            arr_planned[0] = int(arr_planned[0]) -1
+            arr_planned[1] = str(arr_planned[1])
+            arr_planned[0] = str(arr_planned[0])
+        arr_planned[1] = str(arr_planned[1])
+        print(arr_planned)
+        concat_name = current_route_num + " - " + current_trip_headsign
+        # planned_arrival_time = dt.strptime(planned_arrival_time, '%H:%M:%S')
+        # date_and_time = datetime.datetime(2021, 8, 22, 11, 2, 5)
+
+
+        estimated_arrival_time = separator.join(arr_planned)
+
+        current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay_min':estimated_arrival_delay_min ,
+                            'estimated_arrival_time'  : estimated_arrival_time }
+        all_next_buses.append(current_dict)  
+        
+        # if current_trip.exists(): #when the trip id doesn't match 
+            # current_trip  = trips_set.filter(trip_id=current_trip_id).first()
+    #     current_trip_headsign = current_trip.trip_headsign
+    #         current_route = route_set.filter(route_id=stop.route_id).first()
+    #         current_route_num = current_route.route_short_name
+    #         concat_name = current_route_num + " - " + current_trip_headsign
+    #         current_stop_time = stop_times_set.filter(trip_id=current_trip_id, stop_sequence=stop.stop_sequence ).first()
+    #         planned_arrival_time = current_stop_time.arrival_time
+    #         planned_departure_time = current_stop_time.departure_time
+    #         estimated_arrival_delay = stop.arrival_delay
+    #         estimated_departure_delay = stop.departure_delay
+    #         current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay':estimated_arrival_delay,
+    #                           'planned_departure_time':planned_departure_time, 'estimated_departure_delay':estimated_departure_delay }
+    #         all_next_buses.append(current_dict)  
             
 
-    serializer = BusesUpdatesSerializer(update_set,many=True) 
-
+    # serializer = BusesUpdatesSerializer(update_set,many=True) 
+    print(connection.queries)
     return Response(all_next_buses) #return the data 
 
 
@@ -81,7 +129,7 @@ def getShape(request, route_id_requested):
 
     # get all trips !
     # route_id_selected = '60-46A-b12-1'
-    shape_set = Shapes.objects.all()
+    # shape_set = Shapes.objects.all()
 
     # queryset = Shapes.objects.all()
     if route_id_requested is not None:
@@ -91,14 +139,13 @@ def getShape(request, route_id_requested):
         #print('first_trip_id : ',first_trip_id)
 
     bus_route_shape = []
-    bus_route_shape = shape_set.filter(shape_id=first_trip_id)
+    bus_route_shape = Shapes.objects.filter(shape_id=first_trip_id).annotate(lat=F('shape_pt_lat'),lng=F('shape_pt_lon')).values('lat','lng')
     # print(len(bus_route_shape),len(shape_set))
     # print(bus_route_shape)
-    serializer = ShapesSerializer(bus_route_shape,many=True) 
+    # serializer = ShapesSerializer(bus_route_shape,many=True) 
+    # print(connection.queries)
+    return Response(bus_route_shape) #return the data 
 
-    return Response(serializer.data) #return the data 
-
-#test for route 46A = route-id : 60-46A-b12-1
 @api_view(['GET'])
 def getStopsForRoute(request, route_id_requested):
     # route_id_selected = '60-46A-b12-1' # harcoded trips
@@ -120,46 +167,23 @@ def getStopsForRoute(request, route_id_requested):
         # first_trip = trips_set.first()
         # first_trip_id = first_trip.trip_id # retrieve and trip ID
 
-    stop_times_set = StopTimes.objects.all()
+    # df_stop_times = pd.DataFrame(list(StopTimes.objects.all().value()))
     # get all stops !
-    bus_route_stops_times = []
-    bus_route_stops_times = stop_times_set.filter(trip_id=first_trip_id)
+    # bus_route_stops_times = []
+    bus_route_stops_times = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))#all stops on a route 
 
-    
     bus_route_stops = []
-    # stop_set = Stops.objects.all()
+    df_stop = pd.DataFrame(list(Stops.objects.all().values()))
 
-    for stop in bus_route_stops_times.iterator():
-        current_stop_id = stop.stop_id
-        current_stop = Stops.objects.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
-        bus_route_stops.append(current_stop)
+    for stop in bus_route_stops_times.iterrows():
+        current_stop_id = stop[1]['stop_id']
+    #     current_stop = Stops.objects.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
+        current_stop = df_stop[df_stop['stop_id'] == current_stop_id].iloc[0]
+        bus_route_stops.append(current_stop.to_dict())
 
-    serializer = StopsSerializer(bus_route_stops,many=True) 
-    print(connection.queries)
-    return Response(serializer.data) #return the data 
-
-# @api_view(['GET'])
-# def getBusRouteList(request):
-#     # route_set = .all()
-#     # trips_set = all()
-    
-#     trip_set_unique_headsign = Trips.objects.order_by('trip_headsign').values('trip_headsign').distinct() #select all unique trip headsign 
-#     print(len(trip_set_unique_headsign))
-#     # route_set_short_name = Routes.objects.values('route_short_name')
-
-#     routes = []
-#     for trip in trip_set_unique_headsign.iterator():
-#         route_long_name = trip['trip_headsign']
-#         route_id = Trips.objects.filter(trip_headsign = route_long_name).values('route_id').first()['route_id']
-#         route_short_name = Routes.objects.filter(route_id = route_id).values('route_short_name').first()['route_short_name']
-#         concat_name_str = route_short_name + ' - ' + route_long_name
-#         route_dict = {'route_id': route_id, 'concat_name': concat_name_str }
-#         routes.append(route_dict)
-
-#     print(connection.queries)
-#     print(len(routes))
-#     return Response(routes) #return the data 
-
+    # serializer = StopsSerializer(bus_route_stops,many=True) 
+    # print(connection.queries)
+    return Response(bus_route_stops) #return the data 
 
 @api_view(['GET'])
 def getBusRouteList(request):
@@ -167,8 +191,8 @@ def getBusRouteList(request):
     df_route = pd.DataFrame(list(Routes.objects.all().values('route_id','route_short_name')))
     
     trip_set_unique_headsign = Trips.objects.order_by('trip_headsign').values('trip_headsign').distinct() #select all unique trip headsign 
-    print(len(trip_set_unique_headsign))
-    print(df_trips.columns.values.tolist())
+    # print(len(trip_set_unique_headsign))
+    # print(df_trips.columns.values.tolist())
 
     routes = []
     for trip in trip_set_unique_headsign.iterator():
@@ -180,8 +204,8 @@ def getBusRouteList(request):
         routes.append(route_dict)
         # print(route_short_name)
 
-    print(connection.queries)
-    print(len(routes))
+    # print(connection.queries)
+    # print(len(routes))
     return Response(routes) #return the data 
 
 
@@ -203,5 +227,5 @@ def getBusStopList(request):
         if i not in unique_stop_list:
             unique_stop_list.append(i)
             unique_stop_dict.append({'stop_name':i})
-    print(connection.queries)
+    # print(connection.queries)
     return Response(unique_stop_dict) #return the data 
