@@ -35,7 +35,8 @@ const Menu = (props) => {
 
   if(props.directions)
 {
-  journeyDetails = props.directions.routes[0].legs[0].steps.map((step)=>
+
+  journeyDetails = props.directions.routes.map(route => route.legs[0].steps.map((step)=>
   {if(step.travel_mode==="TRANSIT")
   {return {distance:step.distance.text,
       duration:step.duration.text,
@@ -49,9 +50,12 @@ const Menu = (props) => {
           return {distance:step.distance.text,
               duration:step.duration.text,
               mode:step.travel_mode}
-      }})
+      }}))
 
-  journeySummary =journeyDetails.map((stepObj) =>{return<Box sx={{display:"flex",alignItems:"center",padding:"0.2rem"}}>{stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"yellow",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])
+  journeySummary =journeyDetails.map(route=> {return <Box role="button" tabIndex="0" onClick={testing} sx={{display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid black",borderRadius:"10px",
+  boxShadow:"2px 2px 2px 2px #F9F9F9", "&:hover": {
+      cursor:"pointer",
+    }}}>{route.map((stepObj) =>{return<Box sx={{display:"flex",alignItems:"center",padding:"0.2rem"}}>{stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"yellow",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])}</Box>})
 }
 
 return(
@@ -74,10 +78,7 @@ return(
 
 
 <Box sx={{zIndex:"1", backgroundColor:"white",margin:"1rem",padding:"2rem",borderRadius:"10px"}}>
-{journeyDetails ? <Box role="button" tabIndex="0" onClick={testing} sx={{display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid black",borderRadius:"10px",
-    boxShadow:"2px 2px 2px 2px #F9F9F9", "&:hover": {
-        cursor:"pointer",
-      }}}>{journeySummary}</Box>:null}
+{journeyDetails ? journeySummary:null}
 
 
 {journeyFurtherDetails ? <Box sx={{display:"flex",padding:"2rem",alignItems:"center",justifyContent:"center",border:"1px solid black",borderRadius:"10px",

@@ -26,8 +26,6 @@ const RoutePlanner = (props) => {
     }
 
 
-
-
     const mapBounds = {componentRestrictions:{country:["ie"]}}
 
 
