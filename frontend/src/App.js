@@ -1,6 +1,5 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box} from '@mui/material'
-import Header from './components/Header/Header'
 import Menu from './components/Menu/Menu'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
@@ -112,7 +111,7 @@ console.log("breakdown", results.routes)
 
   return (
     <ThemeProvider theme={theme}>
-      <Box className="testing" sx={{display:"flex",backgroundColor:"red"}}>
+      <Box className="testing" sx={{display:"flex",backgroundColor:"white"}}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
           <Menu origin={originRef} directions ={directions} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
 

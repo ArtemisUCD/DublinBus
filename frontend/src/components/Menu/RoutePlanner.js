@@ -61,12 +61,13 @@ borderRadius:"10px;"}}>
         <Box sx={{padding:"1rem 0"}}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DesktopDateTimePicker
+            
             label="For desktop"
             value={value}
             onChange={(newValue) => {
                 setValue(newValue)
             }}
-            renderInput={(params) => <TextField {...params} />}
+            renderInput={(params) => <TextField size="small" {...params} />}
             />
         </LocalizationProvider>
         </Box>
@@ -75,13 +76,7 @@ borderRadius:"10px;"}}>
         <IconButton onClick={clearDetails}>
         <HighlightOffOutlinedIcon/>
         </IconButton>
-        
-        </Box>
-        {/* <IconButton>
-        <ListIcon/>
-        </IconButton> */}
-
-        
+        </Box>        
         </Box>
 </Box>
     )

@@ -9,7 +9,6 @@ import DirectionsIcon from '@mui/icons-material/Directions';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import Accordion from '@mui/material/Accordion';
 import BusRouteList from './BusRouteList';
@@ -65,15 +64,34 @@ const Menu = (props) => {
     let answer = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
 
 
-  journeySummary =journeyDetails.map((route,routeIndex)=> {return <Accordion ><AccordionSummary  
+  journeySummary =journeyDetails.map((route,routeIndex)=> {return <Accordion>
+    <AccordionSummary 
     aria-controls="panel1a-content"
     sx={{width:"100%",display:"flex",paddingLeft:"2rem"}}
-    >{route.map((stepObj) =>{return <Box sx={{display:"flex"}}> {stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"#FBCB0A",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])}</AccordionSummary>
-    <AccordionDetails sx={{backgroundColor:"aqua"}}>
+    >{route.map((stepObj) =>{return <Box sx={{display:"flex"}}> {stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"#FBCB0A",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])}
+    </AccordionSummary>
+    <AccordionDetails sx={{backgroundColor:"white"}}>
     {journeyDetails[routeIndex].map((step,index) =>{if(step.mode==="WALKING")
-    { return <Box sx={{display:"flex",alignItems:"center"}}><Box>{answer[routeIndex][index].getHours()}:{answer[routeIndex][index].getMinutes()<10?'0'+ answer[routeIndex][index].getMinutes():answer[routeIndex][index].getMinutes()}<DirectionsWalkIcon sx={{marginLeft:"1rem"}}/></Box><Box sx={{flexDirection:"column",marginLeft:"1rem"}}><p style={{margin:"0"}}>Walk</p><p style={{margin:"0"}}>About {step.duration}, {step.distance}</p></Box></Box>}
+    { return <Box sx={{display:"flex",alignItems:"center", borderBottom:"1px solid black",padding:"1rem 0"}}>
+        <Box>{answer[routeIndex][index].getHours()}:{answer[routeIndex][index].getMinutes()<10?'0'+ answer[routeIndex][index].getMinutes():answer[routeIndex][index].getMinutes()}<DirectionsWalkIcon sx={{marginLeft:"1rem"}}/>
+        </Box>
+        <Box sx={{flexDirection:"column",marginLeft:"1rem"}}>
+        <p style={{margin:"0"}}>Walk</p>
+        <p style={{margin:"0"}}>About {step.duration}, {step.distance}</p>
+        </Box>
+      </Box>}
     else{
-      return <p>MODEL<DirectionsBusIcon/>{step.distance} **MODEL VALUE** {step.mode} No. stops:{step.stopCount} {step.departure} {step.arrival}</p>
+      return <Box sx={{display:"flex",alignItems:"center",borderBottom:"1px solid black",paddingBottom:"1rem"}}>
+        <Box>
+        MODEL<DirectionsBusIcon/>
+        </Box>
+        <Box sx={{flexDirection:"column",marginLeft:"1rem"}}>
+        <p>{step.departure}</p>
+        <Box sx={{display:"flex",alignItems:"center"}}><Box sx={{backgroundColor:"#FBCB0A",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{step.busNumber}</Box> {step.headsign}</Box>
+        <p>**MODEL VALUE** {step.stopCount} stops</p>
+        <p> {step.arrival}</p>
+        </Box>
+        </Box>
     }}
     )}
     </AccordionDetails>
@@ -81,8 +99,8 @@ const Menu = (props) => {
 }
 
 return(
-  <Box className="main-menu" sx={{display:"flex", flexDirection:"column",backgroundColor:"black"}}>
-  <Box sx={{ zIndex:"1", typography: 'body1', backgroundColor:"pink"}}>
+  <Box className="main-menu" sx={{display:"flex", flexDirection:"column",backgroundColor:"white"}}>
+  <Box sx={{ zIndex:"1", typography: 'body1', backgroundColor:"white"}}>
   <TabContext value={value}>
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
       <Tabs value={value} variant="scrollable" onChange={handleChange} aria-label="lab API tabs example">
@@ -91,13 +109,14 @@ return(
         <Tab icon={<AccessTimeIcon />} label="Real Time Info" value="3" />
       </Tabs>
     </Box>
-    <TabPanel sx={{padding:"0.5rem"}} value="1" ><RoutePlanner directions = {props.directions} origin={props.origin} getAddress ={props.getAddress}destination={props.destination} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} getStartTime = {getStartTime} toggleDrawer={props.toggleDrawer}/>
+    <TabPanel sx={{padding:"0.5rem"}} value="1" >
+      <RoutePlanner directions = {props.directions} origin={props.origin} getAddress ={props.getAddress}destination={props.destination} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} getStartTime = {getStartTime} toggleDrawer={props.toggleDrawer}/>
   </TabPanel>
     <TabPanel value="2"><BusRouteList /></TabPanel>
     <TabPanel value="3"><RealTime /></TabPanel>
   </TabContext>
 </Box>
-<Box sx={{zIndex:"1", backgroundColor:"green",borderRadius:"10px",overflowY:"auto"}}>
+<Box sx={{zIndex:"1", backgroundColor:"white",borderRadius:"10px",overflowY:"auto"}}>
 {journeyDetails && value==="1" ? journeySummary:null}
 </Box>
 </Box>

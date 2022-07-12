@@ -30,7 +30,7 @@ body {
 }
  
 ::-webkit-scrollbar-thumb {
-  background: orange; 
+  background: black; 
   border-radius: 10px;
 }
 
