@@ -1,16 +1,5 @@
 weatherKey.txt
-<<<<<<< HEAD
 .env
 backend\buses\1_1_model.pkl
 understand_pickle.py
 *.pyc 
-||||||| merged common ancestors
-.env
-=======
-.env
-backend\buses\1_1_model.pkl
-understand_pickle.py
-backend\backend\__pycache__
-backend\buses\__pycache__
-backend\buses\migrations\__pycache__
->>>>>>> djangoViews
