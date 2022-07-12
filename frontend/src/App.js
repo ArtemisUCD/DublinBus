@@ -1,12 +1,12 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box} from '@mui/material'
-import Header from './components/Header/Header'
 import Menu from './components/Menu/Menu'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
 import { useState, useRef } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
+
 
 const googleLibraries = ["places"];
 
@@ -69,10 +69,11 @@ const getAddress = () =>{
     setDrawerOpen(!drawerOpen);
   }
 
-  const calcRoute = async () => {
+  const calcRoute = async (value) => {
     if(originRef.current.value === '' || destinationRef.current.value === ''){
       return ;
   }
+  console.log("departure time being used:",value)
 
   const directionsService = new window.google.maps.DirectionsService();
   let results = await directionsService.route({
@@ -81,6 +82,7 @@ const getAddress = () =>{
     travelMode: window.google.maps.TravelMode.TRANSIT,
     provideRouteAlternatives:true,
     transitOptions:{
+      departureTime: value,
       modes: ['BUS']
     }
     }
@@ -89,8 +91,8 @@ const getAddress = () =>{
 const notDublinBus = (el)=>el.transit.line.agencies[0].name!=="Dublin Bus";
 let filteredRoutes = results.routes.filter(route => !route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").some(notDublinBus));
 results.routes = filteredRoutes;
-console.log("final routes",results)
 setDirections(results)
+console.log("breakdown", results.routes)
 
 
   }
@@ -109,13 +111,13 @@ setDirections(results)
 
   return (
     <ThemeProvider theme={theme}>
+      <Box className="testing" sx={{display:"flex",backgroundColor:"white"}}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
-          <Menu origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
+          <Menu origin={originRef} directions ={directions} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
 
-    <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
-  flexDirection:'column',
-  alignItems:'flex-start'}}>
+    <Box className="main-map" sx={{ display:'flex'}}>
       <NewMap directions={directions}/>
+</Box>
 </Box>
 </ThemeProvider>
   )

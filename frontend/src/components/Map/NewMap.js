@@ -1,4 +1,4 @@
-import { GoogleMap, Marker, DirectionsRenderer} from '@react-google-maps/api'
+import { GoogleMap, Marker, DirectionsRenderer, Polyline} from '@react-google-maps/api'
 import './Map.css'
 
 const NewMap = (props) =>{
@@ -12,7 +12,8 @@ const NewMap = (props) =>{
             fullscreenControl: false,}}
             // onLoad={(map)=>setMap(map)}>
             >
-            <Marker position={center}/>
+                {/* <Polyline options={{strokeColor:'blue',strokeOpacity: 1,
+  strokeWeight: 5}} path={[{ lat:53.35,lng:-6.25 }, {lat:54.35,lng:-6.25}]}/> */}
             {props.directions && <DirectionsRenderer directions={props.directions}/>}
             </GoogleMap>
     )
