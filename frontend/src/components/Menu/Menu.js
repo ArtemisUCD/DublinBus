@@ -19,11 +19,17 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 
 const Menu = (props) => {
 
+
   const [value, setValue] = useState('1');
+  const [startTime, setStartTime] = useState();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const getStartTime = (value) =>{
+    setStartTime(value)
+  }
 
 
   let journeyDetails;
@@ -49,23 +55,29 @@ const Menu = (props) => {
       }}))
 
 
+
+    // get duration each step of the journey takes
+    let timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
+    // function to cumulateively sum the elements for each route
+    const cumulativeSum = (sum => value => sum += value);
+    let stepTimes = timings.map(route => route.map(cumulativeSum(0)))
+    // get datetime objects for timings and add starttime as first element
+    let answer = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
+
+
   journeySummary =journeyDetails.map((route,routeIndex)=> {return <Accordion ><AccordionSummary  
     aria-controls="panel1a-content"
     sx={{width:"100%",display:"flex",paddingLeft:"2rem"}}
-    >{route.map((stepObj) =>{return <Box sx={{display:"flex"}}> {stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"yellow",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])}</AccordionSummary>
+    >{route.map((stepObj) =>{return <Box sx={{display:"flex"}}> {stepObj.mode==="WALKING"?<DirectionsWalkIcon/>:<DirectionsBusIcon/>} {stepObj.busNumber?<Box sx={{backgroundColor:"#FBCB0A",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{stepObj.busNumber}</Box>:null}</Box>}).reduce((prev, curr) => [prev, ' > ', curr])}</AccordionSummary>
     <AccordionDetails sx={{backgroundColor:"aqua"}}>
-    {journeyDetails[routeIndex].map(step =>{if(step.mode==="WALKING")
-    { return <p><DirectionsWalkIcon/>{step.distance} {step.duration} {step.mode}</p>}
+    {journeyDetails[routeIndex].map((step,index) =>{if(step.mode==="WALKING")
+    { return <Box sx={{display:"flex",alignItems:"center"}}><Box>{answer[routeIndex][index].getHours()}:{answer[routeIndex][index].getMinutes()<10?'0'+ answer[routeIndex][index].getMinutes():answer[routeIndex][index].getMinutes()}<DirectionsWalkIcon sx={{marginLeft:"1rem"}}/></Box><Box sx={{flexDirection:"column",marginLeft:"1rem"}}><p style={{margin:"0"}}>Walk</p><p style={{margin:"0"}}>About {step.duration}, {step.distance}</p></Box></Box>}
     else{
-      return <p><DirectionsBusIcon/>{step.distance} **MODEL VALUE** {step.mode} No. stops:{step.stopCount} {step.departure} {step.arrival}</p>
+      return <p>MODEL<DirectionsBusIcon/>{step.distance} **MODEL VALUE** {step.mode} No. stops:{step.stopCount} {step.departure} {step.arrival}</p>
     }}
     )}
     </AccordionDetails>
     </Accordion>})
-
-    console.log("journey details",journeyDetails)
-
-
 }
 
 return(
@@ -79,18 +91,14 @@ return(
         <Tab icon={<AccessTimeIcon />} label="Real Time Info" value="3" />
       </Tabs>
     </Box>
-    <TabPanel value="1" ><RoutePlanner directions = {props.directions} origin={props.origin} getAddress ={props.getAddress}destination={props.destination} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} toggleDrawer={props.toggleDrawer}/>
+    <TabPanel sx={{padding:"0.5rem"}} value="1" ><RoutePlanner directions = {props.directions} origin={props.origin} getAddress ={props.getAddress}destination={props.destination} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} getStartTime = {getStartTime} toggleDrawer={props.toggleDrawer}/>
   </TabPanel>
     <TabPanel value="2"><BusRouteList /></TabPanel>
     <TabPanel value="3"><RealTime /></TabPanel>
   </TabContext>
 </Box>
-
-
-<Box sx={{zIndex:"1", backgroundColor:"green",margin:"1rem",borderRadius:"10px",overflowY:"auto"}}>
+<Box sx={{zIndex:"1", backgroundColor:"green",borderRadius:"10px",overflowY:"auto"}}>
 {journeyDetails && value==="1" ? journeySummary:null}
-
-
 </Box>
 </Box>
     )

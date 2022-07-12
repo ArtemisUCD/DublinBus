@@ -16,8 +16,8 @@ const RoutePlanner = (props) => {
     const [value,setValue] = useState(new Date())
 
     const calcRoute = () => {
-        console.log("in route planner",value)
         props.calcRoute(value)
+        props.getStartTime(value)
     }
 
     const clearDetails = () => {
@@ -38,9 +38,9 @@ const RoutePlanner = (props) => {
 
     return(
 
-        <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",marginLeft:"1rem",
+        <Box sx={{ padding:"0",display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",margin:"0 1rem",
 borderRadius:"10px;"}}>
-        <Box sx={{display:"flex",marginTop:"1rem",
+        <Box sx={{display:"flex",
         flexDirection:"column",}}>
         <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
         <Autocomplete options={mapBounds}>
@@ -64,7 +64,7 @@ borderRadius:"10px;"}}>
             label="For desktop"
             value={value}
             onChange={(newValue) => {
-                setValue(newValue);
+                setValue(newValue)
             }}
             renderInput={(params) => <TextField {...params} />}
             />
