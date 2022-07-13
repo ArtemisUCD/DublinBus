@@ -335,9 +335,13 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops):
     else:
         direction = trip_set_both_direction[0]['direction_id']
         print('not correct direction : ', direction)
+    pickle_direction = direction + 1
 
+    pickle_name = 'C:\\Users\\elisebrard\\Documents\\GitHub\\DublinBus\\' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
 
-    pickled_model = pickle.load(open(r'C:\Users\elisebrard\Documents\GitHub\DublinBus\model.pkl', 'rb'))
+    print(pickle_name)
+
+    pickled_model = pickle.load(open(pickle_name, 'rb'))
     total_time_route = pickled_model.predict(df_input)
     time_num_stops = int(total_time_route * percentage_of_route)
     return Response(time_num_stops)
