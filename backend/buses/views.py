@@ -232,11 +232,10 @@ def getBusStopList(request):
 
 
 
-
+# http://localhost:8000/buses/getEstimateTime/1657181364/7/Mountjoy%20Square/18/
 @api_view(['GET'])
-def getEstimateTime(request,timestamp,route_short_name,headsign):
+def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops):
     # print(timestamp,route_short_name,headsign)
-    pickled_model = pickle.load(open(r'C:\Users\elisebrard\Documents\GitHub\DublinBus\model.pkl', 'rb'))
     d = {'WEEKDAY_Monday': [0], 'WEEKDAY_Saturday': [0],'WEEKDAY_Sunday': [0], 'WEEKDAY_Thursday': [0],
             'WEEKDAY_Tuesday': [0], 'WEEKDAY_Wednesday': [0], 'HOUROFDAY_7': [0], 'HOUROFDAY_7': [0],
             'HOUROFDAY_8': [0],'HOUROFDAY_9': [0],'HOUROFDAY_10': [0],'HOUROFDAY_11': [0],'HOUROFDAY_12': [0],
@@ -249,12 +248,9 @@ def getEstimateTime(request,timestamp,route_short_name,headsign):
             'MONTHOFYEAR_September': [0],'BANKHOLIDAY_True': [0]}
     df_input = pd.DataFrame(data=d)
 
-
-    #BANKHOLIDAY ??? 
-    #change for user input !
-    today_timestamp =  dt.datetime.fromtimestamp(1657181364)
-    today_weekday = today_timestamp.weekday()
-    print((today_timestamp),'week day',today_weekday )
+    requested_timestamp =  dt.datetime.fromtimestamp(timestamp)
+    today_weekday = requested_timestamp.weekday()
+    print('requested_timestamp : ',requested_timestamp,' week day : ',today_weekday )
     if today_weekday == 0:
         df_input['WEEKDAY_Monday'][0] = 1
     elif today_weekday == 1:
@@ -268,12 +264,12 @@ def getEstimateTime(request,timestamp,route_short_name,headsign):
     elif today_weekday == 6:
         df_input['WEEKDAY_Sunday'][0] = 1
 
-    str_hour_column = 'HOUROFDAY_'+ str(today_timestamp.hour)
+    str_hour_column = 'HOUROFDAY_'+ str(requested_timestamp.hour)
 
     if str_hour_column in df_input.columns:
         df_input[str_hour_column][0] = 1
 
-    today_month = today_timestamp.month
+    today_month = requested_timestamp.month
     if today_month == 1:
         df_input['MONTHOFYEAR_January'][0] = 1
     elif today_month == 2:
@@ -297,7 +293,53 @@ def getEstimateTime(request,timestamp,route_short_name,headsign):
     elif today_month == 12:
         df_input['MONTHOFYEAR_December'][0] = 1
 
-    print(df_input.to_dict())
 
-    result = pickled_model.predict(df_input)
-    return Response(result)
+    route_id = Routes.objects.filter(route_short_name = route_short_name).values('route_id').first()['route_id']
+    first_trip_id = Trips.objects.filter(route_id=route_id).values('trip_id').first()['trip_id']
+    stops_list = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))
+    num_stop_total = len(stops_list)
+    percentage_of_route = (num_stops / num_stop_total)%100
+    print('num_stop',percentage_of_route)
+
+    headsign_arr = headsign.split()
+   
+    trip_set_both_direction = Trips.objects.filter(route_id=route_id).order_by('trip_headsign').values('trip_headsign','direction_id').distinct() #select all unique trip headsign 
+
+    ## KEEP ### most commun used words in all bus headsigns
+    # from collections import Counter
+    # trip_set_unique= Trips.objects.order_by('trip_headsign').values('trip_headsign','direction_id').distinct()
+    # super_str =''
+    # for trip in trip_set_unique.iterator():
+    #     super_str += trip['trip_headsign']
+    # super_str_arr = super_str.split()
+    # Counter = Counter(super_str_arr)
+    # most_occur = Counter.most_common(30)
+    # print(most_occur)
+
+    redundant_word_list = ['Road','College','Street','Square','Train','Park', 'of', 'Station', 'Avenue','Bus','Dublin' ]
+
+    print('trip_set_both_direction',(trip_set_both_direction))
+    # first_headsign = trip_set_both_direction[0]['trip_headsign']
+    first_headsign_arr = trip_set_both_direction[0]['trip_headsign'].split(' - ')
+    first_headsign_direction = first_headsign_arr[0]
+    first_headsign_direction_arr = first_headsign_direction.split()
+    
+    print('first_headsign_direction_arr :',first_headsign_direction_arr)
+    first_headsign_direction_arr_filtered = list(filter(lambda word: word not in redundant_word_list, first_headsign_direction_arr))
+    print('first_headsign_direction_arr_filtered :',first_headsign_direction_arr_filtered)
+    print('headsign_arr : ',headsign_arr)
+
+    if any(word in headsign_arr for word in first_headsign_direction_arr_filtered):
+        direction = trip_set_both_direction[1]['direction_id']
+        print('correct direction : ', direction)
+    else:
+        direction = trip_set_both_direction[0]['direction_id']
+        print('not correct direction : ', direction)
+
+
+    pickled_model = pickle.load(open(r'C:\Users\elisebrard\Documents\GitHub\DublinBus\model.pkl', 'rb'))
+    total_time_route = pickled_model.predict(df_input)
+    time_num_stops = int(total_time_route * percentage_of_route)
+    return Response(time_num_stops)
+
+

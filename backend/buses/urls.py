@@ -9,5 +9,5 @@ urlpatterns = [
     path('getBusRouteList',views.getBusRouteList),
     path('getBusStopList',views.getBusStopList),
     path('getEstimateTime',views.getEstimateTime),
-    path('getEstimateTime/<timestamp>/<route_short_name>/<headsign>/',views.getEstimateTime),
+    path('getEstimateTime/<int:timestamp>/<route_short_name>/<headsign>/<int:num_stops>/',views.getEstimateTime),
 ]
