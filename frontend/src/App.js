@@ -1,10 +1,9 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box} from '@mui/material'
-import Header from './components/Header/Header'
 import Menu from './components/Menu/Menu'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
-import { useState, useRef, createContext, useContext } from 'react';
+import { useState, useRef } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
 

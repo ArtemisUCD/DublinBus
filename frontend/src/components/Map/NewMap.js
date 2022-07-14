@@ -1,6 +1,6 @@
 import { GoogleMap, Marker, DirectionsRenderer, InfoWindow,Polyline} from '@react-google-maps/api'
 import './Map.css'
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 
 const NewMap = (props) =>{
 

@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import "./RealTime.css";
-import { IconButton, Box, TextField, Button, List, ListItem, ListItemText} from '@mui/material'
+import { IconButton, Box, TextField} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete';
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import SearchIcon from '@mui/icons-material/Search';
@@ -49,7 +49,7 @@ const RealTime = (props) => {
             getData(stopinfo);
             setshowfavicon(true);
             console.log(favouriteinfo)
-            setFavouritedStops(props.favouritesS.some((v => v.stop_id == favouriteinfo.stop_id)))
+            setFavouritedStops(props.favouritesS.some((v => v.stop_id === favouriteinfo.stop_id)))
             console.log(favouritedStops)
             console.log(stopId);
             console.log(stopinfo)

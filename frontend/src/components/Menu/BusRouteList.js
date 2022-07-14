@@ -1,7 +1,7 @@
 import './BusRouteList.css'
 // import BusRouteItem from './BusRouteItem'
 import { useEffect, useState } from 'react';
-import { IconButton, Box, TextField, Button, List, ListItem, ListItemText} from '@mui/material'
+import { IconButton, Box, TextField, List, ListItem, ListItemText} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete';
 import SearchIcon from '@mui/icons-material/Search';
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -54,7 +54,7 @@ const BusRouteList = (props) => {
             getData(busroute);
             getRouteShape(routeshape);
             setshowfavicon(true);
-            setFavouritedRoutes(props.favouritesR.some((v => v.route_id == favouriteinfo.route_id)))
+            setFavouritedRoutes(props.favouritesR.some((v => v.route_id === favouriteinfo.route_id)))
             console.log(routeId)
             console.log(busroute)
         }else{
