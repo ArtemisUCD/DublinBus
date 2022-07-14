@@ -18,7 +18,7 @@ const BusRouteItem = (props) => {
     }
 
     return(<div>
-        {props.route} {favouritedRoute ? <FaHeart className={"heart full"} onClick={()=>toggleFavourite(props.route)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavourite(props.route)}/>}
+        {props.route.stop_name} {favouritedRoute ? <FaHeart className={"heart full"} onClick={()=>toggleFavourite(props.route)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavourite(props.route)}/>}
     </div>)
 
 }

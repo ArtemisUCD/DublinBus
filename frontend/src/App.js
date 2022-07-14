@@ -18,7 +18,8 @@ function App() {
   const originRef = useRef()
   const destinationRef = useRef()
   const [markerinfo, setMarkerinfo] = useState([]);
-  const [routeId, setRouteId] = useState("")
+  const [routeshape, setRouteShape] = useState([]);
+  const [favData, setFavData] = useState([])
 
     const getData = (stopinfo) => {
       setMarkerinfo(stopinfo);
@@ -26,11 +27,15 @@ function App() {
     }
     console.log(markerinfo)
 
-    const getRouteId = (routeId) => {
-      setRouteId(routeId);
-      console.log(routeId)
+    const getRouteShape = (routeshape) => {
+      setRouteShape(routeshape);
+      console.log(routeshape)
     }
-    console.log(routeId)
+
+    const getFavData = (favData) =>{
+      setFavData(favData);
+    }
+    console.log(favData)
 
   Geocode.setApiKey("AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA");
 
@@ -123,12 +128,12 @@ setDirections(results)
   return (
     <ThemeProvider theme={theme}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
-          <Menu getData={getData} getRouteId={getRouteId} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
+          <Menu getData={getData} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
 
     <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
   flexDirection:'column',
   alignItems:'flex-start'}}>
-      <NewMap directions={directions} markerdetail={markerinfo} routeId={routeId} />
+      <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} />
 </Box>
 </ThemeProvider>
   )

@@ -1,9 +1,9 @@
 
-import { forwardRef, useRef, useEffect, useImperativeHandle, useState } from 'react';
-
+import { useEffect, useState } from 'react';
+import "./RealTime.css";
 import { IconButton, Box, TextField, Button, List, ListItem, ListItemText} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete';
-
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import SearchIcon from '@mui/icons-material/Search';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -22,9 +22,10 @@ const RealTime = (props) => {
     // const [showsearch, setShowsearch] = useState(true);
     const [value, setValue] = useState("");
     const [stopId, setStopId] = useState("8220DB000003");
-    const [stopLat, setStopLat] = useState();
-    const [stopLon, setStopLon] = useState();
     const [stopinfo, setStopInfo] = useState([]);
+    const [favouriteinfo, setFavoriteinfo] = useState();
+    const [showfavicon, setshowfavicon] = useState(false);
+    const [favouritedStops,setFavouritedStops] = useState(false);
 
     const getData = () => {
         props.getData(stopinfo);
@@ -45,14 +46,28 @@ const RealTime = (props) => {
     const searchresult = ()=>{
         if (value !== ""){
             setShowinfo(true);
-            setStopInfo({'stop_name': value, 'stop_id': stopId, 'stop_lat': stopLat, 'stop_lon': stopLon});
             getData(stopinfo);
+            setshowfavicon(true);
+            console.log(favouriteinfo)
+            setFavouritedStops(props.favouritesS.some((v => v.stop_id == favouriteinfo.stop_id)))
+            console.log(favouritedStops)
             console.log(stopId);
             console.log(stopinfo)
         }else{
             setShowinfo(false);
         }   
     }
+
+    const toggleFavourite = (busStop) =>{
+        if(!favouritedStops){
+            props.onLike(busStop)
+        }
+        else{
+            props.onUnlike(busStop)
+        }
+        setFavouritedStops(!favouritedStops)
+    }
+
 
     // const backtoroute =() => {
     //     setShowinfo(false);
@@ -64,6 +79,7 @@ const RealTime = (props) => {
                 flexDirection:"column",}}>
                 
                 <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
+                    
                     <Autocomplete
                         id="combo-box-demo"
                         getOptionLabel={(stopData) => 
@@ -81,7 +97,12 @@ const RealTime = (props) => {
                                         "stop_id": value.stop_id,
                                         "stop_lat": value.stop_lat,
                                         "stop_lon": value.stop_lon}])
+                            setFavoriteinfo({"stop_name": value.stop_name,
+                                        "stop_id": value.stop_id,
+                                        "stop_lat": value.stop_lat,
+                                        "stop_lon": value.stop_lon})
                             }}
+                            
                         noOptionsText={"No result"}
                         renderOption={(props, stopData) => (
                             <Box component="li" {...props} key={stopData.stop_name}>
@@ -93,14 +114,20 @@ const RealTime = (props) => {
                     <IconButton size ="small" onClick={searchresult} sx={{border: "1px solid gray", borderRadius: 1, marginLeft: 2}}>
                         <SearchIcon />
                     </IconButton>
+                    {showfavicon && (
+                        <div>
+                         {favouritedStops ? <FaHeart className={"heart full"} onClick={()=>toggleFavourite(favouriteinfo)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavourite(favouriteinfo)}/>}
+                        </div>
+                    )}
+                    
                     
                 </Box>
                         
                 
                 {showinfo && (
+                    
                     <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
                         {/* <Button onClick={backtoroute}variant="outlined" size="small" >Back to Search</Button> */}
-                        
                         <Box sx={{display:"flex", justifyContent:"flex-start", width:"100%"}}>
                    
                     <TableContainer component={Paper}
@@ -135,9 +162,7 @@ const RealTime = (props) => {
                     </Box>
                 )}
                 </Box>
-                <Box>
-                
-                </Box>
+    
                 </Box>
     )
 }

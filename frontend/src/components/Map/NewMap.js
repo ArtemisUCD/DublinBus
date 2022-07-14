@@ -4,44 +4,28 @@ import { useState, useEffect } from 'react';
 
 const NewMap = (props) =>{
 
-    const [markerMap, setMarkerMap] = useState({});
-    const [selectedPlace, setSelectedPlace] = useState(null);
     const [mapRef] = useState(null);
-    const [infoOpen, setInfoOpen] = useState(false);
     const [center, setCenter] = useState({lat: 53.306221, lng: -6.21914755});
-    const [routeshape, setRouteShape] = useState([]);
 
-    useEffect(() => {
-        fetch("/buses/getShape/"+props.routeId+"/")
-        .then(response => response.json())
-        .then(data => setRouteShape(data))
-      },[props.routeId]);
-
+    
+    
 
     // routeshape.map((place) => (
     //     setPathList({'lat': place.shape_pt_lat, 'lng': place.shape_pt_lon})
     // ))
 
 
-    const markerLoadHandler = (marker, place) => {
-        return setMarkerMap(prevState => {
-          return { ...prevState, [place.stop_id]: marker };
-        });
+    
+
+    const [activeMarker, setActiveMarker] = useState(null);
+
+    const handleActiveMarker = (marker) => {
+      if (marker === activeMarker) {
+        return;
+      }
+      setActiveMarker(marker);
     };
     
-    const markerClickHandler = (event, place) => {
-        
-        setSelectedPlace(place);
-    
-        if (!infoOpen) {
-          setInfoOpen(true);
-        }else{
-          setInfoOpen(false);
-        }
-        
-        
-    
-    };
     
     const onCenterChanged = mapRef => {
         if (mapRef && mapRef.getCenter()) {
@@ -63,7 +47,7 @@ const NewMap = (props) =>{
         editable: false,
         visible: true,
         radius: 30000,
-        paths: routeshape,
+        paths: props.routeshape,
         geodesic: true,
         zIndex: 2
       };
@@ -73,31 +57,38 @@ const NewMap = (props) =>{
             streetViewControl:false,
             mapTypeControl:false,
             fullscreenControl: false,}}
-            onCenterChanged={()=>onCenterChanged(mapRef)}
+            onCenterChanged={()=>onCenterChanged(mapRef)
+            }
+            onClick={() => setActiveMarker(null)}
             // onLoad={(map)=>setMap(map)}>
             >
             {props.markerdetail && props.markerdetail.map((place,index) =>(
                 <Marker
                 key={index}
                 position={{ lat: Number(place.stop_lat), lng: Number(place.stop_lon) }}
-                onLoad={marker => markerLoadHandler(marker, place)}
-                onClick={event => markerClickHandler(event, place)} />
+                onClick={() => handleActiveMarker(place.stop_id)} >
+                  {activeMarker === place.stop_id ? (
+                    <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+                      <div><h3>{place.stop_name}</h3></div>
+                    </InfoWindow>
+                  ) : null}
+                </Marker>
             ))}
-            {infoOpen && selectedPlace && (
-            <InfoWindow
-              anchor={markerMap[selectedPlace.stop_id]}
-              onCloseClick={() => setInfoOpen(false)}
-            >
-              <div>
-                <h3>{selectedPlace.stop_name}</h3>
-              </div>
-            </InfoWindow>
-          )}
+            {/* {props.favmarker && props.favmarker.map((place, index) => (
+              <Marker key={index}
+                      position={{ lat: Number(place.stop_lat), lng: Number(place.stop_lon) }}>
+
+              </Marker>
+            ))} */}
+            {props.favmarker && <Marker key={Math.random()}
+                                        position={{ lat: Number(props.favmarker.stop_lat), lng: Number(props.favmarker.stop_lon)}}>
+                                </Marker>}
+
             {props.directions && <DirectionsRenderer directions={props.directions}/>}
             <Polyline
-			path={routeshape}
-			options={pathOptions}
-		    />
+            path={props.routeshape}
+            options={pathOptions}
+              />
             </GoogleMap>
     )
 }
