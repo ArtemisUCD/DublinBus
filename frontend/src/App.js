@@ -3,7 +3,7 @@ import { Box} from '@mui/material'
 import Menu from './components/Menu/Menu'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
-import { useState, useRef, createContext, useContext } from 'react';
+import { useState, useRef } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
 
@@ -18,7 +18,8 @@ function App() {
   const originRef = useRef()
   const destinationRef = useRef()
   const [markerinfo, setMarkerinfo] = useState([]);
-  const [routeId, setRouteId] = useState("")
+  const [routeshape, setRouteShape] = useState([]);
+  const [favData, setFavData] = useState([])
 
     const getData = (stopinfo) => {
       setMarkerinfo(stopinfo);
@@ -26,11 +27,15 @@ function App() {
     }
     console.log(markerinfo)
 
-    const getRouteId = (routeId) => {
-      setRouteId(routeId);
-      console.log(routeId)
+    const getRouteShape = (routeshape) => {
+      setRouteShape(routeshape);
+      console.log(routeshape)
     }
-    console.log(routeId)
+
+    const getFavData = (favData) =>{
+      setFavData(favData);
+    }
+    console.log(favData)
 
   Geocode.setApiKey("AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA");
 
@@ -127,12 +132,13 @@ console.log("breakdown", results.routes)
       <Box className="testing" sx={{display:"flex",backgroundColor:"white"}}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
 
-          <Menu origin={originRef} directions ={directions} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
+          <Menu getData={getData} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
 
-    <Box className="main-map" sx={{ display:'flex'}}>
-      <NewMap directions={directions}/>
+    <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
+  flexDirection:'column',
+  alignItems:'flex-start'}}>
+      <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} />
 
-</Box>
 </Box>
 </ThemeProvider>
   )

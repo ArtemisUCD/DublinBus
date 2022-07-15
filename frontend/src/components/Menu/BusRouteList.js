@@ -1,9 +1,10 @@
 import './BusRouteList.css'
 // import BusRouteItem from './BusRouteItem'
 import { useEffect, useState } from 'react';
-import { IconButton, Box, TextField, Button, List, ListItem, ListItemText} from '@mui/material'
+import { IconButton, Box, TextField, List, ListItem, ListItemText} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete';
 import SearchIcon from '@mui/icons-material/Search';
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 
 const BusRouteList = (props) => {
@@ -14,13 +15,17 @@ const BusRouteList = (props) => {
     const [value, setValue] = useState("");
     const [routeId, setRouteId] = useState("60-41-b12-1");
     const [busroute, setBusroute] = useState([]);
+    const [favouriteinfo, setFavouriteinfo] = useState();
+    const [showfavicon, setshowfavicon] = useState(false);
+    const [favouritedRoutes,setFavouritedRoutes] = useState(false);
+    const [routeshape, setRouteShape] = useState([]);
 
     const getData = () => {
         props.getData(busroute);
     }
 
-    const getRouteId =() =>{
-        props.getRouteId(routeId);
+    const getRouteShape =() =>{
+        props.getRouteShape(routeshape);
     }
     
     useEffect(() => {
@@ -35,21 +40,36 @@ const BusRouteList = (props) => {
         .then(data => setBusroute(data))
       },[routeId]);
 
-    // let routefav
-    // if (enterRoute != ""){
-    //     routefav = <BusRouteItem key = {Math.random()} route = {enterRoute} onLike={props.onLike} onUnlike={props.onUnlike} favourites = {props.favourites}/>;
-    // }
+      useEffect(() => {
+        fetch("/buses/getShape/"+routeId+"/")
+        .then(response => response.json())
+        .then(data => setRouteShape(data))
+      },[routeId]);
+    
+
 
     const searchresult = ()=>{
         if (value !== ""){
             setShowinfo(true);
-            getData(busroute)
-            getRouteId(routeId)
+            getData(busroute);
+            getRouteShape(routeshape);
+            setshowfavicon(true);
+            setFavouritedRoutes(props.favouritesR.some((v => v.route_id === favouriteinfo.route_id)))
             console.log(routeId)
             console.log(busroute)
         }else{
             setShowinfo(false);
         }   
+    }
+
+    let toggleFavouriteRoute = (busroute) =>{
+        if(!favouritedRoutes){
+            props.onLikeRoute(busroute)
+        }
+        else{
+            props.onUnlikeRoute(busroute)
+        }
+        setFavouritedRoutes(!favouritedRoutes)
     }
 
     // const backtoroute =() => {
@@ -72,7 +92,7 @@ const BusRouteList = (props) => {
                         isOptionEqualToValue={(option, value) =>
                             option.concat_name === value.concat_name
                         }
-                        onChange={(e,value) => {setValue(value.concat_name); setRouteId(value.route_id)}}
+                        onChange={(e,value) => {setValue(value.concat_name); setRouteId(value.route_id); setFavouriteinfo({"route_name": value.concat_name, "route_id": value.route_id})}}
                         noOptionsText={"No result"}
                         renderOption={(props, routeList) => (
                             <Box component="li" {...props} key={routeList.concat_name}>
@@ -84,6 +104,11 @@ const BusRouteList = (props) => {
                     <IconButton size ="small" onClick={searchresult} sx={{border: "1px solid gray", borderRadius: 1, marginLeft: 2}}>
                         <SearchIcon />
                     </IconButton>
+                    {showfavicon && (
+                        <div>
+                         {favouritedRoutes ? <FaHeart className={"heart full"} onClick={()=>toggleFavouriteRoute(favouriteinfo)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavouriteRoute(favouriteinfo)}/>}
+                        </div>
+                    )}
                     
                 </Box>
                         
