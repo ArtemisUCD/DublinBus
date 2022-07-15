@@ -1,4 +1,6 @@
-import { GoogleMap, Marker, DirectionsRenderer, InfoWindow,Polyline} from '@react-google-maps/api'
+
+import { GoogleMap, Marker, DirectionsRenderer, Polyline} from '@react-google-maps/api'
+
 import './Map.css'
 import { useState} from 'react';
 
@@ -62,6 +64,7 @@ const NewMap = (props) =>{
             onClick={() => setActiveMarker(null)}
             // onLoad={(map)=>setMap(map)}>
             >
+
             {props.markerdetail && props.markerdetail.map((place,index) =>(
                 <Marker
                 key={index}
@@ -83,6 +86,7 @@ const NewMap = (props) =>{
             {props.favmarker && <Marker key={Math.random()}
                                         position={{ lat: Number(props.favmarker.stop_lat), lng: Number(props.favmarker.stop_lon)}}>
                                 </Marker>}
+
 
             {props.directions && <DirectionsRenderer directions={props.directions}/>}
             <Polyline

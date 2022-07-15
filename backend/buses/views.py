@@ -12,10 +12,9 @@ from django.db import connection
 import pandas as pd
 import datetime as dt
 from django.db.models import F
-
+import pickle
 from datetime import datetime  
-from datetime import timedelta 
-
+import datetime as dt
 
 def index(request):
     return HttpResponse("Hello, world. You're at the bus app index.")
@@ -229,3 +228,122 @@ def getBusStopList(request):
             unique_stop_dict.append({'stop_name':i})
     # print(connection.queries)
     return Response(unique_stop_dict) #return the data 
+
+
+
+
+# http://localhost:8000/buses/getEstimateTime/1657181364/7/Mountjoy%20Square/18/
+@api_view(['GET'])
+def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops):
+    # print(timestamp,route_short_name,headsign)
+    d = {'WEEKDAY_Monday': [0], 'WEEKDAY_Saturday': [0],'WEEKDAY_Sunday': [0], 'WEEKDAY_Thursday': [0],
+            'WEEKDAY_Tuesday': [0], 'WEEKDAY_Wednesday': [0], 'HOUROFDAY_7': [0], 'HOUROFDAY_7': [0],
+            'HOUROFDAY_8': [0],'HOUROFDAY_9': [0],'HOUROFDAY_10': [0],'HOUROFDAY_11': [0],'HOUROFDAY_12': [0],
+            'HOUROFDAY_13': [0],'HOUROFDAY_14': [0],'HOUROFDAY_15': [0],'HOUROFDAY_16': [0],'HOUROFDAY_17': [0],
+            'HOUROFDAY_18': [0],'HOUROFDAY_19': [0],'HOUROFDAY_20': [0],'HOUROFDAY_21': [0],
+            'HOUROFDAY_22': [0],'HOUROFDAY_23': [0], 'HOUROFDAY_24': [0],'MONTHOFYEAR_August': [0],
+            'MONTHOFYEAR_December': [0],'MONTHOFYEAR_February': [0],'MONTHOFYEAR_January': [0],
+            'MONTHOFYEAR_July': [0],'MONTHOFYEAR_June': [0],'MONTHOFYEAR_March': [0],
+            'MONTHOFYEAR_May': [0],'MONTHOFYEAR_November': [0],'MONTHOFYEAR_October': [0],
+            'MONTHOFYEAR_September': [0],'BANKHOLIDAY_True': [0]}
+    df_input = pd.DataFrame(data=d)
+
+    requested_timestamp =  dt.datetime.fromtimestamp(timestamp)
+    today_weekday = requested_timestamp.weekday()
+    print('requested_timestamp : ',requested_timestamp,' week day : ',today_weekday )
+    if today_weekday == 0:
+        df_input['WEEKDAY_Monday'][0] = 1
+    elif today_weekday == 1:
+        df_input['WEEKDAY_Tuesday'][0] = 1
+    elif today_weekday == 2:
+        df_input['WEEKDAY_Wednesday'][0] = 1
+    elif today_weekday == 3:
+        df_input['WEEKDAY_Thursday'][0] = 1
+    elif today_weekday == 5:
+        df_input['WEEKDAY_Saturday'][0] = 1
+    elif today_weekday == 6:
+        df_input['WEEKDAY_Sunday'][0] = 1
+
+    str_hour_column = 'HOUROFDAY_'+ str(requested_timestamp.hour)
+
+    if str_hour_column in df_input.columns:
+        df_input[str_hour_column][0] = 1
+
+    today_month = requested_timestamp.month
+    if today_month == 1:
+        df_input['MONTHOFYEAR_January'][0] = 1
+    elif today_month == 2:
+        df_input['MONTHOFYEAR_February'][0] = 1
+    elif today_month == 3:
+        df_input['MONTHOFYEAR_March'][0] = 1
+    elif today_month == 5:
+        df_input['MONTHOFYEAR_May'][0] = 1
+    elif today_month == 6:
+        df_input['MONTHOFYEAR_June'][0] = 1
+    elif today_month == 7:
+        df_input['MONTHOFYEAR_July'][0] = 1
+    elif today_month == 8:
+        df_input['MONTHOFYEAR_August'][0] = 1
+    elif today_month == 9:
+        df_input['MONTHOFYEAR_September'][0] = 1
+    elif today_month == 10:
+        df_input['MONTHOFYEAR_October'][0] = 1
+    elif today_month == 11:
+        df_input['MONTHOFYEAR_November'][0] = 1
+    elif today_month == 12:
+        df_input['MONTHOFYEAR_December'][0] = 1
+
+
+    route_id = Routes.objects.filter(route_short_name = route_short_name).values('route_id').first()['route_id']
+    first_trip_id = Trips.objects.filter(route_id=route_id).values('trip_id').first()['trip_id']
+    stops_list = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))
+    num_stop_total = len(stops_list)
+    percentage_of_route = (num_stops / num_stop_total)%100
+    print('num_stop',percentage_of_route)
+
+    headsign_arr = headsign.split()
+   
+    trip_set_both_direction = Trips.objects.filter(route_id=route_id).order_by('trip_headsign').values('trip_headsign','direction_id').distinct() #select all unique trip headsign 
+
+    ## KEEP ### most commun used words in all bus headsigns
+    # from collections import Counter
+    # trip_set_unique= Trips.objects.order_by('trip_headsign').values('trip_headsign','direction_id').distinct()
+    # super_str =''
+    # for trip in trip_set_unique.iterator():
+    #     super_str += trip['trip_headsign']
+    # super_str_arr = super_str.split()
+    # Counter = Counter(super_str_arr)
+    # most_occur = Counter.most_common(30)
+    # print(most_occur)
+
+    redundant_word_list = ['Road','College','Street','Square','Train','Park', 'of', 'Station', 'Avenue','Bus','Dublin' ]
+
+    print('trip_set_both_direction',(trip_set_both_direction))
+    # first_headsign = trip_set_both_direction[0]['trip_headsign']
+    first_headsign_arr = trip_set_both_direction[0]['trip_headsign'].split(' - ')
+    first_headsign_direction = first_headsign_arr[0]
+    first_headsign_direction_arr = first_headsign_direction.split()
+    
+    print('first_headsign_direction_arr :',first_headsign_direction_arr)
+    first_headsign_direction_arr_filtered = list(filter(lambda word: word not in redundant_word_list, first_headsign_direction_arr))
+    print('first_headsign_direction_arr_filtered :',first_headsign_direction_arr_filtered)
+    print('headsign_arr : ',headsign_arr)
+
+    if any(word in headsign_arr for word in first_headsign_direction_arr_filtered):
+        direction = trip_set_both_direction[1]['direction_id']
+        print('correct direction : ', direction)
+    else:
+        direction = trip_set_both_direction[0]['direction_id']
+        print('not correct direction : ', direction)
+    pickle_direction = direction + 1
+
+    pickle_name = 'C:\\Users\\elisebrard\\Documents\\GitHub\\DublinBus\\' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
+
+    print(pickle_name)
+
+    pickled_model = pickle.load(open(pickle_name, 'rb'))
+    total_time_route = pickled_model.predict(df_input)
+    time_num_stops = int(total_time_route * percentage_of_route)
+    return Response(time_num_stops)
+
+

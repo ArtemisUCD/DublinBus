@@ -4,3 +4,6 @@ backend\buses\1_1_model.pkl
 understand_pickle.py
 __pycache__/
 *.py[cod]
+model.pkl
+7_2_model.pkl
+

@@ -7,6 +7,7 @@ import { useState, useRef } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
 
+
 const googleLibraries = ["places"];
 
 function App() {
@@ -86,10 +87,11 @@ const getAddress = () =>{
     setDrawerOpen(!drawerOpen);
   }
 
-  const calcRoute = async () => {
+  const calcRoute = async (value) => {
     if(originRef.current.value === '' || destinationRef.current.value === ''){
       return ;
   }
+  console.log("departure time being used:",value)
 
   const directionsService = new window.google.maps.DirectionsService();
   let results = await directionsService.route({
@@ -98,6 +100,7 @@ const getAddress = () =>{
     travelMode: window.google.maps.TravelMode.TRANSIT,
     provideRouteAlternatives:true,
     transitOptions:{
+      departureTime: value,
       modes: ['BUS']
     }
     }
@@ -106,8 +109,8 @@ const getAddress = () =>{
 const notDublinBus = (el)=>el.transit.line.agencies[0].name!=="Dublin Bus";
 let filteredRoutes = results.routes.filter(route => !route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").some(notDublinBus));
 results.routes = filteredRoutes;
-console.log("final routes",results)
 setDirections(results)
+console.log("breakdown", results.routes)
 
 
   }
@@ -126,13 +129,16 @@ setDirections(results)
 
   return (
     <ThemeProvider theme={theme}>
+      <Box className="testing" sx={{display:"flex",backgroundColor:"white"}}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
+
           <Menu getData={getData} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
 
     <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
   flexDirection:'column',
   alignItems:'flex-start'}}>
       <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} />
+
 </Box>
 </ThemeProvider>
   )
