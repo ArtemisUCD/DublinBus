@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { forwardRef, useRef, useEffect, useImperativeHandle, useState } from 'react';
 
 import { IconButton, Box, TextField, Button, List, ListItem, ListItemText} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete';
@@ -14,14 +14,21 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 
-const RealTime = () => {
-    
+const RealTime = (props) => {
+
     const [stopData, setstopData] =useState([]);
     const [showinfo, setShowinfo] = useState(false);
     const [stopupdate, setStopupdate] = useState([]);
     // const [showsearch, setShowsearch] = useState(true);
     const [value, setValue] = useState("");
-    const [stopId, setStopId] = useState("8220DB000039");
+    const [stopId, setStopId] = useState("8220DB000003");
+    const [stopLat, setStopLat] = useState();
+    const [stopLon, setStopLon] = useState();
+    const [stopinfo, setStopInfo] = useState([]);
+
+    const getData = () => {
+        props.getData(stopinfo);
+    }
     
     useEffect(() => {
         fetch("/api/stop_")
@@ -35,13 +42,13 @@ const RealTime = () => {
         .then(data => setStopupdate(data))
       },[stopId]);
 
-
-
     const searchresult = ()=>{
         if (value !== ""){
             setShowinfo(true);
-            console.log(stopId)
-            console.log(stopupdate)
+            setStopInfo({'stop_name': value, 'stop_id': stopId, 'stop_lat': stopLat, 'stop_lon': stopLon});
+            getData(stopinfo);
+            console.log(stopId);
+            console.log(stopinfo)
         }else{
             setShowinfo(false);
         }   
@@ -63,12 +70,19 @@ const RealTime = () => {
                             `${stopData.stop_name}`
                         }
                         options={stopData}
-                        sx={{width:200}}
+                        sx={{width:250}}
                         isOptionEqualToValue={(option, value) =>
                             option.stop_name === value.stop_name
                         }
-                        onChange={(e,value) => {setValue(value.stop_name); setStopId(value.stop_id)}}
-                        noOptionsText={"Stop name/number"}
+                        onChange={(e,value) => {
+                            setValue(value.stop_name); 
+                            setStopId(value.stop_id); 
+                            setStopInfo([{"stop_name": value.stop_name,
+                                        "stop_id": value.stop_id,
+                                        "stop_lat": value.stop_lat,
+                                        "stop_lon": value.stop_lon}])
+                            }}
+                        noOptionsText={"No result"}
                         renderOption={(props, stopData) => (
                             <Box component="li" {...props} key={stopData.stop_name}>
                                 {stopData.stop_name}
@@ -76,7 +90,7 @@ const RealTime = () => {
                         )}
                         renderInput={(params)=><TextField {...params} label="Stop name/number" />}
                     />
-                    <IconButton size ="small" onClick={searchresult} sx={{border: "2px solid gray", borderRadius: 1}}>
+                    <IconButton size ="small" onClick={searchresult} sx={{border: "1px solid gray", borderRadius: 1, marginLeft: 2}}>
                         <SearchIcon />
                     </IconButton>
                     
@@ -89,7 +103,8 @@ const RealTime = () => {
                         
                         <Box sx={{display:"flex", justifyContent:"flex-start", width:"100%"}}>
                    
-                    <TableContainer component={Paper}>
+                    <TableContainer component={Paper}
+                        sx={{maxHeight:400,}}>
                         <Table sx={{width: '100%',
                         maxWidth: 360,
                         position: 'relative',
@@ -126,4 +141,5 @@ const RealTime = () => {
                 </Box>
     )
 }
+
 export default RealTime;

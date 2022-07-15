@@ -72,8 +72,8 @@ return(
     <TabPanel sx={{padding:"0.5rem"}} value="1" >
       <RoutePlanner directions = {props.directions} origin={props.origin} getAddress ={props.getAddress}destination={props.destination} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} getStartTime = {getStartTime} toggleDrawer={props.toggleDrawer}/>
   </TabPanel>
-    <TabPanel value="2"><BusRouteList /></TabPanel>
-    <TabPanel value="3"><RealTime /></TabPanel>
+    <TabPanel value="2"><BusRouteList getData={props.getData} getRouteId={props.getRouteId} /></TabPanel>
+    <TabPanel value="3"><RealTime getData={props.getData} /></TabPanel>
   </TabContext>
 </Box>
 <Box sx={{zIndex:"1", backgroundColor:"white",borderRadius:"10px",overflowY:"auto"}}>

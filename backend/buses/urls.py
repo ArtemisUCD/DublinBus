@@ -8,6 +8,6 @@ urlpatterns = [
     path('getUpdatesForStop/<stop_id_requested>/',views.getUpdatesForStop),
     path('getBusRouteList',views.getBusRouteList),
     path('getBusStopList',views.getBusStopList),
-    # path('getTripsAll',views.getTripsAll),
-
+    path('getEstimateTime',views.getEstimateTime),
+    path('getEstimateTime/<int:timestamp>/<route_short_name>/<headsign>/<int:num_stops>/',views.getEstimateTime),
 ]

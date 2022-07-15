@@ -3,7 +3,7 @@ import { Box} from '@mui/material'
 import Menu from './components/Menu/Menu'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
-import { useState, useRef } from 'react';
+import { useState, useRef, createContext, useContext } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
 
@@ -17,7 +17,20 @@ function App() {
   const [directions,setDirections] = useState(null);
   const originRef = useRef()
   const destinationRef = useRef()
+  const [markerinfo, setMarkerinfo] = useState([]);
+  const [routeId, setRouteId] = useState("")
 
+    const getData = (stopinfo) => {
+      setMarkerinfo(stopinfo);
+      console.log(stopinfo)
+    }
+    console.log(markerinfo)
+
+    const getRouteId = (routeId) => {
+      setRouteId(routeId);
+      console.log(routeId)
+    }
+    console.log(routeId)
 
   Geocode.setApiKey("AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA");
 
@@ -113,10 +126,12 @@ console.log("breakdown", results.routes)
     <ThemeProvider theme={theme}>
       <Box className="testing" sx={{display:"flex",backgroundColor:"white"}}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
+
           <Menu origin={originRef} directions ={directions} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
 
     <Box className="main-map" sx={{ display:'flex'}}>
       <NewMap directions={directions}/>
+
 </Box>
 </Box>
 </ThemeProvider>
