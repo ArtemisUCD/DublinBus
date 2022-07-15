@@ -1,5 +1,5 @@
 
-import { GoogleMap, Marker, DirectionsRenderer, Polyline} from '@react-google-maps/api'
+import { GoogleMap, Marker, DirectionsRenderer, Polyline,InfoWindow} from '@react-google-maps/api'
 
 import './Map.css'
 import { useState} from 'react';

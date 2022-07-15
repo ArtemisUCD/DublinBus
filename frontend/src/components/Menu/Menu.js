@@ -12,6 +12,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import BusRouteList from './BusRouteList';
 import RealTime from './RealTime';
 import Favorites from './Favorites';
+import RouteItem from './RouteItem';
 
 
 const Menu = (props) => {
@@ -78,7 +79,8 @@ const Menu = (props) => {
   }
 
   if(props.directions)
-{journeyDetails = props.directions.routes.map(route => route.legs[0].steps.map((step)=>
+{console.log("directions here",props.directions)
+  journeyDetails = props.directions.routes.map(route => route.legs[0].steps.map((step)=>
   {if(step.travel_mode==="TRANSIT")
   {return {
       distance:step.distance.text,
@@ -104,7 +106,7 @@ const Menu = (props) => {
     // get datetime objects for timings and add starttime as first element
     let routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
 
-  routeList =journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()}routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings}/>)
+  routeList =journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings}/>)
 }
 
 

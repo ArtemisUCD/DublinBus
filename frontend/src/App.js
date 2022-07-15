@@ -132,13 +132,14 @@ console.log("breakdown", results.routes)
       <Box className="testing" sx={{display:"flex",backgroundColor:"white"}}>
       {/* <Header toggleDrawer={toggleDrawer}/> */}
 
-          <Menu getData={getData} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
+          <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
 
     <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
   flexDirection:'column',
   alignItems:'flex-start'}}>
       <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} />
 
+</Box>
 </Box>
 </ThemeProvider>
   )
