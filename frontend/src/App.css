@@ -1,3 +1,29 @@
+.main-map{
+    align-items: flex-end;
+    width:100vw;
+    height:50vh;
+    margin-bottom: 0;
+}
+
+
+@media only screen and (min-width: 840px){
+.main-map{
+    align-items: flex-end;
+    width: 75%;
+    height:100vh;
+}
+    }
+
 .testing{
-    background-color: pink;
+    flex-direction: column;
+    justify-content: flex-start;
+    height:50%;
+    }
+    
+    
+@media only screen and (min-width: 840px){
+.testing{
+flex-direction: row;
+height: 100vh;
+}
 }
