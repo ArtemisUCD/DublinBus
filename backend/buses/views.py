@@ -299,7 +299,7 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops):
     stops_list = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))
     num_stop_total = len(stops_list)
     percentage_of_route = (num_stops / num_stop_total)%100
-    print('num_stop',percentage_of_route)
+    print('percentage_of_route',percentage_of_route)
 
     headsign_arr = headsign.split()
    
@@ -337,12 +337,13 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops):
         print('not correct direction : ', direction)
     pickle_direction = direction + 1
 
-    pickle_name = 'C:\\Users\\elisebrard\\Documents\\GitHub\\DublinBus\\' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
+    pickle_name = 'C:\\Users\\eoin_\\projects\\dublinBus\\' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
 
     print(pickle_name)
 
     pickled_model = pickle.load(open(pickle_name, 'rb'))
     total_time_route = pickled_model.predict(df_input)
+    print("total journey time",total_time_route)
     time_num_stops = int(total_time_route * percentage_of_route)
     return Response(time_num_stops)
 
