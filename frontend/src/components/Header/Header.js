@@ -10,7 +10,7 @@ const Header = (props) => {
   }
     return (
     <AppBar sx={{display:"flex",alignItems:"center",flexDirection:"row",position:"sticky"}}>
-    <Toolbar sx={{justifyContent:"space-between",alignItems:"center"}}>
+    <Toolbar sx={{justifyContent:"space-between",alignItems:"center",minHeight:"10px"}}>
       <Box sx={{display:"flex",alignItems:"center"}}>
       <img src={logo} className="logo" alt="logo"/>
       </Box>

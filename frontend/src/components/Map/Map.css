@@ -7,7 +7,7 @@
 
 @media only screen and (min-width: 420px){
     #map {
-    height: 95vh;
+    height: calc(100vh - 64px);
     margin-top:0;
     }
         
