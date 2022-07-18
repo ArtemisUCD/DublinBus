@@ -1,9 +1,10 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box} from '@mui/material'
 import Menu from './components/Menu/Menu'
+import Header from './components/Header/Header'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
-import { useState, useRef, createContext, useContext } from 'react';
+import { useState, useRef } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
 
@@ -18,7 +19,8 @@ function App() {
   const originRef = useRef()
   const destinationRef = useRef()
   const [markerinfo, setMarkerinfo] = useState([]);
-  const [routeId, setRouteId] = useState("")
+  const [routeshape, setRouteShape] = useState([]);
+  const [favData, setFavData] = useState([])
 
     const getData = (stopinfo) => {
       setMarkerinfo(stopinfo);
@@ -26,11 +28,15 @@ function App() {
     }
     console.log(markerinfo)
 
-    const getRouteId = (routeId) => {
-      setRouteId(routeId);
-      console.log(routeId)
+    const getRouteShape = (routeshape) => {
+      setRouteShape(routeshape);
+      console.log(routeshape)
     }
-    console.log(routeId)
+
+    const getFavData = (favData) =>{
+      setFavData(favData);
+    }
+    console.log(favData)
 
   Geocode.setApiKey("AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA");
 
@@ -73,7 +79,7 @@ const getAddress = () =>{
   const theme = createTheme({
     palette: {
       primary: {
-        main: "#1363DF"
+        main: "#070861"
       }
     }
   });
@@ -124,13 +130,12 @@ console.log("breakdown", results.routes)
 
   return (
     <ThemeProvider theme={theme}>
-      <Box className="testing" sx={{display:"flex",backgroundColor:"white"}}>
-      {/* <Header toggleDrawer={toggleDrawer}/> */}
+      <Box sx={{display:"flex",flexDirection:"column"}}>
+      <Header toggleDrawer={toggleDrawer}/>
+      <Box className="main-content" sx={{display:"flex",backgroundColor:"white"}}>
+          <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
 
-          <Menu origin={originRef} directions ={directions} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer}/>
-
-    <Box className="main-map" sx={{ display:'flex'}}>
-      <NewMap directions={directions}/>
+      <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} />
 
 </Box>
 </Box>
