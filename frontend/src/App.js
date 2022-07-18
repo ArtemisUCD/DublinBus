@@ -1,6 +1,7 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box} from '@mui/material'
 import Menu from './components/Menu/Menu'
+import Header from './components/Header/Header'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
 import { useState, useRef } from 'react';
@@ -78,7 +79,7 @@ const getAddress = () =>{
   const theme = createTheme({
     palette: {
       primary: {
-        main: "#1363DF"
+        main: "#070861"
       }
     }
   });
@@ -129,16 +130,17 @@ console.log("breakdown", results.routes)
 
   return (
     <ThemeProvider theme={theme}>
-      <Box className="testing" sx={{display:"flex",backgroundColor:"white"}}>
-      {/* <Header toggleDrawer={toggleDrawer}/> */}
-
+      <Box sx={{display:"flex",flexDirection:"column"}}>
+      <Header toggleDrawer={toggleDrawer}/>
+      <Box className="main-content" sx={{display:"flex",backgroundColor:"white"}}>
           <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
 
-    <Box sx={{ display: 'flex',width:"100vw",height:"100vh",
+    <Box sx={{ display: 'flex',width:"100vw",height:"90vh",
   flexDirection:'column',
   alignItems:'flex-start'}}>
       <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} />
 
+</Box>
 </Box>
 </Box>
 </ThemeProvider>

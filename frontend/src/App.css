@@ -14,7 +14,7 @@
 }
     }
 
-.testing{
+.main-content{
     flex-direction: column;
     justify-content: flex-start;
     height:50%;
@@ -22,8 +22,7 @@
     
     
 @media only screen and (min-width: 840px){
-.testing{
+.main-content{
 flex-direction: row;
-height: 100vh;
 }
 }
