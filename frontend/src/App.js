@@ -135,12 +135,8 @@ console.log("breakdown", results.routes)
       <Box className="main-content" sx={{display:"flex",backgroundColor:"white"}}>
           <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
 
-    <Box sx={{ display: 'flex',width:"100vw",height:"90vh",
-  flexDirection:'column',
-  alignItems:'flex-start'}}>
       <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} />
 
-</Box>
 </Box>
 </Box>
 </ThemeProvider>
