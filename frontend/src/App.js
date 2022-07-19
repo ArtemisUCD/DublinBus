@@ -1,19 +1,19 @@
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box} from '@mui/material'
 import Menu from './components/Menu/Menu'
 import Header from './components/Header/Header'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
 
 
 const googleLibraries = ["places"];
+let datetime;
 
 function App() {
 
-  const [map] = useState(/**@type google.maps.Map*/null);
+  const [map,setMap] = useState( /** @type google.maps.GoogleMap */ (null))
   const [drawerOpen,setDrawerOpen]= useState(false);
   const [directions,setDirections] = useState(null);
   const originRef = useRef()
@@ -22,21 +22,39 @@ function App() {
   const [routeshape, setRouteShape] = useState([]);
   const [favData, setFavData] = useState([])
 
+  // const getModelTimes= ()=>{
+      
+  //   let modelTimes = directions.routes.map(route => route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").map(busLeg=>{
+  //   fetch("/buses/getEstimateTime/"+(datetime)+`/${busLeg.transit.line.short_name}/${busLeg.transit.headsign}/${busLeg.transit.num_stops}`)
+  //   .then(response => response.json())
+  //   .then(data => console.log(`model output ${JSON.stringify(busLeg.transit.line.short_name)}`,data))
+  //   .catch(error=>console.log("Error",error))
+  //     }))
+
+  //    console.log("model times",modelTimes)
+  //   }
+
+  // useEffect(()=>{
+  //   if(directions!==null){
+  //     getModelTimes();
+  //     }
+  //     else{
+  //       console.log("no directions yet")
+  //     }
+  // },[directions])
+  
+
     const getData = (stopinfo) => {
       setMarkerinfo(stopinfo);
-      console.log(stopinfo)
     }
-    console.log(markerinfo)
 
     const getRouteShape = (routeshape) => {
       setRouteShape(routeshape);
-      console.log(routeshape)
     }
 
     const getFavData = (favData) =>{
       setFavData(favData);
     }
-    console.log(favData)
 
   Geocode.setApiKey("AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA");
 
@@ -70,19 +88,12 @@ const getAddress = () =>{
   const {isLoaded} = useJsApiLoader({
     googleMapsApiKey: "AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA",
     libraries:googleLibraries
+    
   })
 
   if(!isLoaded){
     return 'Loading'
   }
-
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#070861"
-      }
-    }
-  });
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -92,8 +103,7 @@ const getAddress = () =>{
     if(originRef.current.value === '' || destinationRef.current.value === ''){
       return ;
   }
-  console.log("departure time being used:",value)
-
+  datetime=Math.round((value.getTime()/1000))
   const directionsService = new window.google.maps.DirectionsService();
   let results = await directionsService.route({
     origin: originRef.current.value,
@@ -111,15 +121,14 @@ const notDublinBus = (el)=>el.transit.line.agencies[0].name!=="Dublin Bus";
 let filteredRoutes = results.routes.filter(route => !route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").some(notDublinBus));
 results.routes = filteredRoutes;
 setDirections(results)
-console.log("breakdown", results.routes)
-
-
   }
 
   const clearDetails = () => {
     setDirections(null)
     originRef.current.value = ''
     destinationRef.current.value = ''
+    map.panTo()
+
   }
 
   const swapInputFields = () => {
@@ -129,7 +138,6 @@ console.log("breakdown", results.routes)
   }
 
   return (
-    <ThemeProvider theme={theme}>
       <Box sx={{display:"flex",flexDirection:"column"}}>
       <Header toggleDrawer={toggleDrawer}/>
       <Box className="main-content" sx={{display:"flex",backgroundColor:"white"}}>
@@ -139,7 +147,6 @@ console.log("breakdown", results.routes)
 
 </Box>
 </Box>
-</ThemeProvider>
   )
 }
 export default App;

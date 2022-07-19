@@ -1,5 +1,5 @@
 import './Menu.css'
-import RoutePlanner from "./RoutePlanner";
+import RoutePlanner from "./RoutePlanner/RoutePlanner";
 import { useEffect, useState } from "react";
 import { Box, Tab} from "@mui/material";
 import TabContext from '@mui/lab/TabContext';
@@ -10,14 +10,14 @@ import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import BusRouteList from './BusRouteList';
-import RealTime from './RealTime';
-import Favorites from './Favorites';
-import RouteItem from './RouteItem';
+import RealTime from './RealTime/RealTime';
+import Favorites from './Favourites/Favorites';
+import RouteItem from './RoutePlanner/RouteItem';
 
 
 const Menu = (props) => {
   let journeyDetails;
-  let routeList;
+  
 
   const [value, setValue] = useState('1');
 
@@ -25,26 +25,68 @@ const Menu = (props) => {
   const [favouriteRoutes, setFavouriteRoutes] = useState(JSON.parse(localStorage.getItem('favouriteRoutes')) ?? []);
 
   const [startTime, setStartTime] = useState();
+  const [routeList,setRouteList] = useState();
 
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  const cumulativeSum = (sum => value => sum += value);
 
+    useEffect(()=>{
+      let timings;
+      let stepTimes;
+
+      const getModelValues = async (routeIndex,stepIndex,step)=>{
+        let theanswer = await fetch("/buses/getEstimateTime/"+(Math.round((startTime.getTime()/1000)))+`/${step.transit.line.short_name}/${step.transit.headsign}/${step.transit.num_stops}`)
+    
+        let response = await theanswer.json()
+        timings[routeIndex][stepIndex]=response
+        console.log(`model output for ${step.transit.line.short_name} loc ${routeIndex}${stepIndex}`,response)
+      }
+
+      const timesUpdated = async ()=>{
+        let modeltimings = props.directions.routes.map(route => route.legs[0].steps)
+        for(const [routeIndex, route] of modeltimings.entries()){
+          for(const [stepIndex, step]  of route.entries()){
+            if(step.travel_mode==="TRANSIT"){
+            await getModelValues(routeIndex,stepIndex,step)
+            }
+          }
+        }
+      }
+
+    if(props.directions!==null){
+          // get duration each step of the journey takes
+    timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
+    console.log("full timings",timings)
+
+    timesUpdated().then(()=>{
+      console.log("updated times",timings);
+      stepTimes = timings.map(route => route.map(cumulativeSum(0)));
+      console.log("these step times",stepTimes)
+      // get datetime objects for timings and add starttime as first element
+      let routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
+      setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings}/>));
+    })
+      }
+      else{
+        console.log("no directions yet")
+      }
+  },[props.directions,startTime,journeyDetails])
+  
 
     // update favourites in local storage when the state updates
     useEffect(() => {
     localStorage.setItem('favouriteStops', JSON.stringify(favouriteStops));
     }, [favouriteStops]);
 
-    console.log(favouriteStops)
 
     useEffect(() => {
       localStorage.setItem('favouriteRoutes', JSON.stringify(favouriteRoutes));
       }, [favouriteRoutes]);
   
-      console.log(favouriteRoutes)
 
     const addFavouriteRoute = (newRoute) =>{
       if(!favouriteRoutes.includes(newRoute)){
@@ -78,8 +120,28 @@ const Menu = (props) => {
     setStartTime(value)
   }
 
+  // const getModelValues = async (step)=>{
+  //   let theanswer = await fetch("/buses/getEstimateTime/"+(Math.round((startTime.getTime()/1000)))+`/${step.transit.line.short_name}/${step.transit.headsign}/${step.transit.num_stops}`)
+
+  //   let response = await theanswer.json()
+  //   console.log( `model output for ${step.transit.line.short_name}`,response)
+    
+
+  // }
+
   if(props.directions)
-{console.log("directions here",props.directions)
+{ 
+  // modeltimings = props.directions.routes.map(route => route.legs[0].steps)
+  // console.log("model timings",modeltimings)
+
+  // for(const route of modeltimings){
+  //   for(const step of route){
+  //     if(step.travel_mode==="TRANSIT"){
+  //     getModelValues(step)
+  //     }
+  //   }
+  // }
+
   journeyDetails = props.directions.routes.map(route => route.legs[0].steps.map((step)=>
   {if(step.travel_mode==="TRANSIT")
   {return {
@@ -98,15 +160,15 @@ const Menu = (props) => {
       mode:step.travel_mode}
       }}))
 
-    // get duration each step of the journey takes
-    let timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
-    // function to cumulateively sum the elements for each route
-    const cumulativeSum = (sum => value => sum += value);
-    let stepTimes = timings.map(route => route.map(cumulativeSum(0)))
-    // get datetime objects for timings and add starttime as first element
-    let routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
+  //   // get duration each step of the journey takes
+  //   let timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
+  //   // function to cumulateively sum the elements for each route
+  //   const cumulativeSum = (sum => value => sum += value);
+  //   let stepTimes = timings.map(route => route.map(cumulativeSum(0)))
+  //   // get datetime objects for timings and add starttime as first element
+  //   let routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
 
-  routeList =journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings}/>)
+  // routeList =journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings}/>)
 }
 
 
