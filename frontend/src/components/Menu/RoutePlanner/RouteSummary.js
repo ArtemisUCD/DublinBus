@@ -6,7 +6,7 @@ import { Box } from "@mui/material";
 const RouteSummary = (props) => {
 
     return(
-        <AccordionSummary key={Math.random()}
+        <AccordionSummary onClick = {props.onClick} key={Math.random()}
         aria-controls="panel1a-content"
         sx={{width:"100%",display:"flex",paddingLeft:"2rem"}}
         >{props.routeObj.map((stepObj) =>{

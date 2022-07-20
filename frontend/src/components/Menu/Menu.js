@@ -72,12 +72,13 @@ const Menu = (props) => {
           // get duration each step of the journey takes
     timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
     console.log("full timings",timings)
+    setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}/>));
 
     timesUpdated().then(()=>{
       console.log("updated times",timings);
       stepTimes = timings.map(route => route.map(cumulativeSum(0)));
       // get datetime objects for timings and add starttime as first element
-      routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
+      routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))))
       setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}/>));
     })
 
@@ -131,27 +132,8 @@ const Menu = (props) => {
     setStartTime(value)
   }
 
-  // const getModelValues = async (step)=>{
-  //   let theanswer = await fetch("/buses/getEstimateTime/"+(Math.round((startTime.getTime()/1000)))+`/${step.transit.line.short_name}/${step.transit.headsign}/${step.transit.num_stops}`)
-
-  //   let response = await theanswer.json()
-  //   console.log( `model output for ${step.transit.line.short_name}`,response)
-    
-
-  // }
-
   if(props.directions)
 { 
-  // modeltimings = props.directions.routes.map(route => route.legs[0].steps)
-  // console.log("model timings",modeltimings)
-
-  // for(const route of modeltimings){
-  //   for(const step of route){
-  //     if(step.travel_mode==="TRANSIT"){
-  //     getModelValues(step)
-  //     }
-  //   }
-  // }
 
   journeyDetails = props.directions.routes.map(route => route.legs[0].steps.map((step)=>
   {if(step.travel_mode==="TRANSIT")
@@ -171,15 +153,6 @@ const Menu = (props) => {
       mode:step.travel_mode}
       }}))
 
-  //   // get duration each step of the journey takes
-  //   let timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
-  //   // function to cumulateively sum the elements for each route
-  //   const cumulativeSum = (sum => value => sum += value);
-  //   let stepTimes = timings.map(route => route.map(cumulativeSum(0)))
-  //   // get datetime objects for timings and add starttime as first element
-  //   let routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
-
-  // routeList =journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings}/>)
 }
 
 
