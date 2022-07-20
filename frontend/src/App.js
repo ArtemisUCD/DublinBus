@@ -21,27 +21,13 @@ function App() {
   const [markerinfo, setMarkerinfo] = useState([]);
   const [routeshape, setRouteShape] = useState([]);
   const [favData, setFavData] = useState([])
+  const [routeIndex,setRouteIndex] = useState(0);
 
-  // const getModelTimes= ()=>{
-      
-  //   let modelTimes = directions.routes.map(route => route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").map(busLeg=>{
-  //   fetch("/buses/getEstimateTime/"+(datetime)+`/${busLeg.transit.line.short_name}/${busLeg.transit.headsign}/${busLeg.transit.num_stops}`)
-  //   .then(response => response.json())
-  //   .then(data => console.log(`model output ${JSON.stringify(busLeg.transit.line.short_name)}`,data))
-  //   .catch(error=>console.log("Error",error))
-  //     }))
 
-  //    console.log("model times",modelTimes)
-  //   }
 
-  // useEffect(()=>{
-  //   if(directions!==null){
-  //     getModelTimes();
-  //     }
-  //     else{
-  //       console.log("no directions yet")
-  //     }
-  // },[directions])
+    const changeDirectionsRender = (index) =>{
+      setRouteIndex(index)
+    }
   
 
     const getData = (stopinfo) => {
@@ -127,7 +113,7 @@ setDirections(results)
     setDirections(null)
     originRef.current.value = ''
     destinationRef.current.value = ''
-    map.panTo()
+    
 
   }
 
@@ -141,9 +127,9 @@ setDirections(results)
       <Box sx={{display:"flex",flexDirection:"column"}}>
       <Header toggleDrawer={toggleDrawer}/>
       <Box className="main-content" sx={{display:"flex",backgroundColor:"white"}}>
-          <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} />
+          <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} changeDirectionsRender={changeDirectionsRender} />
 
-      <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} />
+      <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} routeIndex={routeIndex} />
 
 </Box>
 </Box>

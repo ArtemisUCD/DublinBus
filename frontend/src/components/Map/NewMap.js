@@ -217,7 +217,7 @@ const NewMap = (props) =>{
                                 </Marker>}
 
 
-            {props.directions && <DirectionsRenderer directions={props.directions}/>}
+            {props.directions && <DirectionsRenderer directions={props.directions} routeIndex={props.routeIndex}/>}
             <Polyline
             path={props.routeshape}
             options={pathOptions}

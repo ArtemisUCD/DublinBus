@@ -9,6 +9,7 @@ const RouteItem = (props)=> {
 
     const toggleJourneyDetails = ()=>{
         setShowDetails(!showDetails)
+        props.changeDirectionsRender(props.routeIndex)
     }
 
     let routeDetails;

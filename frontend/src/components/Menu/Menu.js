@@ -72,20 +72,21 @@ const Menu = (props) => {
           // get duration each step of the journey takes
     timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
     console.log("full timings",timings)
-    setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}/>));
+    setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}  changeDirectionsRender={props.changeDirectionsRender}/>));
 
     timesUpdated().then(()=>{
       console.log("updated times",timings);
       stepTimes = timings.map(route => route.map(cumulativeSum(0)));
       // get datetime objects for timings and add starttime as first element
       routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))))
-      setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}/>));
+      setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings} changeDirectionsRender={props.changeDirectionsRender}/>));
     })
 
       }
       else{
         console.log("no directions yet")
       }
+      // eslint-disable-next-line 
   },[props.directions,startTime,journeyDetails])
   
 
@@ -169,7 +170,7 @@ return(
       </Tabs>
     </Box>
     <TabPanel sx={{padding:"0.5rem"}} value="1" >
-      <RoutePlanner directions={props.directions} origin={props.origin} originError={props.originError} getAddress ={props.getAddress}destination={props.destination} destinationError={props.destinationError} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} getStartTime = {getStartTime} toggleDrawer={props.toggleDrawer}/>
+      <RoutePlanner directions={props.directions} origin={props.origin} originError={props.originError} getAddress ={props.getAddress}destination={props.destination} destinationError={props.destinationError} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} getStartTime = {getStartTime} toggleDrawer={props.toggleDrawer} />
   </TabPanel>
     <TabPanel value="2"><BusRouteList getData={props.getData} getRouteShape={props.getRouteShape} onLikeRoute={addFavouriteRoute} onUnlikeRoute={removeFavouriteRoute} favouritesR={favouriteRoutes} /></TabPanel>
     <TabPanel value="3"><RealTime getData={props.getData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
