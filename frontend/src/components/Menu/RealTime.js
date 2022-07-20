@@ -26,10 +26,6 @@ const RealTime = (props) => {
     const [favouriteinfo, setFavoriteinfo] = useState();
     const [showfavicon, setshowfavicon] = useState(false);
     const [favouritedStops,setFavouritedStops] = useState(false);
-
-    const getData = () => {
-        props.getData(stopinfo);
-    }
     
     useEffect(() => {
         fetch("/api/stop_")
@@ -46,7 +42,7 @@ const RealTime = (props) => {
     const searchresult = ()=>{
         if (value !== ""){
             setShowinfo(true);
-            getData(stopinfo);
+            props.getData(stopinfo);
             setshowfavicon(true);
             console.log(favouriteinfo)
             setFavouritedStops(props.favouritesS.some((v => v.stop_id === favouriteinfo.stop_id)))

@@ -29,6 +29,9 @@ const Menu = (props) => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    props.getData(null);
+    props.getRouteShape([]);
+    props.getFavData(null);
   };
 
 
