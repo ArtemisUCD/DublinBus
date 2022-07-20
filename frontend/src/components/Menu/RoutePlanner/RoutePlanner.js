@@ -34,10 +34,10 @@ const RoutePlanner = (props) => {
         props.calcRoute(value)
         props.getStartTime(value)
         // fetch model results for particular route
-        console.log("directions to model",props.directions.routes)
-        fetch("/buses/getEstimateTime/"+(Math.round(value.getTime()/1000))+"/7/Mountjoy Square/58")
-        .then(response => response.json())
-        .then(data => console.log("model output",data))
+
+        // map over each of the routes
+ 
+
         }
         }
     

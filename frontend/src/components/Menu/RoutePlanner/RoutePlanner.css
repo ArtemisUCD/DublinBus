@@ -16,7 +16,7 @@
 }
 
 #change-direction-button{
-    background-image: url(./img/switch_arrows.png);
+    background-image: url(../img/switch_arrows.png);
     background-size: cover;
     width: 3rem;
     height:3rem;
