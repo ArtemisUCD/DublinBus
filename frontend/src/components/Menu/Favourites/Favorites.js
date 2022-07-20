@@ -79,7 +79,7 @@ const Favorites = (props) => {
       };
 
     const toggleFavourite = (busRoute) =>{
-        props.onUnLike(busRoute)
+        props.onUnlike(busRoute)
     }
 
     const toggleFavouriteRoute = (busRoute) =>{
