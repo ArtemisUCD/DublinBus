@@ -1,5 +1,5 @@
 import './Favorites.css';
-import { Box, List, ListItem, ListItemText, Button} from "@mui/material";
+import { Box, List, ListItem, ListItemButton, ListItemText, Button} from "@mui/material";
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -106,10 +106,10 @@ const Favorites = (props) => {
                             {showroutelist && (
                             <List>
                                 {props.favoritesR && props.favoritesR.map((item, index) => (
-                                    <ListItem button
-                                            key={index}
-                                            onClick={() => getRouteinfo(item)}>
+                                    <ListItem key={index}>
+                                        <ListItemButton onClick={() => getRouteinfo(item)}>
                                         <ListItemText primary={item.route_name} />
+                                        </ListItemButton>
                                         <IconButton
                                             size="large"
                                             sx={{
@@ -122,6 +122,8 @@ const Favorites = (props) => {
                                             onClick={()=>toggleFavouriteRoute(item)}>
                                             <FaHeart className={"heart full"}/>
                                         </IconButton>
+                                        
+                                        
                                     </ListItem>
                                 ))}
                                 </List>
@@ -164,10 +166,10 @@ const Favorites = (props) => {
                         {showstoplist && (
                         <List>
                             {props.favouritesS && props.favouritesS.map((item, index) => (
-                                <ListItem button
-                                          key={index}
-                                          onClick={() => getStopinfo(item)}>
+                                <ListItem key={index} >
+                                    <ListItemButton onClick={() => getStopinfo(item)}>
                                     <ListItemText primary={item.stop_name} />
+                                    </ListItemButton>
                                     <IconButton
                                         size="large"
                                         sx={{
