@@ -76,11 +76,9 @@ const Menu = (props) => {
     timesUpdated().then(()=>{
       console.log("updated times",timings);
       stepTimes = timings.map(route => route.map(cumulativeSum(0)));
-      console.log("these step times",stepTimes)
       // get datetime objects for timings and add starttime as first element
       routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
-      console.log("timings for the full route",routeTimings)
-      setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings}/>));
+      setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}/>));
     })
 
       }

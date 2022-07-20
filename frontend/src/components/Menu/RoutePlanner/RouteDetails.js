@@ -18,7 +18,7 @@ const RouteDetails = (props)=> {
     else{
       return <Box key={Math.random()} sx={{display:"flex",alignItems:"center",borderBottom:"1px solid black",paddingBottom:"1rem"}}>
         <Box >
-        MODEL<DirectionsBusIcon/>
+        {props.routeTimings[props.routeIndex][index].getHours()}:{props.routeTimings[props.routeIndex][index].getMinutes()<10?'0'+ props.routeTimings[props.routeIndex][index].getMinutes():props.routeTimings[props.routeIndex][index].getMinutes()}<DirectionsBusIcon/>
         </Box>
         <Box sx={{flexDirection:"column",marginLeft:"1rem"}}>
         <p>{step.departure}</p>
@@ -26,7 +26,7 @@ const RouteDetails = (props)=> {
           <Box sx={{backgroundColor:"#FBCB0A",marginRight:"0.5rem",borderRadius:"5px",padding:"0.2rem"}}>{step.busNumber}</Box>
            {step.headsign}
           </Box>
-        <p >**MODEL VALUE** {step.stopCount} stops</p>
+        <p >About {props.stepTimings[props.routeIndex][index]}mins - {step.stopCount} stops</p>
         <p > {step.arrival}</p>
         </Box>
         </Box>

@@ -8,7 +8,7 @@ const RouteItem = (props)=> {
     return(
     <Accordion>
     <RouteSummary key ={Math.random} routeObj={props.routeObj}/>
-    <RouteDetails key ={Math.random} routeObj={props.routeObj} routeIndex={props.routeIndex} routeTimings={props.routeTimings}/>
+    <RouteDetails key ={Math.random} routeObj={props.routeObj} routeIndex={props.routeIndex} routeTimings={props.routeTimings} stepTimings={props.stepTimings}/>
     </Accordion>
     )
 }
