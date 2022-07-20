@@ -2,11 +2,20 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import { Box } from "@mui/material";
+import { useRef } from 'react';
 
 const RouteSummary = (props) => {
 
+    const expanded = useRef(0)
+
+    const handleClick = ()=>{
+        expanded.current++
+        props.onClick()
+    }
+    console.log("testing",expanded)
+
     return(
-        <AccordionSummary onClick = {props.onClick} key={Math.random()}
+        <AccordionSummary expanded ={expanded} onClick = {handleClick} key={Math.random()}
         aria-controls="panel1a-content"
         sx={{width:"100%",display:"flex",paddingLeft:"2rem"}}
         >{props.routeObj.map((stepObj) =>{
