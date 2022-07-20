@@ -33,10 +33,13 @@ const Menu = (props) => {
   };
 
   const cumulativeSum = (sum => value => sum += value);
+  
 
     useEffect(()=>{
       let timings;
       let stepTimes;
+      let routeTimings;
+      const newRoutes=["H3","14","83","9","15","6"]
 
       const getModelValues = async (routeIndex,stepIndex,step)=>{
         let theanswer = await fetch("/buses/getEstimateTime/"+(Math.round((startTime.getTime()/1000)))+`/${step.transit.line.short_name}/${step.transit.headsign}/${step.transit.num_stops}`)
@@ -51,7 +54,12 @@ const Menu = (props) => {
         for(const [routeIndex, route] of modeltimings.entries()){
           for(const [stepIndex, step]  of route.entries()){
             if(step.travel_mode==="TRANSIT"){
+            if(!newRoutes.includes(step.transit.line.short_name)){
             await getModelValues(routeIndex,stepIndex,step)
+            }
+            else{
+              console.log(`${step.transit.line.short_name} does not have a model`)
+            }
             }
           }
         }
@@ -67,9 +75,11 @@ const Menu = (props) => {
       stepTimes = timings.map(route => route.map(cumulativeSum(0)));
       console.log("these step times",stepTimes)
       // get datetime objects for timings and add starttime as first element
-      let routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
+      routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))));
+      console.log("timings for the full route",routeTimings)
       setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={Math.random()} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings}/>));
     })
+
       }
       else{
         console.log("no directions yet")
