@@ -1,5 +1,5 @@
 import './Menu.css'
-import RoutePlanner from "./RoutePlanner";
+import RoutePlanner from "./RoutePlanner/RoutePlanner";
 import { useEffect, useState } from "react";
 import { Box, Tab} from "@mui/material";
 import TabContext from '@mui/lab/TabContext';
@@ -10,9 +10,9 @@ import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import BusRouteList from './BusRouteList';
-import RealTime from './RealTime';
-import Favorites from './Favorites';
-import RouteItem from './RouteItem';
+import RealTime from './RealTime/RealTime';
+import Favorites from './Favourites/Favorites';
+import RouteItem from './RoutePlanner/RouteItem';
 
 
 const Menu = (props) => {
