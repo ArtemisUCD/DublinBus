@@ -9,10 +9,12 @@ import DirectionsIcon from '@mui/icons-material/Directions';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import BusRouteList from './BusRouteList';
 import RealTime from './RealTime/RealTime';
 import Favorites from './Favourites/Favorites';
 import RouteItem from './RoutePlanner/RouteItem';
+import Weather from '../Weather/Weather';
 
 
 const Menu = (props) => {
@@ -195,6 +197,7 @@ return(
         <Tab icon={<DirectionsBusIcon />} label="Bus Routes" value="2" />
         <Tab icon={<AccessTimeIcon />} label="Real Time Info" value="3" />
         <Tab icon={<FavoriteBorderIcon />} label="Favorite" value="4" />
+        <Tab icon={<WbSunnyIcon />} label="Weather" value="5" />
       </Tabs>
     </Box>
     <TabPanel sx={{padding:"0.5rem"}} value="1" >
@@ -203,6 +206,7 @@ return(
     <TabPanel value="2"><BusRouteList getData={props.getData} getRouteShape={props.getRouteShape} onLikeRoute={addFavouriteRoute} onUnlikeRoute={removeFavouriteRoute} favouritesR={favouriteRoutes} /></TabPanel>
     <TabPanel value="3"><RealTime getData={props.getData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
     <TabPanel value="4"><Favorites getData={props.getData} getRouteShape={props.getRouteShape} getFavData={props.getFavData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops} onLikeRoute={addFavouriteRoute} onUnLikeRoute={removeFavouriteRoute} favoritesR = {favouriteRoutes} /></TabPanel>
+    <TabPanel value="5"><Weather /></TabPanel>
   </TabContext>
 </Box>
 <Box sx={{zIndex:"1", backgroundColor:"white",borderRadius:"10px",overflowY:"auto"}}>
