@@ -85,9 +85,10 @@ def getUpdatesForStop(request,stop_id_requested):
         planned_arrival_time = separator.join(arr_planned[:2])
 
         current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay_min':estimated_arrival_delay_min ,
-                            'estimated_arrival_time'  : estimated_arrival_time }
+                            'estimated_arrival_time'  : estimated_arrival_time , 'time_planned_min':time_planned_min}
         all_next_buses.append(current_dict)  
-        
+    all_next_buses = sorted(all_next_buses, key=lambda d: d['time_planned_min']) 
+
     # print(connection.queries)
     return Response(all_next_buses) #return the data 
 
