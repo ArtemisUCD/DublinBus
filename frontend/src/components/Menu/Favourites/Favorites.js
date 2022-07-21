@@ -197,14 +197,16 @@ const Favorites = (props) => {
                                         <TableContainer component={Paper}
                                             sx={{maxHeight:400,}}>
                                             <Table sx={{width: '100%',
-                                            maxWidth: 360,
+                                            maxWidth: 340,
                                             position: 'relative',
                                             overflow: 'auto',
                                             maxHeight: 300, }} aria-label="simple table">
                                                 <TableHead>
                                                 <TableRow>
                                                     <TableCell>Bus Route</TableCell>
-                                                    <TableCell align="right">Due</TableCell>
+                                                    <TableCell align="right">Plan</TableCell>
+                                                    <TableCell align="right">Estimate</TableCell>
+                                                    <TableCell align="right">Delay</TableCell>
                                                 </TableRow>
                                                 </TableHead>
                                                 <TableBody>
@@ -217,6 +219,8 @@ const Favorites = (props) => {
                                                         {row.concat_name}
                                                     </TableCell>
                                                     <TableCell align="right">{row.planned_arrival_time}</TableCell>
+                                                    <TableCell align="right">{row.estimated_arrival_time}</TableCell>
+                                                    <TableCell align="right">{row.estimated_arrival_delay_min}</TableCell>
                                                     </TableRow>
                                                 ))}
                                                 </TableBody>
