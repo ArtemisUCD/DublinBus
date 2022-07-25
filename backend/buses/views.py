@@ -53,7 +53,8 @@ def getUpdatesForStop(request,stop_id_requested):
     if stop_id_requested is not None:
         update_set = BusesUpdates.objects.filter(stop_id=stop_id_requested)
         # print('this is leng ',len(update_set))
-    
+     
+   
     all_next_buses = []
     for stop in update_set.iterator():
         current_trip_id = stop.trip_id
@@ -68,57 +69,27 @@ def getUpdatesForStop(request,stop_id_requested):
         estimated_arrival_delay = stop.arrival_delay
         
         if estimated_arrival_delay != -1 :
-            # time_change = datetime.timedelta(minutes=2)
-            print('diff -1', type(estimated_arrival_delay))
             estimated_arrival_delay_min = int(estimated_arrival_delay/60)
         else :
             estimated_arrival_delay_min = 0
         separator = ":"
         arr_planned = planned_arrival_time.split(separator)
-        arr_planned[1] = int(arr_planned[1]) + estimated_arrival_delay_min
-   
-        if arr_planned[1] >= 60 :
-            arr_planned[1] = arr_planned[1] - 60
-            arr_planned[0] = int(arr_planned[0]) +1
-            arr_planned[1] = str(arr_planned[1])
-            arr_planned[0] = str(arr_planned[0])
+        time_planned_min = int(arr_planned[0])*60 + int(arr_planned[1])
+        time_delayed_min = time_planned_min + estimated_arrival_delay_min
 
-        if arr_planned[1] < 0 :
-            arr_planned[1] = arr_planned[1] + 60
-            arr_planned[0] = int(arr_planned[0]) -1
-            arr_planned[1] = str(arr_planned[1])
-            arr_planned[0] = str(arr_planned[0])
-        arr_planned[1] = str(arr_planned[1])
-        print(arr_planned)
+        estimated_arrival_time='{:02d}:{:02d}'.format(*divmod(time_delayed_min, 60))
+
         concat_name = current_route_num + " - " + current_trip_headsign
-        # planned_arrival_time = dt.strptime(planned_arrival_time, '%H:%M:%S')
-        # date_and_time = datetime.datetime(2021, 8, 22, 11, 2, 5)
+    
 
-
-        estimated_arrival_time = separator.join(arr_planned)
+        planned_arrival_time = separator.join(arr_planned[:2])
 
         current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay_min':estimated_arrival_delay_min ,
-                            'estimated_arrival_time'  : estimated_arrival_time }
+                            'estimated_arrival_time'  : estimated_arrival_time , 'time_planned_min':time_planned_min}
         all_next_buses.append(current_dict)  
-        
-        # if current_trip.exists(): #when the trip id doesn't match 
-            # current_trip  = trips_set.filter(trip_id=current_trip_id).first()
-    #     current_trip_headsign = current_trip.trip_headsign
-    #         current_route = route_set.filter(route_id=stop.route_id).first()
-    #         current_route_num = current_route.route_short_name
-    #         concat_name = current_route_num + " - " + current_trip_headsign
-    #         current_stop_time = stop_times_set.filter(trip_id=current_trip_id, stop_sequence=stop.stop_sequence ).first()
-    #         planned_arrival_time = current_stop_time.arrival_time
-    #         planned_departure_time = current_stop_time.departure_time
-    #         estimated_arrival_delay = stop.arrival_delay
-    #         estimated_departure_delay = stop.departure_delay
-    #         current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay':estimated_arrival_delay,
-    #                           'planned_departure_time':planned_departure_time, 'estimated_departure_delay':estimated_departure_delay }
-    #         all_next_buses.append(current_dict)  
-            
+    all_next_buses = sorted(all_next_buses, key=lambda d: d['time_planned_min']) 
 
-    # serializer = BusesUpdatesSerializer(update_set,many=True) 
-    print(connection.queries)
+    # print(connection.queries)
     return Response(all_next_buses) #return the data 
 
 
