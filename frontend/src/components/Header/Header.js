@@ -1,6 +1,7 @@
 import './Header.css'
 import Weather from '../Weather/Weather'
 import logo from './img/Dublin_Bus_WHITE.png';
+import background from './img/background.jpeg'
 import {AppBar, Toolbar, IconButton, Box} from '@mui/material'
 
 const Header = (props) => {
@@ -9,7 +10,7 @@ const Header = (props) => {
     props.toggleDrawer()
   }
     return (
-    <AppBar sx={{display:"flex",alignItems:"center",flexDirection:"row",position:"sticky"}}>
+    <AppBar id="header" sx={{display:"flex",alignItems:"center",flexDirection:"row",position:"sticky",backgroundColor:"#070861"}}>
     <Toolbar sx={{justifyContent:"space-between",alignItems:"center",minHeight:"10px"}}>
       <Box sx={{display:"flex",alignItems:"center"}}>
       <img src={logo} className="logo" alt="logo"/>
