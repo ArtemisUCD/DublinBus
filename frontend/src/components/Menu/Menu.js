@@ -35,6 +35,8 @@ const Menu = (props) => {
     props.getData(null);
     props.getRouteShape([]);
     props.getFavData(null);
+    props.getCenter({lat: 53.306221, lng: -6.21914755});
+    props.getZoom(11)
   };
 
   const cumulativeSum = (sum => value => sum += value);
@@ -204,8 +206,8 @@ return(
       <RoutePlanner directions={props.directions} origin={props.origin} originError={props.originError} getAddress ={props.getAddress}destination={props.destination} destinationError={props.destinationError} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} getStartTime = {getStartTime} toggleDrawer={props.toggleDrawer}/>
   </TabPanel>
     <TabPanel value="2"><BusRouteList getData={props.getData} getRouteShape={props.getRouteShape} onLikeRoute={addFavouriteRoute} onUnlikeRoute={removeFavouriteRoute} favouritesR={favouriteRoutes} /></TabPanel>
-    <TabPanel value="3"><RealTime getData={props.getData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
-    <TabPanel value="4"><Favorites getData={props.getData} getRouteShape={props.getRouteShape} getFavData={props.getFavData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops} onLikeRoute={addFavouriteRoute} onUnLikeRoute={removeFavouriteRoute} favoritesR = {favouriteRoutes} /></TabPanel>
+    <TabPanel value="3"><RealTime getData={props.getData} getCenter={props.getCenter} getZoom={props.getZoom} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
+    <TabPanel value="4"><Favorites getData={props.getData} getRouteShape={props.getRouteShape} getCenter={props.getCenter} getZoom={props.getZoom} getFavData={props.getFavData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops} onLikeRoute={addFavouriteRoute} onUnLikeRoute={removeFavouriteRoute} favoritesR = {favouriteRoutes} /></TabPanel>
     <TabPanel value="5"><Weather /></TabPanel>
   </TabContext>
 </Box>

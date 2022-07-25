@@ -31,6 +31,8 @@ const Favorites = (props) => {
         setStopInfo(item)
         setStopId(item.stop_id)
         props.getFavData(item)
+        props.getCenter({"lat": item.stop_lat, "lng": item.stop_lon})
+        props.getZoom(16)
         props.getData(null)
         props.getRouteShape([])
         setshowstoplist(false)
@@ -39,11 +41,15 @@ const Favorites = (props) => {
     console.log(props.favourites)
     console.log(props.favouritesR)
 
+
+
     const getRouteinfo = (item) => {
         setRouteId(item.route_id)
         props.getData(routeList)
         props.getFavData(null)
         props.getRouteShape(routeshape) 
+        props.getCenter({lat: 53.306221, lng: -6.21914755});
+        props.getZoom(11)
         setshowroutelist(false)
         setShowrouteUpdata(true)
     }

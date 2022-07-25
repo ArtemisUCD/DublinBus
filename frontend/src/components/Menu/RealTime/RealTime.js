@@ -26,6 +26,8 @@ const RealTime = (props) => {
     const [favouriteinfo, setFavoriteinfo] = useState();
     const [showfavicon, setshowfavicon] = useState(false);
     const [favouritedStops,setFavouritedStops] = useState(false);
+    const [center, setCenter] = useState({lat: 53.306221, lng: -6.21914755});
+    const [zoom, setZoom] = useState(11)
     
     useEffect(() => {
         fetch("/api/stop_")
@@ -43,6 +45,8 @@ const RealTime = (props) => {
         if (value !== ""){
             setShowinfo(true);
             props.getData(stopinfo);
+            props.getCenter(center);
+            props.getZoom(zoom);
             setshowfavicon(true);
             console.log(favouriteinfo)
             setFavouritedStops(props.favouritesS.some((v => v.stop_id === favouriteinfo.stop_id)))
@@ -93,6 +97,8 @@ const RealTime = (props) => {
                                         "stop_id": value.stop_id,
                                         "stop_lat": value.stop_lat,
                                         "stop_lon": value.stop_lon}])
+                            setCenter({"lat": value.stop_lat, "lng": value.stop_lon})
+                            setZoom(16)
                             setFavoriteinfo({"stop_name": value.stop_name,
                                         "stop_id": value.stop_id,
                                         "stop_lat": value.stop_lat,
