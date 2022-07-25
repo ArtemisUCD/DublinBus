@@ -9,10 +9,12 @@ import DirectionsIcon from '@mui/icons-material/Directions';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import BusRouteList from './BusRouteList';
 import RealTime from './RealTime/RealTime';
 import Favorites from './Favourites/Favorites';
 import RouteItem from './RoutePlanner/RouteItem';
+import Weather from '../Weather/Weather';
 
 
 const Menu = (props) => {
@@ -33,6 +35,8 @@ const Menu = (props) => {
     props.getData(null);
     props.getRouteShape([]);
     props.getFavData(null);
+    props.getCenter({lat: 53.306221, lng: -6.21914755});
+    props.getZoom(11)
   };
 
   const cumulativeSum = (sum => value => sum += value);
@@ -167,14 +171,16 @@ return(
         <Tab icon={<DirectionsBusIcon />} label="Bus Routes" value="2" />
         <Tab icon={<AccessTimeIcon />} label="Real Time Info" value="3" />
         <Tab icon={<FavoriteBorderIcon />} label="Favorite" value="4" />
+        <Tab icon={<WbSunnyIcon />} label="Weather" value="5" />
       </Tabs>
     </Box>
     <TabPanel sx={{padding:"0.5rem"}} value="1" >
       <RoutePlanner directions={props.directions} origin={props.origin} originError={props.originError} getAddress ={props.getAddress}destination={props.destination} destinationError={props.destinationError} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} getStartTime = {getStartTime} toggleDrawer={props.toggleDrawer} />
   </TabPanel>
     <TabPanel value="2"><BusRouteList getData={props.getData} getRouteShape={props.getRouteShape} onLikeRoute={addFavouriteRoute} onUnlikeRoute={removeFavouriteRoute} favouritesR={favouriteRoutes} /></TabPanel>
-    <TabPanel value="3"><RealTime getData={props.getData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
-    <TabPanel value="4"><Favorites getData={props.getData} getRouteShape={props.getRouteShape} getFavData={props.getFavData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops} onLikeRoute={addFavouriteRoute} onUnLikeRoute={removeFavouriteRoute} favoritesR = {favouriteRoutes} /></TabPanel>
+    <TabPanel value="3"><RealTime getData={props.getData} getCenter={props.getCenter} getZoom={props.getZoom} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
+    <TabPanel value="4"><Favorites getData={props.getData} getRouteShape={props.getRouteShape} getCenter={props.getCenter} getZoom={props.getZoom} getFavData={props.getFavData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops} onLikeRoute={addFavouriteRoute} onUnLikeRoute={removeFavouriteRoute} favoritesR = {favouriteRoutes} /></TabPanel>
+    <TabPanel value="5"><Weather /></TabPanel>
   </TabContext>
 </Box>
 <Box sx={{zIndex:"1", backgroundColor:"white",borderRadius:"10px",overflowY:"auto"}}>

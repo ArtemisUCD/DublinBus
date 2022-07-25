@@ -2,9 +2,9 @@ from turtle import Shape
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
-from .models import Stops, DailyWeather, BusesUpdates, Trips, StopTimes, Shapes, Routes
+from .models import Stops, DailyWeather, HourlyWeather, BusesUpdates, Trips, StopTimes, Shapes, Routes
 from rest_framework import viewsets,generics
-from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer, RoutesSerializer
+from .serializers import StopsSerializer, WeatherForecastSerializer, HourlyWeatherForecastSerializer,BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer, RoutesSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.cache import cache
@@ -38,6 +38,10 @@ class StopsView(viewsets.ModelViewSet):
 class WeatherView(viewsets.ModelViewSet):
     serializer_class = WeatherForecastSerializer
     queryset = DailyWeather.objects.all()
+
+class HourlyWeatherView(viewsets.ModelViewSet):
+    serializer_class = HourlyWeatherForecastSerializer
+    queryset = HourlyWeather.objects.all()
 
 
 

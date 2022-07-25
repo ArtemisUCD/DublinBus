@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Stops, DailyWeather,BusesUpdates, Trips, StopTimes, Shapes,Routes
+from .models import Stops, DailyWeather,BusesUpdates, Trips, StopTimes, Shapes,Routes, HourlyWeather
 
 class StopsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,6 +11,10 @@ class WeatherForecastSerializer(serializers.ModelSerializer):
         model = DailyWeather
         fields = ('date', 'temperature', 'weather_icon')
 
+class HourlyWeatherForecastSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HourlyWeather
+        fields = ('date', 'temperature', 'uvi', 'humidity', 'wind')
 
 class BusesUpdatesSerializer(serializers.ModelSerializer):
     class Meta:

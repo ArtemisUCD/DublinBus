@@ -19,6 +19,8 @@ function App() {
   const originRef = useRef()
   const destinationRef = useRef()
   const [markerinfo, setMarkerinfo] = useState([]);
+  const [center, setCenter] = useState({lat: 53.306221, lng: -6.21914755});
+  const [zoom, setZoom] = useState(11);
   const [routeshape, setRouteShape] = useState([]);
   const [favData, setFavData] = useState([])
   const [routeIndex,setRouteIndex] = useState(0);
@@ -32,6 +34,14 @@ function App() {
 
     const getData = (stopinfo) => {
       setMarkerinfo(stopinfo);
+    }
+
+    const getCenter = (center) => {
+      setCenter(center)
+    }
+
+    const getZoom = (zoom) => {
+      setZoom(zoom)
     }
 
     const getRouteShape = (routeshape) => {
@@ -113,7 +123,10 @@ setDirections(results)
     setDirections(null)
     originRef.current.value = ''
     destinationRef.current.value = ''
-    
+
+    setCenter({lat: 53.306221, lng: -6.21914755})
+    map.panTo()
+
 
   }
 
@@ -127,9 +140,10 @@ setDirections(results)
       <Box sx={{display:"flex",flexDirection:"column"}}>
       <Header toggleDrawer={toggleDrawer}/>
       <Box className="main-content" sx={{display:"flex",backgroundColor:"white"}}>
-          <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} changeDirectionsRender={changeDirectionsRender} />
+          <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} changeDirectionsRender={changeDirectionsRender} getCenter={getCenter} getZoom={getZoom} />
 
-      <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} routeIndex={routeIndex} />
+      <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} routeIndex={routeIndex} center={center} zoom={zoom}/>
+
 
 </Box>
 </Box>
