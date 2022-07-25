@@ -1,35 +1,34 @@
 import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Boolean,TIMESTAMP
 from sqlalchemy.sql import select
-
 import urllib.request, json
 import os
 import warnings
 import time
 
-
 warnings.simplefilter(action='ignore', category=FutureWarning) # hide all warnings from panda future updates !
 
-db_password = os.environ['DUBLIN_BUS_PASSWORD']
-db_location = os.environ['DUBLIN_BUS_ENDPOINT']
-
-engine = create_engine('mysql+mysqlconnector://admin:'+db_password+'@'+db_location+':3306/artemis')
-dbConnection = engine.connect()
-
-
-metadata = MetaData(dbConnection)
-
-trips = Table('trips', metadata, autoload_with=engine)
-
-s = select([trips.c.trip_id]) # c to say it's a colun 
-result = dbConnection.execute(s)
-
-trip_id_list = [r for r, in result]
-print(len(trip_id_list))
-
-api_key = os.environ['GTFSR_API_KEY']
-
 while True :
+
+    db_password = os.environ['DUBLIN_BUS_PASSWORD']
+    db_location = os.environ['DUBLIN_BUS_ENDPOINT']
+
+    engine = create_engine('mysql+mysqlconnector://admin:'+db_password+'@'+db_location+':3306/artemis')
+    dbConnection = engine.connect()
+
+
+    metadata = MetaData(dbConnection)
+
+    trips = Table('trips', metadata, autoload_with=engine)
+
+    s = select([trips.c.trip_id]) # c to say it's a colun 
+    result = dbConnection.execute(s)
+
+    trip_id_list = [r for r, in result]
+    print(len(trip_id_list))
+
+    api_key = os.environ['GTFSR_API_KEY']
+
     try:
         url = "https://api.nationaltransport.ie/gtfsr/v1?format=json"
 
