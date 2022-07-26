@@ -52,19 +52,21 @@ while True :
         #     response_json = json.load(json_file)
         index= 0
         Timestamp = response_json['Header']['Timestamp']
-        print(Timestamp)
-
+        
+        
         df_buses_updates = pd.DataFrame(columns=['id','timestamp','trip_id','route_id','start_time',
                                     'start_date','schedule_relationship','is_deleted',
                                     'stop_sequence','stop_id','arrival_delay','arrival_time',
                                     'departure_delay','departure_time'])
-
+        print('len',len(response_json['Entity']))
         for bus in response_json['Entity']:   #goes trhough all the different trips 
             
             #save all the value specific to the trip
             current_trip = bus['TripUpdate']['Trip']
             TripId = current_trip['TripId']
+            # print(TripId,'\n\n')
             if TripId in trip_id_list : #check if trip is dublin bus 
+                print(TripId,'\n\n')
                 RouteId = current_trip['RouteId']
                 StartTime = current_trip['StartTime']
                 StartDate = current_trip['StartDate']
@@ -79,6 +81,7 @@ while True :
                                         'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
                                         'departure_delay':DepartureDelay,'departure_time':DepartureTime}, ignore_index=True )
 
+                    print('readyto aooen IF')
 
                 else:
                     current_bus = bus['TripUpdate']['StopTimeUpdate']
@@ -123,6 +126,7 @@ while True :
                         #                 'DepartureDelay':DepartureDelay})
                         #print[new_row]
                         index += 1
+                        print('readyto aooen')
                         df_buses_updates = df_buses_updates.append({'id':index,'timestamp':Timestamp,'trip_id':TripId,'route_id':RouteId,'start_time':StartTime,
                                         'start_date':StartDate,'schedule_relationship':ScheduleRelationship,'is_deleted':IsDeleted,
                                         'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
@@ -166,5 +170,5 @@ while True :
 
     finally:
         dbConnection.close()
-
+    print('time to sleep')
     time.sleep(600)
