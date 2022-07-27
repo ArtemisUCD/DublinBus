@@ -19,13 +19,14 @@ while True :
 
     metadata = MetaData(dbConnection)
 
-    trips = Table('trips', metadata, autoload_with=engine)
+    # trips = Table('trips', metadata, autoload_with=engine)
+    routes = Table('routes', metadata, autoload_with=engine)
 
-    s = select([trips.c.trip_id]) # c to say it's a colun 
+    s = select([routes.c.route_id]) # c to say it's a colun 
     result = dbConnection.execute(s)
 
-    trip_id_list = [r for r, in result]
-    print(len(trip_id_list))
+    route_id_list = [r for r, in result]
+    print(len(route_id_list))
 
     api_key = os.environ['GTFSR_API_KEY']
 
@@ -63,11 +64,11 @@ while True :
             
             #save all the value specific to the trip
             current_trip = bus['TripUpdate']['Trip']
-            TripId = current_trip['TripId']
-            # print(TripId,'\n\n')
-            if TripId in trip_id_list : #check if trip is dublin bus 
-                print(TripId,'\n\n')
-                RouteId = current_trip['RouteId']
+            RouteId = current_trip['RouteId']
+            # print(RouteId,'\n\n')
+            if RouteId in route_id_list : #check if route is dublin bus 
+                print(RouteId,'in the list !! of db \n\n')
+                TripId = current_trip['TripId']
                 StartTime = current_trip['StartTime']
                 StartDate = current_trip['StartDate']
                 ScheduleRelationship = current_trip['ScheduleRelationship']
@@ -81,7 +82,7 @@ while True :
                                         'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
                                         'departure_delay':DepartureDelay,'departure_time':DepartureTime}, ignore_index=True )
 
-                    print('readyto aooen IF')
+                    # print('readyto aooen IF')
 
                 else:
                     current_bus = bus['TripUpdate']['StopTimeUpdate']
@@ -126,7 +127,7 @@ while True :
                         #                 'DepartureDelay':DepartureDelay})
                         #print[new_row]
                         index += 1
-                        print('readyto aooen')
+                        # print('readyto aooen')
                         df_buses_updates = df_buses_updates.append({'id':index,'timestamp':Timestamp,'trip_id':TripId,'route_id':RouteId,'start_time':StartTime,
                                         'start_date':StartDate,'schedule_relationship':ScheduleRelationship,'is_deleted':IsDeleted,
                                         'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
