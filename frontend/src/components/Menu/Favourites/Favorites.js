@@ -76,8 +76,6 @@ const Favorites = (props) => {
         .then(data => setRouteShape(data))
       },[routeId]);
 
-    console.log(routeList)
-
     const handleChange = (panel) => (event, newExpanded) => {
         setExpanded(newExpanded ? panel : false);
       };
