@@ -172,4 +172,4 @@ while True :
     finally:
         dbConnection.close()
     print('time to sleep')
-    time.sleep(600)
+    time.sleep(600) #10 minutes
