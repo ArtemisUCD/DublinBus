@@ -10,6 +10,7 @@ import datetime as dt
 from django.db.models import F
 import pickle
 import datetime as dt
+import holidays
 
 
 class StopsView(viewsets.ModelViewSet):
@@ -185,6 +186,7 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weathe
     df_input = pd.DataFrame(data=d)
 
     requested_timestamp =  dt.datetime.fromtimestamp(timestamp)
+    
     today_weekday = requested_timestamp.weekday()
     print('requested_timestamp : ',requested_timestamp,' week day : ',today_weekday )
     if today_weekday == 0:
@@ -228,6 +230,12 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weathe
         df_input['MONTHOFYEAR_November'][0] = 1
     elif today_month == 12:
         df_input['MONTHOFYEAR_December'][0] = 1
+
+    irish_holidays = holidays.Ireland()
+    requested_timestamp_str = requested_timestamp.strftime("%d-%m-%Y")
+
+    if requested_timestamp_str in irish_holidays:
+        df_input['BANKHOLIDAY_True'][0] = 1
 
     if weather_icon_num <= 9 :
         str_weather_column = 'weather_icon_0'+ str(weather_icon_num)
