@@ -29,6 +29,8 @@ const Menu = (props) => {
   const [startTime, setStartTime] = useState();
   const [routeList,setRouteList] = useState();
 
+  const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -40,6 +42,12 @@ const Menu = (props) => {
   };
 
   const cumulativeSum = (sum => value => sum += value);
+
+  // if(props.weather && startTime){
+  //   console.log("weather data",props.weather)
+  // //   console.log("datetime",typeof weekday[startTime.getDay()])
+  // //   console.log("weather summary",props.weather.filter(el=>el.date===weekday[startTime.getDay()])[0].weather_icon)
+  // }
   
 
     useEffect(()=>{
@@ -49,7 +57,8 @@ const Menu = (props) => {
       const newRoutes=["H3","14","83","9","15","6"]
 
       const getModelValues = async (routeIndex,stepIndex,step)=>{
-        let theanswer = await fetch("/buses/getEstimateTime/"+(Math.round((startTime.getTime()/1000)))+`/${step.transit.line.short_name}/${step.transit.headsign}/${step.transit.num_stops}`)
+        let weatherSummary = props.weather.filter(el=>el.date===weekday[startTime.getDay()])[0].weather_icon.slice(0,-1)
+        let theanswer = await fetch("/buses/getEstimateTime/"+(Math.round((startTime.getTime()/1000)))+`/${step.transit.line.short_name}/${step.transit.headsign}/${step.transit.num_stops}/${weatherSummary}`)
     
         let response = await theanswer.json()
         timings[routeIndex][stepIndex]=response
@@ -75,7 +84,6 @@ const Menu = (props) => {
     if(props.directions!==null){
           // get duration each step of the journey takes
     timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
-    console.log("full timings",timings)
     setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={`route_${routeIndex}`} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}  changeDirectionsRender={props.changeDirectionsRender}/>));
 
     timesUpdated().then(()=>{
