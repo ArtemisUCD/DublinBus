@@ -21,6 +21,7 @@ from buses import views
 router = routers.DefaultRouter()
 router.register(r'stop_', views.StopsView, 'stop')
 router.register(r'forecast', views.WeatherView, 'weather_forecast')
+router.register(r'hourlyforecast', views.HourlyWeatherView, 'weather_Hourlyforecast')
 # router.register(r'busesUpdates', views.BusesUpdatesView, 'busesUpdates')
 # router.register(r'StopForRoute', views.StopForRouteView, 'StopForRoute')
 # router.register(r'get', views.getShape, basename='MyModel')

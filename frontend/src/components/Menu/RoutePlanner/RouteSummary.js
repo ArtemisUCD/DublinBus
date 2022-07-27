@@ -12,7 +12,6 @@ const RouteSummary = (props) => {
         expanded.current++
         props.onClick()
     }
-    console.log("testing",expanded)
 
     return(
         <AccordionSummary expanded ={expanded} onClick = {handleClick} key={Math.random()}

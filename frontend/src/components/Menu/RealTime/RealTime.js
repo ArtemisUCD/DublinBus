@@ -26,6 +26,8 @@ const RealTime = (props) => {
     const [favouriteinfo, setFavoriteinfo] = useState();
     const [showfavicon, setshowfavicon] = useState(false);
     const [favouritedStops,setFavouritedStops] = useState(false);
+    const [center, setCenter] = useState({lat: 53.306221, lng: -6.21914755});
+    const [zoom, setZoom] = useState(11)
     
     useEffect(() => {
         fetch("/api/stop_")
@@ -43,6 +45,8 @@ const RealTime = (props) => {
         if (value !== ""){
             setShowinfo(true);
             props.getData(stopinfo);
+            props.getCenter(center);
+            props.getZoom(zoom);
             setshowfavicon(true);
             console.log(favouriteinfo)
             setFavouritedStops(props.favouritesS.some((v => v.stop_id === favouriteinfo.stop_id)))
@@ -93,6 +97,8 @@ const RealTime = (props) => {
                                         "stop_id": value.stop_id,
                                         "stop_lat": value.stop_lat,
                                         "stop_lon": value.stop_lon}])
+                            setCenter({"lat": value.stop_lat, "lng": value.stop_lon})
+                            setZoom(16)
                             setFavoriteinfo({"stop_name": value.stop_name,
                                         "stop_id": value.stop_id,
                                         "stop_lat": value.stop_lat,
@@ -129,14 +135,16 @@ const RealTime = (props) => {
                     <TableContainer component={Paper}
                         sx={{maxHeight:400,}}>
                         <Table sx={{width: '100%',
-                        maxWidth: 360,
+                        maxWidth: 380,
                         position: 'relative',
                         overflow: 'auto',
-                        maxHeight: 300, }} aria-label="simple table">
+                        maxHeight: 300, }} aria-label="simple table" stickyHeader>
                             <TableHead>
                             <TableRow>
                                 <TableCell>Bus Route</TableCell>
-                                <TableCell align="right">Due</TableCell>
+                                <TableCell align="right">Plan</TableCell>
+                                <TableCell align="right">Estimate</TableCell>
+                                <TableCell align="right">Delay</TableCell>
                             </TableRow>
                             </TableHead>
                             <TableBody>
@@ -149,6 +157,8 @@ const RealTime = (props) => {
                                     {row.concat_name}
                                 </TableCell>
                                 <TableCell align="right">{row.planned_arrival_time}</TableCell>
+                                <TableCell align="right">{row.estimated_arrival_time}</TableCell>
+                                <TableCell align="right">{row.estimated_arrival_delay_min}</TableCell>
                                 </TableRow>
                             ))}
                             </TableBody>

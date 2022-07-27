@@ -1,8 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+
 from .models import Stops, DailyWeather, BusesUpdates, Trips, StopTimes, Shapes, Routes
 from rest_framework import viewsets
 from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer, RoutesSerializer
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import pandas as pd
@@ -21,6 +23,10 @@ class StopsView(viewsets.ModelViewSet):
 class WeatherView(viewsets.ModelViewSet):
     serializer_class = WeatherForecastSerializer
     queryset = DailyWeather.objects.all()
+
+class HourlyWeatherView(viewsets.ModelViewSet):
+    serializer_class = HourlyWeatherForecastSerializer
+    queryset = HourlyWeather.objects.all()
 
 
 @api_view(['GET'])

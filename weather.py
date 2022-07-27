@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-api_key = os.environ['WEATHER_API_KEY']
+api_key = '764413d2bba3ad04ad4bdc5a0e5a17ea'
 # function to return historical weather data for Dublin
 def getHistoricalWeather():
     datapointCount = 10
@@ -17,6 +17,14 @@ def getHistoricalWeather():
 def getDailyWeather():
     datapointCount = 7
     url = f"http://api.openweathermap.org/data/2.5/forecast/daily?lat=53.303&lon=-6.232&cnt={datapointCount}&appid={api_key}&units=metric"
+    r = requests.get(url) 
+    json_data = json.loads(r.text)
+    return json_data
+
+def getHourlyWeather():
+    datapointCount = 48
+    hourly_api_key = '2cdffb9226f70e5762693a143d32a0f0'
+    url = f"https://api.openweathermap.org/data/3.0/onecall?lat=53.3434&lon=-6.26761&exclude=minutely,daily,minutely,alerts,current&appid={hourly_api_key}"
     r = requests.get(url) 
     json_data = json.loads(r.text)
     return json_data

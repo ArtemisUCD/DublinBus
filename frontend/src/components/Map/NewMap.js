@@ -7,7 +7,6 @@ import { useState} from 'react';
 const NewMap = (props) =>{
 
     const [mapRef] = useState(null);
-    const [center, setCenter] = useState({lat: 53.306221, lng: -6.21914755});
 
     const mapStyles = [
       {
@@ -157,14 +156,6 @@ const NewMap = (props) =>{
     };
     
     
-    const onCenterChanged = mapRef => {
-        if (mapRef && mapRef.getCenter()) {
-          const ccenter = mapRef.getCenter().toJSON();
-          if (ccenter.lat !== center.lat && ccenter.lng !== center.lng) {
-            setCenter(mapRef.getCenter().toJSON());
-          }
-        }
-    };
 
     const pathOptions = {
         strokeColor: '#FF0000',
@@ -183,13 +174,12 @@ const NewMap = (props) =>{
       };
 
     return(
-        <GoogleMap id="map" center={center} zoom={11}  options={{zoomControl:false,
+        <GoogleMap id="map" center={props.center} zoom={props.zoom}  options={{zoomControl:false,
             streetViewControl:false,
             mapTypeControl:false,
             fullscreenControl: false,
           styles:mapStyles}}
-            onCenterChanged={()=>onCenterChanged(mapRef)
-            }
+
             onClick={() => setActiveMarker(null)}
             // onLoad={(map)=>setMap(map)}>
             >
@@ -198,6 +188,11 @@ const NewMap = (props) =>{
                 <Marker
                 key={index}
                 position={{ lat: Number(place.stop_lat), lng: Number(place.stop_lon) }}
+                icon={{
+                    url:
+                    "https://img.icons8.com/office/40/000000/bus.png",
+                    scaledSize: { width: 35, height: 35 }
+                  }}
                 onClick={() => handleActiveMarker(place.stop_id)} >
                   {activeMarker === place.stop_id ? (
                     <InfoWindow onCloseClick={() => setActiveMarker(null)}>
@@ -213,7 +208,12 @@ const NewMap = (props) =>{
               </Marker>
             ))} */}
             {props.favmarker && <Marker key={Math.random()}
-                                        position={{ lat: Number(props.favmarker.stop_lat), lng: Number(props.favmarker.stop_lon)}}>
+                                        position={{ lat: Number(props.favmarker.stop_lat), lng: Number(props.favmarker.stop_lon)}}
+                                        icon={{
+                                            url:
+                                            "https://img.icons8.com/office/40/000000/bus.png",
+                                            scaledSize: { width: 35, height: 35 }
+                                          }}>
                                 </Marker>}
 
 

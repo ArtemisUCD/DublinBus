@@ -135,3 +135,14 @@ class DailyWeather(models.Model):
     class Meta:
         managed = False
         db_table = 'daily_weather'
+
+class HourlyWeather(models.Model):
+    date = models.IntegerField(primary_key=True)
+    temperature = models.FloatField(max_length=32, blank=True, null=True)
+    uvi = models.FloatField(max_length=32, blank=True, null=True)
+    humidity = models.FloatField(max_length=32, blank=True, null=True)
+    wind = models.FloatField(max_length=32, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'hourly_weather'

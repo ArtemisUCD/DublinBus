@@ -9,6 +9,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useState } from 'react'
 import './RoutePlanner.css'
 import FormControl from '@mui/material/FormControl';
+import addDays from 'date-fns/addDays';
 
 
 const RoutePlanner = (props) => {
@@ -16,6 +17,7 @@ const RoutePlanner = (props) => {
     const [value,setValue] = useState(new Date())
     const [originError,setOriginError] = useState(false);
     const [destinationError,setDestinationError] = useState(false);
+    const maxDate = addDays(new Date(),6)
 
     const calcRoute = () => {
         if(props.origin.current.value === '' || props.destination.current.value === ''){
@@ -99,9 +101,10 @@ borderRadius:"10px;"}}>
         <Box sx={{padding:"1rem 0"}}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DesktopDateTimePicker
-            
+            disablePast
             label="For desktop"
             value={value}
+            maxDate={maxDate}
             onChange={(newValue) => {
                 setValue(newValue)
             }}
@@ -109,11 +112,9 @@ borderRadius:"10px;"}}>
             />
         </LocalizationProvider>
         </Box>
-        <Box>
-        <Button onClick={calcRoute}variant="outlined" size="small" >Calculate Route</Button>
-        <IconButton onClick={clearDetails}>
-        <HighlightOffOutlinedIcon/>
-        </IconButton>
+        <Box sx={{display:"flex",justifyContent:"space-evenly"}}>
+        <Button onClick={calcRoute}variant="contained" size="small" >Calculate Route</Button>
+        <Button onClick={clearDetails}variant="contained" size="small" color="error" >Clear</Button>
         </Box>        
         </Box>
         </FormControl>
