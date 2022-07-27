@@ -130,9 +130,8 @@ setDirections(results)
     setDirections(null)
     originRef.current.value = ''
     destinationRef.current.value = ''
-
-    setCenter({lat: 53.306221, lng: -6.21914755})
-    map.panTo()
+    setZoom(11)
+    setCenter({lat: 53.348665, lng: -6.25396})
 
 
   }
