@@ -67,7 +67,7 @@ while True :
             RouteId = current_trip['RouteId']
             # print(RouteId,'\n\n')
             if RouteId in route_id_list : #check if route is dublin bus 
-                print(RouteId,'in the list !! of db \n\n')
+                # print(RouteId,'in the list !! of db \n\n')
                 TripId = current_trip['TripId']
                 StartTime = current_trip['StartTime']
                 StartDate = current_trip['StartDate']
