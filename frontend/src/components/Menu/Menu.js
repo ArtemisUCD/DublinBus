@@ -120,11 +120,10 @@ const Menu = (props) => {
       })
       }
     }
-    
   // function to remove bus route from list of favourites
     const removeFavouriteRoute = (routenum) =>{
       setFavouriteRoutes((prevFavouriteRoutes) =>{
-        return prevFavouriteRoutes.filter(route => route!== routenum)
+        return prevFavouriteRoutes.filter(route => route.route_name!== routenum.route_name)
       })}
 
     const addFavourite = (newStop) =>{
@@ -137,6 +136,7 @@ const Menu = (props) => {
       
     // function to remove bus route from list of favourites
       const removeFavourite = (stopnum) =>{
+        console.log("favourite stops",favouriteStops)
         setFavouriteStops((prevFavouriteStops) =>{
           return prevFavouriteStops.filter(stop => stop!== stopnum)
         })}
