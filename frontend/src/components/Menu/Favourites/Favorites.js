@@ -26,6 +26,8 @@ const Favorites = (props) => {
     const [showroutelist, setshowroutelist] = useState(true);
     const [showrouteUpdate, setShowrouteUpdata] = useState(false);
     const [expanded, setExpanded] = useState('panel1');
+
+    let favouriteRoutes;
     
     const getStopinfo = (item) => {
         setStopInfo(item)
@@ -38,10 +40,6 @@ const Favorites = (props) => {
         setshowstoplist(false)
         setShowstopUpdata(true)
     }
-    console.log(props.favourites)
-    console.log(props.favouritesR)
-
-
 
     const getRouteinfo = (item) => {
         setRouteId(item.route_id)
@@ -99,72 +97,78 @@ const Favorites = (props) => {
         setshowroutelist(true);
     }
 
+
+    if(props.favoritesR && props.favoritesR.length>0 && showrouteUpdate===false){
+    favouriteRoutes = <List>{props.favoritesR.map((item, index) => (
+        <ListItem key={index}>
+            <ListItemButton onClick={() => getRouteinfo(item)}>
+            <ListItemText primary={item.route_name} />
+            </ListItemButton>
+            <IconButton
+                size="large"
+                sx={{
+                "& svg": {
+                    color: "crimson",
+                    transition: "0.2s",
+                    transform: "translateX(0) rotate(0)"
+                }
+                }}
+                onClick={()=>toggleFavouriteRoute(item)}>
+                <FaHeart className={"heart full"}/>
+            </IconButton>
+        </ListItem>
+    ))}
+    </List>
+    }
+    else if(props.favoritesR && props.favoritesR.length>0 && showrouteUpdate===true){
+        favouriteRoutes =         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
+        <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
+            <Box>
+                <Button onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
+            </Box>
+            <List
+            sx={{
+                width: '100%',
+                maxWidth: 360,
+                bgcolor: 'background.paper',
+                position: 'relative',
+                overflow: 'auto',
+                maxHeight: 400,
+                '& ul': { padding: 0 },
+            }}>
+            {routeList.map((item, index) => (
+                <ListItem button
+                key={index}>
+                <ListItemText primary={item.stop_name} />
+                </ListItem>
+            ))}
+            </List>
+        </Box> 
+</Box>
+    }
+    else{
+        console.log("favourite routes",props.favouritesR)
+        favouriteRoutes = <p>No favourite Routes</p>
+    }
+
+    
+
     return (
         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",marginLeft:"1rem",borderRadius:"10px;", maxheight:"300px"}}>
             <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
                 
-                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start", maxheight:"300px"}}>
-                    <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start", maxheight:"300px",width:"100%"}}>
+                    <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')} sx={{width:"100%"}}>
                         <AccordionSummary aria-controls="panel1d-content" id="panel1d-header" expandIcon={<ExpandMoreIcon />}>
                             <Typography>Favorite Routes</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {showroutelist && (
-                            <List>
-                                {props.favoritesR && props.favoritesR.map((item, index) => (
-                                    <ListItem key={index}>
-                                        <ListItemButton onClick={() => getRouteinfo(item)}>
-                                        <ListItemText primary={item.route_name} />
-                                        </ListItemButton>
-                                        <IconButton
-                                            size="large"
-                                            sx={{
-                                            "& svg": {
-                                                color: "crimson",
-                                                transition: "0.2s",
-                                                transform: "translateX(0) rotate(0)"
-                                            }
-                                            }}
-                                            onClick={()=>toggleFavouriteRoute(item)}>
-                                            <FaHeart className={"heart full"}/>
-                                        </IconButton>
-                                        
-                                        
-                                    </ListItem>
-                                ))}
-                                </List>
-                            )}
-                            {showrouteUpdate && (
-                                <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
-                                    <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
-                                        <Box>
-                                            <Button onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
-                                        </Box>
-                                        <List
-                                        sx={{
-                                            width: '100%',
-                                            maxWidth: 360,
-                                            bgcolor: 'background.paper',
-                                            position: 'relative',
-                                            overflow: 'auto',
-                                            maxHeight: 400,
-                                            '& ul': { padding: 0 },
-                                        }}>
-                                        {routeList.map((item, index) => (
-                                            <ListItem button
-                                            key={index}>
-                                            <ListItemText primary={item.stop_name} />
-                                            </ListItem>
-                                        ))}
-                                        </List>
-                                    </Box> 
-                            </Box>
-                            )}
+                            {favouriteRoutes}
                         </AccordionDetails>
                     </Accordion>
                 </Box>
                 <Box sx={{display:"flex",justifyContent:"flex-start"}}>
-                    <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+                    <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')} sx={{width:"100%"}}>
                         <AccordionSummary aria-controls="panel2d-content" id="panel2d-header" expandIcon={<ExpandMoreIcon />}>
                             <Typography>Favorite Stops</Typography>
                         </AccordionSummary>
