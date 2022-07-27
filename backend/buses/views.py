@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from .models import Stops, DailyWeather, BusesUpdates, Trips, StopTimes, Shapes, Routes
+from .models import Stops, DailyWeather, BusesUpdates, Trips, StopTimes, Shapes, Routes,HourlyWeather
 from rest_framework import viewsets
-from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer, RoutesSerializer
+from .serializers import StopsSerializer, WeatherForecastSerializer, HourlyWeatherForecastSerializer
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
