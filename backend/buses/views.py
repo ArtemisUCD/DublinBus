@@ -1,39 +1,24 @@
-from turtle import Shape
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.template import loader
-from .models import Stops, DailyWeather, HourlyWeather, BusesUpdates, Trips, StopTimes, Shapes, Routes
-from rest_framework import viewsets,generics
-from .serializers import StopsSerializer, WeatherForecastSerializer, HourlyWeatherForecastSerializer,BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer, RoutesSerializer
+
+from .models import Stops, DailyWeather, BusesUpdates, Trips, StopTimes, Shapes, Routes
+from rest_framework import viewsets
+from .serializers import StopsSerializer, WeatherForecastSerializer, BusesUpdatesSerializer, TripsSerializer, StopTimesSerializer, ShapesSerializer, RoutesSerializer
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.core.cache import cache
-from django.db import connection
 import pandas as pd
 import datetime as dt
 from django.db.models import F
 import pickle
-from datetime import datetime  
 import datetime as dt
+import holidays
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the bus app index.")
-
-def routes(request,id_route):
-    return HttpResponse("Hello, world. These is the dublin bus route num %s. " % id_route)
-
-def stops(request,id_stop):
-    stops_list = Stops.objects.order_by('-stop_id')[:5]
-    
-    output = '<br> '.join([q.stop_name for q in stops_list])
-    context = {
-        'stops_list': stops_list,
-    }
-    return render(request, 'stops.html',context)
 
 class StopsView(viewsets.ModelViewSet):
     serializer_class = StopsSerializer
     queryset = Stops.objects.all()
+
 
 class WeatherView(viewsets.ModelViewSet):
     serializer_class = WeatherForecastSerializer
@@ -44,22 +29,18 @@ class HourlyWeatherView(viewsets.ModelViewSet):
     queryset = HourlyWeather.objects.all()
 
 
-
 @api_view(['GET'])
 def getUpdatesForStop(request,stop_id_requested):
     # route_id_selected = '60-46A-b12-1' # harcoded trips 
     # stop_id_selected = '8220DB000326' 
-    # update_set = pd.DataFrame(list(BusesUpdates.objects.all().values()))
     df_trips = pd.DataFrame(list(Trips.objects.all().values()))
-    # df_stop_times = pd.DataFrame(list(StopTimes.objects.all().values('trip_id','stop_sequence','arrival_time')))
     df_route = pd.DataFrame(list(Routes.objects.all().values()))
 
     if stop_id_requested is not None:
-        update_set = BusesUpdates.objects.filter(stop_id=stop_id_requested)
-        # print('this is leng ',len(update_set))
-     
+        update_set = BusesUpdates.objects.filter(stop_id=stop_id_requested)     
    
     all_next_buses = []
+
     for stop in update_set.iterator():
         current_trip_id = stop.trip_id
         current_trip  = df_trips[df_trips['trip_id'] == current_trip_id].iloc[0] #trips_set.filter(trip_id=current_trip_id)
@@ -67,7 +48,6 @@ def getUpdatesForStop(request,stop_id_requested):
         current_route_id = stop.route_id
         current_route = df_route[df_route['route_id'] == current_route_id].iloc[0] #Routes.objects.filter(route_id=stop.route_id).first()
         current_route_num = current_route['route_short_name']
-        # current_stop_time = df_stop_times[df_stop_times['trip_id'] == current_trip_id & df_stop_times['stop_sequence'] == stop.stop_sequence].iloc[0]
         current_stop_time = StopTimes.objects.filter(trip_id=current_trip_id, stop_sequence=stop.stop_sequence ).values('trip_id','stop_sequence','arrival_time').first()
         planned_arrival_time = current_stop_time['arrival_time']
         estimated_arrival_delay = stop.arrival_delay
@@ -76,6 +56,7 @@ def getUpdatesForStop(request,stop_id_requested):
             estimated_arrival_delay_min = int(estimated_arrival_delay/60)
         else :
             estimated_arrival_delay_min = 0
+        
         separator = ":"
         arr_planned = planned_arrival_time.split(separator)
         time_planned_min = int(arr_planned[0])*60 + int(arr_planned[1])
@@ -85,14 +66,19 @@ def getUpdatesForStop(request,stop_id_requested):
 
         concat_name = current_route_num + " - " + current_trip_headsign
     
-
         planned_arrival_time = separator.join(arr_planned[:2])
 
-        current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay_min':estimated_arrival_delay_min ,
+        if estimated_arrival_delay_min < 0 : 
+            str_sign = 'early'
+        else:
+            str_sign = 'late'
+
+        concat_delay = str_sign + abs(estimated_arrival_delay_min)
+        current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay_min':concat_delay ,
                             'estimated_arrival_time'  : estimated_arrival_time , 'time_planned_min':time_planned_min}
         all_next_buses.append(current_dict)  
-    all_next_buses = sorted(all_next_buses, key=lambda d: d['time_planned_min']) 
 
+    all_next_buses = sorted(all_next_buses, key=lambda d: d['time_planned_min']) 
     # print(connection.queries)
     return Response(all_next_buses) #return the data 
 
@@ -101,28 +87,19 @@ def getUpdatesForStop(request,stop_id_requested):
 def getShape(request, route_id_requested):
     trips_set = Trips.objects.all()
 
-    # get all trips !
-    # route_id_selected = '60-46A-b12-1'
-    # shape_set = Shapes.objects.all()
-
-    # queryset = Shapes.objects.all()
     if route_id_requested is not None:
         trips_set = trips_set.filter(route=route_id_requested)
         first_trip = trips_set.first()
         first_trip_id = first_trip.shape_id
-        #print('first_trip_id : ',first_trip_id)
 
     bus_route_shape = []
     bus_route_shape = Shapes.objects.filter(shape_id=first_trip_id).annotate(lat=F('shape_pt_lat'),lng=F('shape_pt_lon')).values('lat','lng')
-    # print(len(bus_route_shape),len(shape_set))
-    # print(bus_route_shape)
-    # serializer = ShapesSerializer(bus_route_shape,many=True) 
-    # print(connection.queries)
+
     return Response(bus_route_shape) #return the data 
+
 
 @api_view(['GET'])
 def getStopsForRoute(request, route_id_requested):
-    # route_id_selected = '60-46A-b12-1' # harcoded trips
     
     # incase need to split the string !! just change name argument var to route_var_requested
     ###################################
@@ -134,16 +111,9 @@ def getStopsForRoute(request, route_id_requested):
     
     df_trips = pd.DataFrame(list(Trips.objects.all().values('route','trip_id')))
 
-    # queryset = Shapes.objects.all()
     if route_id_requested is not None:
-        # trips_set = trips_set.filter(route=route_id_requested)
         first_trip_id = df_trips[df_trips['route'] == route_id_requested]['trip_id'].iloc[0]
-        # first_trip = trips_set.first()
-        # first_trip_id = first_trip.trip_id # retrieve and trip ID
-
-    # df_stop_times = pd.DataFrame(list(StopTimes.objects.all().value()))
-    # get all stops !
-    # bus_route_stops_times = []
+      
     bus_route_stops_times = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))#all stops on a route 
 
     bus_route_stops = []
@@ -151,13 +121,12 @@ def getStopsForRoute(request, route_id_requested):
 
     for stop in bus_route_stops_times.iterrows():
         current_stop_id = stop[1]['stop_id']
-    #     current_stop = Stops.objects.filter(stop_id=current_stop_id)[0] #get first element cus always 1 elemnt cus primary key !
         current_stop = df_stop[df_stop['stop_id'] == current_stop_id].iloc[0]
         bus_route_stops.append(current_stop.to_dict())
 
-    # serializer = StopsSerializer(bus_route_stops,many=True) 
     # print(connection.queries)
     return Response(bus_route_stops) #return the data 
+
 
 @api_view(['GET'])
 def getBusRouteList(request):
@@ -165,8 +134,6 @@ def getBusRouteList(request):
     df_route = pd.DataFrame(list(Routes.objects.all().values('route_id','route_short_name')))
     
     trip_set_unique_headsign = Trips.objects.order_by('trip_headsign').values('trip_headsign').distinct() #select all unique trip headsign 
-    # print(len(trip_set_unique_headsign))
-    # print(df_trips.columns.values.tolist())
 
     routes = []
     for trip in trip_set_unique_headsign.iterator():
@@ -176,12 +143,8 @@ def getBusRouteList(request):
         concat_name_str = route_short_name + ' - ' + route_long_name
         route_dict = {'route_id': route_id, 'concat_name': concat_name_str }
         routes.append(route_dict)
-        # print(route_short_name)
 
-    # print(connection.queries)
-    # print(len(routes))
     return Response(routes) #return the data 
-
 
 
 @api_view(['GET'])
@@ -209,8 +172,11 @@ def getBusStopList(request):
 
 # http://localhost:8000/buses/getEstimateTime/1657181364/7/Mountjoy%20Square/18/
 @api_view(['GET'])
-def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops):
+def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weather_icon_num):
     # print(timestamp,route_short_name,headsign)
+
+    # WHAT ABOUT BANKHOLIDAY !!??
+
     d = {'WEEKDAY_Monday': [0], 'WEEKDAY_Saturday': [0],'WEEKDAY_Sunday': [0], 'WEEKDAY_Thursday': [0],
             'WEEKDAY_Tuesday': [0], 'WEEKDAY_Wednesday': [0], 'HOUROFDAY_7': [0], 'HOUROFDAY_7': [0],
             'HOUROFDAY_8': [0],'HOUROFDAY_9': [0],'HOUROFDAY_10': [0],'HOUROFDAY_11': [0],'HOUROFDAY_12': [0],
@@ -220,10 +186,13 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops):
             'MONTHOFYEAR_December': [0],'MONTHOFYEAR_February': [0],'MONTHOFYEAR_January': [0],
             'MONTHOFYEAR_July': [0],'MONTHOFYEAR_June': [0],'MONTHOFYEAR_March': [0],
             'MONTHOFYEAR_May': [0],'MONTHOFYEAR_November': [0],'MONTHOFYEAR_October': [0],
-            'MONTHOFYEAR_September': [0],'BANKHOLIDAY_True': [0]}
+            'MONTHOFYEAR_September': [0],'BANKHOLIDAY_True': [0],'weather_icon_02' : [0],'weather_icon_03' : [0],
+            'weather_icon_04' : [0],'weather_icon_09' : [0],'weather_icon_10' : [0],'weather_icon_11' : [0],
+            'weather_icon_13' : [0],'weather_icon_50' : [0]}
     df_input = pd.DataFrame(data=d)
 
     requested_timestamp =  dt.datetime.fromtimestamp(timestamp)
+    
     today_weekday = requested_timestamp.weekday()
     print('requested_timestamp : ',requested_timestamp,' week day : ',today_weekday )
     if today_weekday == 0:
@@ -268,7 +237,22 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops):
     elif today_month == 12:
         df_input['MONTHOFYEAR_December'][0] = 1
 
+    irish_holidays = holidays.Ireland()
+    requested_timestamp_str = requested_timestamp.strftime("%d-%m-%Y")
 
+    if requested_timestamp_str in irish_holidays:
+        df_input['BANKHOLIDAY_True'][0] = 1
+
+    if weather_icon_num <= 9 :
+        str_weather_column = 'weather_icon_0'+ str(weather_icon_num)
+    else:
+        str_weather_column = 'weather_icon_'+ str(weather_icon_num)
+
+    if str_weather_column in df_input.columns:
+        df_input[str_weather_column][0] = 1
+        print('ok changed')
+
+    
     route_id = Routes.objects.filter(route_short_name = route_short_name).values('route_id').first()['route_id']
     first_trip_id = Trips.objects.filter(route_id=route_id).values('trip_id').first()['trip_id']
     stops_list = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))
