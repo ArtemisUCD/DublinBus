@@ -13,7 +13,7 @@ from django.db.models import F
 import pickle
 import datetime as dt
 import holidays
-
+import numpy as np
 
 class StopsView(viewsets.ModelViewSet):
     serializer_class = StopsSerializer
@@ -171,33 +171,87 @@ def getBusStopList(request):
 
 
 
+from sklearn.ensemble import RandomForestRegressor
 
-# http://localhost:8000/buses/getEstimateTime/1657181364/7/Mountjoy%20Square/18/
+# http://localhost:8000/buses/getEstimateTime/1657181364/7/Mountjoy%20Square/18/10
 @api_view(['GET'])
 def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weather_icon_num):
     # print(timestamp,route_short_name,headsign)
-    pickle_name = 'C:\\Users\\eoin_\\projects\\dublinBus\\' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
+    route_id = Routes.objects.filter(route_short_name = route_short_name).values('route_id').first()['route_id']
+    first_trip_id = Trips.objects.filter(route_id=route_id).values('trip_id').first()['trip_id']
+    stops_list = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))
+    num_stop_total = len(stops_list)
+    percentage_of_route = (num_stops / num_stop_total)%100
+    print('percentage_of_route',percentage_of_route)
+    headsign_arr = headsign.split()
+   
+    trip_set_both_direction = Trips.objects.filter(route_id=route_id).order_by('trip_headsign').values('trip_headsign','direction_id').distinct() #select all unique trip headsign 
+
+    ## KEEP ### most commun used words in all bus headsigns
+    # from collections import Counter
+    # trip_set_unique= Trips.objects.order_by('trip_headsign').values('trip_headsign','direction_id').distinct()
+    # super_str =''
+    # for trip in trip_set_unique.iterator():
+    #     super_str += trip['trip_headsign']
+    # super_str_arr = super_str.split()
+    # Counter = Counter(super_str_arr)
+    # most_occur = Counter.most_common(30)
+    # print(most_occur)
+
+    redundant_word_list = ['Road','College','Street','Square','Train','Park', 'of', 'Station', 'Avenue','Bus','Dublin' ]
+
+    # print('trip_set_both_direction',(trip_set_both_direction))
+    # first_headsign = trip_set_both_direction[0]['trip_headsign']
+    first_headsign_arr = trip_set_both_direction[0]['trip_headsign'].split(' - ')
+    first_headsign_direction = first_headsign_arr[0]
+    first_headsign_direction_arr = first_headsign_direction.split()
+    
+    # print('first_headsign_direction_arr :',first_headsign_direction_arr)
+    first_headsign_direction_arr_filtered = list(filter(lambda word: word not in redundant_word_list, first_headsign_direction_arr))
+    # print('first_headsign_direction_arr_filtered :',first_headsign_direction_arr_filtered)
+    # print('headsign_arr : ',headsign_arr)
+
+    if any(word in headsign_arr for word in first_headsign_direction_arr_filtered):
+        direction = trip_set_both_direction[1]['direction_id']
+        # print('correct direction : ', direction)
+    else:
+        direction = trip_set_both_direction[0]['direction_id']
+        # print('not correct direction : ', direction)
+    pickle_direction = direction + 1
+
+    pickle_name = 'C:\\Users\\elisebrard\\Downloads\\pickles\\pickles\\' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
+
+    # print(pickle_name)
 
     pickled_model = pickle.load(open(pickle_name, 'rb'))
 
-    d = {'WEEKDAY_Monday': [0], 'WEEKDAY_Saturday': [0],'WEEKDAY_Sunday': [0], 'WEEKDAY_Thursday': [0],
-            'WEEKDAY_Tuesday': [0], 'WEEKDAY_Wednesday': [0], 'HOUROFDAY_7': [0], 'HOUROFDAY_7': [0],
-            'HOUROFDAY_8': [0],'HOUROFDAY_9': [0],'HOUROFDAY_10': [0],'HOUROFDAY_11': [0],'HOUROFDAY_12': [0],
-            'HOUROFDAY_13': [0],'HOUROFDAY_14': [0],'HOUROFDAY_15': [0],'HOUROFDAY_16': [0],'HOUROFDAY_17': [0],
-            'HOUROFDAY_18': [0],'HOUROFDAY_19': [0],'HOUROFDAY_20': [0],'HOUROFDAY_21': [0],
-            'HOUROFDAY_22': [0],'HOUROFDAY_23': [0], 'HOUROFDAY_24': [0],'MONTHOFYEAR_August': [0],
-            'MONTHOFYEAR_December': [0],'MONTHOFYEAR_February': [0],'MONTHOFYEAR_January': [0],
-            'MONTHOFYEAR_July': [0],'MONTHOFYEAR_June': [0],'MONTHOFYEAR_March': [0],
-            'MONTHOFYEAR_May': [0],'MONTHOFYEAR_November': [0],'MONTHOFYEAR_October': [0],
-            'MONTHOFYEAR_September': [0],'BANKHOLIDAY_True': [0],'weather_icon_02' : [0],'weather_icon_03' : [0],
-            'weather_icon_04' : [0],'weather_icon_09' : [0],'weather_icon_10' : [0],'weather_icon_11' : [0],
-            'weather_icon_13' : [0],'weather_icon_50' : [0]}
-    df_input = pd.DataFrame(data=d)
+
+    # pickle_name = r"C:\Users\elisebrard\Downloads\pickles\pickles\4_1_model.pkl"
+
+    # pickled_model = pickle.load(open(pickle_name, 'rb'))
+
+    feature_list = pickled_model.feature_names_in_
+    zero_data = np.zeros(shape=(1,len(feature_list)))
+    df_input = pd.DataFrame(zero_data, columns=feature_list)
+    # print(df)
+    # d = {'WEEKDAY_Monday': [0], 'WEEKDAY_Saturday': [0],'WEEKDAY_Sunday': [0], 'WEEKDAY_Thursday': [0],
+    #         'WEEKDAY_Tuesday': [0], 'WEEKDAY_Wednesday': [0], 'HOUROFDAY_7': [0], 'HOUROFDAY_7': [0],
+    #         'HOUROFDAY_8': [0],'HOUROFDAY_9': [0],'HOUROFDAY_10': [0],'HOUROFDAY_11': [0],'HOUROFDAY_12': [0],
+    #         'HOUROFDAY_13': [0],'HOUROFDAY_14': [0],'HOUROFDAY_15': [0],'HOUROFDAY_16': [0],'HOUROFDAY_17': [0],
+    #         'HOUROFDAY_18': [0],'HOUROFDAY_19': [0],'HOUROFDAY_20': [0],'HOUROFDAY_21': [0],
+    #         'HOUROFDAY_22': [0],'HOUROFDAY_23': [0], 'HOUROFDAY_24': [0],'MONTHOFYEAR_August': [0],
+    #         'MONTHOFYEAR_December': [0],'MONTHOFYEAR_February': [0],'MONTHOFYEAR_January': [0],
+    #         'MONTHOFYEAR_July': [0],'MONTHOFYEAR_June': [0],'MONTHOFYEAR_March': [0],
+    #         'MONTHOFYEAR_May': [0],'MONTHOFYEAR_November': [0],'MONTHOFYEAR_October': [0],
+    #         'MONTHOFYEAR_September': [0],'BANKHOLIDAY_True': [0],'weather_icon_02' : [0],'weather_icon_03' : [0],
+    #         'weather_icon_04' : [0],'weather_icon_09' : [0],'weather_icon_10' : [0],'weather_icon_11' : [0],
+    #         'weather_icon_13' : [0],'weather_icon_50' : [0]}
+    # df_input = pd.DataFrame(data=d)
 
     requested_timestamp =  dt.datetime.fromtimestamp(timestamp)
     
     today_weekday = requested_timestamp.weekday()
-    print('requested_timestamp : ',requested_timestamp,' week day : ',today_weekday )
+    # print('requested_timestamp : ',requested_timestamp,' week day : ',today_weekday )
     if today_weekday == 0:
         df_input['WEEKDAY_Monday'][0] = 1
     elif today_weekday == 1:
@@ -206,6 +260,8 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weathe
         df_input['WEEKDAY_Wednesday'][0] = 1
     elif today_weekday == 3:
         df_input['WEEKDAY_Thursday'][0] = 1
+    elif today_weekday == 4:
+        df_input['WEEKDAY_Friday'][0] = 1
     elif today_weekday == 5:
         df_input['WEEKDAY_Saturday'][0] = 1
     elif today_weekday == 6:
@@ -223,6 +279,8 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weathe
         df_input['MONTHOFYEAR_February'][0] = 1
     elif today_month == 3:
         df_input['MONTHOFYEAR_March'][0] = 1
+    elif today_month == 4:
+        df_input['MONTHOFYEAR_April'][0] = 1
     elif today_month == 5:
         df_input['MONTHOFYEAR_May'][0] = 1
     elif today_month == 6:
@@ -253,60 +311,11 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weathe
 
     if str_weather_column in df_input.columns:
         df_input[str_weather_column][0] = 1
-        print('ok changed')
 
     
-    route_id = Routes.objects.filter(route_short_name = route_short_name).values('route_id').first()['route_id']
-    first_trip_id = Trips.objects.filter(route_id=route_id).values('trip_id').first()['trip_id']
-    stops_list = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))
-    num_stop_total = len(stops_list)
-    percentage_of_route = (num_stops / num_stop_total)%100
-    print('percentage_of_route',percentage_of_route)
-
-    headsign_arr = headsign.split()
-   
-    trip_set_both_direction = Trips.objects.filter(route_id=route_id).order_by('trip_headsign').values('trip_headsign','direction_id').distinct() #select all unique trip headsign 
-
-    ## KEEP ### most commun used words in all bus headsigns
-    # from collections import Counter
-    # trip_set_unique= Trips.objects.order_by('trip_headsign').values('trip_headsign','direction_id').distinct()
-    # super_str =''
-    # for trip in trip_set_unique.iterator():
-    #     super_str += trip['trip_headsign']
-    # super_str_arr = super_str.split()
-    # Counter = Counter(super_str_arr)
-    # most_occur = Counter.most_common(30)
-    # print(most_occur)
-
-    redundant_word_list = ['Road','College','Street','Square','Train','Park', 'of', 'Station', 'Avenue','Bus','Dublin' ]
-
-    print('trip_set_both_direction',(trip_set_both_direction))
-    # first_headsign = trip_set_both_direction[0]['trip_headsign']
-    first_headsign_arr = trip_set_both_direction[0]['trip_headsign'].split(' - ')
-    first_headsign_direction = first_headsign_arr[0]
-    first_headsign_direction_arr = first_headsign_direction.split()
-    
-    print('first_headsign_direction_arr :',first_headsign_direction_arr)
-    first_headsign_direction_arr_filtered = list(filter(lambda word: word not in redundant_word_list, first_headsign_direction_arr))
-    print('first_headsign_direction_arr_filtered :',first_headsign_direction_arr_filtered)
-    print('headsign_arr : ',headsign_arr)
-
-    if any(word in headsign_arr for word in first_headsign_direction_arr_filtered):
-        direction = trip_set_both_direction[1]['direction_id']
-        print('correct direction : ', direction)
-    else:
-        direction = trip_set_both_direction[0]['direction_id']
-        print('not correct direction : ', direction)
-    pickle_direction = direction + 1
-
-    pickle_name = 'C:\\Users\\eoin_\\projects\\dublinBus\\' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
-
-    print(pickle_name)
-
-    pickled_model = pickle.load(open(pickle_name, 'rb'))
     total_time_route = pickled_model.predict(df_input)
-    print("total journey time",total_time_route)
     time_num_stops = int(total_time_route * percentage_of_route)
+
     return Response(time_num_stops)
 
 
