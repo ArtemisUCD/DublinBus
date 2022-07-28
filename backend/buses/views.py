@@ -45,6 +45,7 @@ def getUpdatesForStop(request,stop_id_requested):
         current_trip_id = stop.trip_id
         current_trip  = df_trips[df_trips['trip_id'] == current_trip_id].iloc[0] #trips_set.filter(trip_id=current_trip_id)
         current_trip_headsign = current_trip['trip_headsign']
+        current_trip_destination = current_trip_headsign.split('-')[1]
         current_route_id = stop.route_id
         current_route = df_route[df_route['route_id'] == current_route_id].iloc[0] #Routes.objects.filter(route_id=stop.route_id).first()
         current_route_num = current_route['route_short_name']
@@ -62,9 +63,9 @@ def getUpdatesForStop(request,stop_id_requested):
         time_planned_min = int(arr_planned[0])*60 + int(arr_planned[1])
         time_delayed_min = time_planned_min + estimated_arrival_delay_min
 
-        estimated_arrival_time='{:02d}:{:02d}'.format(*divmod(time_delayed_min, 60))
+        estimated_arrival_time ='{:02d}:{:02d}'.format(*divmod(time_delayed_min, 60))
 
-        concat_name = current_route_num + " - " + current_trip_headsign
+        concat_name = current_route_num + " -" + current_trip_destination
     
         planned_arrival_time = separator.join(arr_planned[:2])
 
@@ -175,8 +176,9 @@ def getBusStopList(request):
 @api_view(['GET'])
 def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weather_icon_num):
     # print(timestamp,route_short_name,headsign)
+    pickle_name = 'C:\\Users\\eoin_\\projects\\dublinBus\\' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
 
-    # WHAT ABOUT BANKHOLIDAY !!??
+    pickled_model = pickle.load(open(pickle_name, 'rb'))
 
     d = {'WEEKDAY_Monday': [0], 'WEEKDAY_Saturday': [0],'WEEKDAY_Sunday': [0], 'WEEKDAY_Thursday': [0],
             'WEEKDAY_Tuesday': [0], 'WEEKDAY_Wednesday': [0], 'HOUROFDAY_7': [0], 'HOUROFDAY_7': [0],
