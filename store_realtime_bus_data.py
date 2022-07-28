@@ -19,14 +19,14 @@ while True :
 
     metadata = MetaData(dbConnection)
 
-    # trips = Table('trips', metadata, autoload_with=engine)
-    routes = Table('routes', metadata, autoload_with=engine)
+    trips = Table('trips', metadata, autoload_with=engine)
+    # routes = Table('routes', metadata, autoload_with=engine)
 
-    s = select([routes.c.route_id]) # c to say it's a colun 
+    s = select([trips.c.trip_id]) # c to say it's a colun 
     result = dbConnection.execute(s)
 
-    route_id_list = [r for r, in result]
-    print(len(route_id_list))
+    trip_id_list = [r for r, in result]
+    print(len(trip_id_list))
 
     api_key = os.environ['GTFSR_API_KEY']
 
@@ -59,16 +59,17 @@ while True :
                                     'start_date','schedule_relationship','is_deleted',
                                     'stop_sequence','stop_id','arrival_delay','arrival_time',
                                     'departure_delay','departure_time'])
-        print('len',len(response_json['Entity']))
+        print('len of total buses',len(response_json['Entity']))
         for bus in response_json['Entity']:   #goes trhough all the different trips 
             
             #save all the value specific to the trip
             current_trip = bus['TripUpdate']['Trip']
             RouteId = current_trip['RouteId']
+            TripId = current_trip['TripId']
             # print(RouteId,'\n\n')
-            if RouteId in route_id_list : #check if route is dublin bus 
-                # print(RouteId,'in the list !! of db \n\n')
-                TripId = current_trip['TripId']
+            if TripId in trip_id_list : #check if route is dublin bus 
+                # print(TripId,'in the list !! of db \n\n')
+                # TripId = current_trip['TripId']
                 StartTime = current_trip['StartTime']
                 StartDate = current_trip['StartDate']
                 ScheduleRelationship = current_trip['ScheduleRelationship']
@@ -132,8 +133,9 @@ while True :
                                         'start_date':StartDate,'schedule_relationship':ScheduleRelationship,'is_deleted':IsDeleted,
                                         'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
                                         'departure_delay':DepartureDelay,'departure_time':DepartureTime}, ignore_index=True )
-
+        print('len of dublin bus buses',len(df_buses_updates))
         print('fini')
+        
 
     except Exception as e:
         print(e)

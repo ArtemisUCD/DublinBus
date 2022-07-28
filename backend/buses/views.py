@@ -68,12 +68,13 @@ def getUpdatesForStop(request,stop_id_requested):
     
         planned_arrival_time = separator.join(arr_planned[:2])
 
-        if estimated_arrival_delay_min < 0 : 
-            str_sign = 'early'
+        if estimated_arrival_delay_min == 0 :
+            concat_delay = 'On time'
+        elif estimated_arrival_delay_min < 0 : 
+            concat_delay = str(abs(estimated_arrival_delay_min)) + ' min early'
         else:
-            str_sign = 'late'
+            concat_delay = str(abs(estimated_arrival_delay_min)) + ' min late'
 
-        concat_delay = str_sign + abs(estimated_arrival_delay_min)
         current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay_min':concat_delay ,
                             'estimated_arrival_time'  : estimated_arrival_time , 'time_planned_min':time_planned_min}
         all_next_buses.append(current_dict)  
