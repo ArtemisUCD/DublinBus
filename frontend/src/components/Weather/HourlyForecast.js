@@ -2,7 +2,7 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { useLayoutEffect, useRef } from "react";
 
-export default function (props) {
+const HourlyForecast = (props) =>{
     const chart = useRef(null);
 
     console.log(props.data);
@@ -51,3 +51,5 @@ export default function (props) {
       </div>
     );
   }
+
+  export default HourlyForecast;
