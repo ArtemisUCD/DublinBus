@@ -54,7 +54,7 @@ const Menu = (props) => {
       let timings;
       let stepTimes;
       let routeTimings;
-      const newRoutes=["H3","14","83","9","15","6"]
+      const newRoutes=["H3","6"]
 
       const getModelValues = async (routeIndex,stepIndex,step)=>{
         let weatherSummary = props.weather.filter(el=>el.date===weekday[startTime.getDay()])[0].weather_icon.slice(0,-1)
