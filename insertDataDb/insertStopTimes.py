@@ -12,14 +12,14 @@ dbConnection = engine.connect()
 
 
 n=10000 #num of rows
-reader = pd.read_csv('stop_times.txt',chunksize=n)
+reader = pd.read_csv(r"C:\Users\elisebrard\Downloads\google_transit_dublinbus (1)\stop_times.txt",chunksize=n)
 
 
 #create the table with correct datatype
 stop_times = Table(
    'stop_times', meta, 
    Column('id',Integer,primary_key = True ),
-   Column('trip_id', String(40)), 
+   Column('trip_id', String(50)), 
    Column('arrival_time', String(40) ), 
    Column('departure_time', String(40) ), 
    Column('stop_id', String(20) ),

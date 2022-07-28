@@ -12,16 +12,16 @@ dbConnection = engine.connect()
 
 
 n=10000 #num of rows
-reader = pd.read_csv('trips.txt',chunksize=n)
+reader = pd.read_csv(r"C:\Users\elisebrard\Downloads\google_transit_dublinbus (1)\trips.txt",chunksize=n)
 
 
 #create the table with correct datatype
 transfers = Table(
    'trips', meta, 
-    Column('id',Integer,primary_key = True ),
+#     Column('id',Integer, ),
     Column('route_id',String(20) ),
     Column('service_id',String(5)),
-    Column('trip_id', String(50)), 
+    Column('trip_id', String(50),primary_key = True,autoincrement=False), 
     Column('shape_id', String(20) ), 
     Column('trip_headsign', String(100) ),
     Column('direction_id', Boolean )
