@@ -7,26 +7,17 @@ import SearchIcon from '@mui/icons-material/Search';
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 
-const BusRouteList = (props) => {
-    
+const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlikeRoute }) => {
+
     const [routeList, setRouteList] =useState([]);
     const [showinfo, setShowinfo] = useState(false);
-    // const [showsearch, setShowsearch] = useState(true);
     const [value, setValue] = useState("");
     const [routeId, setRouteId] = useState("60-41-b12-1");
     const [busroute, setBusroute] = useState([]);
-    const [favouriteinfo, setFavouriteinfo] = useState();
+    const [routeSelected, setRouteSelected] = useState();
     const [showfavicon, setshowfavicon] = useState(false);
-    const [favouritedRoutes,setFavouritedRoutes] = useState(false);
     const [routeshape, setRouteShape] = useState([]);
 
-    const getData = () => {
-        props.getData(busroute);
-    }
-
-    const getRouteShape =() =>{
-        props.getRouteShape(routeshape);
-    }
     
     useEffect(() => {
         fetch("/buses/getBusRouteList")
@@ -45,36 +36,25 @@ const BusRouteList = (props) => {
         .then(response => response.json())
         .then(data => setRouteShape(data))
       },[routeId]);
+
+      useEffect(()=>{
+        if(busroute!==undefined && routeSelected!==undefined){
+        setShowinfo(true);
+        setshowfavicon(true);
+        getData(busroute);
+        getRouteShape(routeshape);
+      }
+    },[busroute,routeSelected, favouritesR, routeId, routeshape,getData,getRouteShape])
     
-
-
-    const searchresult = ()=>{
-        if (value !== ""){
-            setShowinfo(true);
-            getData(busroute);
-            getRouteShape(routeshape);
-            setshowfavicon(true);
-            setFavouritedRoutes(props.favouritesR.some((v => v.route_id === favouriteinfo.route_id)))
-            console.log(routeId)
-            console.log(busroute)
-        }else{
-            setShowinfo(false);
-        }   
-    }
-
     let toggleFavouriteRoute = (busroute) =>{
-        if(!favouritedRoutes){
-            props.onLikeRoute(busroute)
+        if(!favouritesR.some((v => v.route_id === busroute.route_id))){
+            onLikeRoute(busroute)
         }
         else{
-            props.onUnlikeRoute(busroute)
+            onUnlikeRoute(busroute)
         }
-        setFavouritedRoutes(!favouritedRoutes)
     }
 
-    // const backtoroute =() => {
-    //     setShowinfo(false);
-    // }
     return(
         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",marginLeft:"1rem", maxheight:"300px",
         borderRadius:"10px;"}}>
@@ -92,7 +72,7 @@ const BusRouteList = (props) => {
                         isOptionEqualToValue={(option, value) =>
                             option.concat_name === value.concat_name
                         }
-                        onChange={(e,value) => {setValue(value.concat_name); setRouteId(value.route_id); setFavouriteinfo({"route_name": value.concat_name, "route_id": value.route_id})}}
+                        onChange={(e,value) => {setValue(value.concat_name); setRouteId(value.route_id); setRouteSelected({"route_name": value.concat_name, "route_id": value.route_id})}}
                         noOptionsText={"No result"}
                         renderOption={(props, routeList) => (
                             <Box component="li" {...props} key={routeList.concat_name}>
@@ -101,12 +81,9 @@ const BusRouteList = (props) => {
                         )}
                         renderInput={(params)=><TextField {...params} label="Route name/number" />}
                     />
-                    <IconButton size ="small" onClick={searchresult} sx={{border: "1px solid gray", borderRadius: 1, marginLeft: 2}}>
-                        <SearchIcon />
-                    </IconButton>
                     {showfavicon && (
                         <div>
-                         {favouritedRoutes ? <FaHeart className={"heart full"} onClick={()=>toggleFavouriteRoute(favouriteinfo)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavouriteRoute(favouriteinfo)}/>}
+                         {favouritesR.some((v => v.route_id === routeSelected.route_id)) ? <FaHeart className={"heart full"} onClick={()=>toggleFavouriteRoute(routeSelected)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavouriteRoute(routeSelected)}/>}
                         </div>
                     )}
                     

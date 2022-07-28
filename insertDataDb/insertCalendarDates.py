@@ -9,13 +9,13 @@ db_location = os.environ['DUBLIN_BUS_ENDPOINT']
 engine = create_engine('mysql+mysqlconnector://admin:'+db_password+'@'+db_location+':3306/artemis')
 dbConnection = engine.connect()
 
-df = pd.read_csv('calendar_dates.txt')
+df = pd.read_csv(r"C:\Users\elisebrard\Downloads\google_transit_dublinbus (1)\calendar_dates.txt")
 
 #create the table with correct datatype
 calendar_dates = Table(
    'calendar_dates', meta, 
-   Column('service_id', Integer, primary_key = True, autoincrement=False), 
-   Column('date', Integer ), 
+   Column('service_id', String(20)), 
+   Column('date', Integer, primary_key = True, autoincrement=False ), 
    Column('exception_type', Integer )
 )
 
