@@ -10,7 +10,7 @@ import rain from '../Weather/img/10d.png';
 import thunderstorm from '../Weather/img/11d.png';
 import snow from '../Weather/img/13d.png';
 import mist from '../Weather/img/50d.png';
-import {AppBar, Toolbar, IconButton, Box} from '@mui/material'
+import {AppBar, Toolbar, Box} from '@mui/material'
 import { useEffect, useState } from 'react';
 
 const Header = (props) => {
@@ -39,12 +39,8 @@ const Header = (props) => {
     "50d":mist  
 }
 
-  const toggleDrawer = () =>{
-    props.toggleDrawer()
-  }
-
     return (
-    <AppBar id="header" sx={{display:"flex",alignItems:"center",flexDirection:"row",position:"sticky",backgroundColor:"#070861"}}>
+    <AppBar id="header" role="heading" sx={{display:"flex",alignItems:"center",flexDirection:"row",position:"sticky",backgroundColor:"#070861"}}>
     <Toolbar sx={{justifyContent:"space-between",alignItems:"center",minHeight:"10px",maxwidth:"70%"}}>
       <Box sx={{display:"flex",alignItems:"center"}}>
       <img src={logo} className="logo" alt="logo"/>
