@@ -78,10 +78,10 @@ const RoutePlanner = (props) => {
 
 
         <Box sx={{ padding:"0",display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",margin:"0 1rem",
-borderRadius:"10px;"}}>
+borderRadius:"10px"}}>
         <FormControl>
         <Box sx={{display:"flex",
-        flexDirection:"column",}}>
+        flexDirection:"column",alignItems:"center"}}>
         <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
         <Autocomplete options={mapBounds}>
         <TextField  id="origin" error={originError} onChange={validCheck} size="small"style={{minWidth:100,maxWidth:400,width:"90%"}} label="Origin" variant="outlined"  inputRef={props.origin} />
@@ -112,7 +112,7 @@ borderRadius:"10px;"}}>
             />
         </LocalizationProvider>
         </Box>
-        <Box sx={{display:"flex",justifyContent:"space-evenly"}}>
+        <Box sx={{display:"flex",justifyContent:"space-around",width:"80%"}}>
         <Button onClick={calcRoute}variant="contained" size="small" >Calculate Route</Button>
         <Button onClick={clearDetails}variant="contained" size="small" color="error" >Clear</Button>
         </Box>        
