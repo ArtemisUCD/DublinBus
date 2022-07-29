@@ -105,7 +105,7 @@ const Favorites = (props) => {
                 onClick={()=>toggleFavouriteRoute(item)}>
                 <FaHeart className={"heart full"}/>
             </IconButton>
-            <ListItemButton onClick={() => getRouteinfo(item)}>
+            <ListItemButton sx={{borderRadius:"10px"}} onClick={() => getRouteinfo(item)}>
             <ListItemText  primary={item.route_name} />
             <ArrowForwardIcon sx={{paddingLeft:"0.5rem"}}/>
             </ListItemButton>
@@ -152,7 +152,7 @@ const Favorites = (props) => {
                     onClick={()=>toggleFavourite(item)}>
                     <FaHeart className={"heart full"}/>
                 </IconButton>
-                <ListItemButton onClick={() => getStopinfo(item)}>
+                <ListItemButton sx={{borderRadius:"10px"}} onClick={() => getStopinfo(item)}>
                 <ListItemText primary={item.stop_name} />
                 <ArrowForwardIcon sx={{paddingLeft:"0.5rem"}}/>
                 </ListItemButton>
