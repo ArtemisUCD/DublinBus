@@ -105,7 +105,7 @@ const RealTime = (props) => {
                                         "stop_lon": value.stop_lon})
                             }}
                             
-                        noOptionsText={"No result"}
+                        noOptionsText={"Routes Loading..."}
                         renderOption={(props, stopData) => (
                             <Box component="li" {...props} key={stopData.stop_name}>
                                 {stopData.stop_name}
