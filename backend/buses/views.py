@@ -232,6 +232,7 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weathe
 
     feature_list = pickled_model.feature_names_in_
     zero_data = np.zeros(shape=(1,len(feature_list)))
+    print(feature_list)
     df_input = pd.DataFrame(zero_data, columns=feature_list)
     # print(df)
     # d = {'WEEKDAY_Monday': [0], 'WEEKDAY_Saturday': [0],'WEEKDAY_Sunday': [0], 'WEEKDAY_Thursday': [0],
@@ -252,19 +253,18 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weathe
     
     today_weekday = requested_timestamp.weekday()
     # print('requested_timestamp : ',requested_timestamp,' week day : ',today_weekday )
-    if today_weekday == 0:
+
+    if today_weekday == 0 and 'WEEKDAY_Monday' in feature_list :
         df_input['WEEKDAY_Monday'][0] = 1
-    elif today_weekday == 1:
+    elif today_weekday == 1 and 'WEEKDAY_Tuesday' in feature_list:
         df_input['WEEKDAY_Tuesday'][0] = 1
-    elif today_weekday == 2:
+    elif today_weekday == 2 and 'WEEKDAY_Wednesday' in feature_list:
         df_input['WEEKDAY_Wednesday'][0] = 1
-    elif today_weekday == 3:
+    elif today_weekday == 3 and 'WEEKDAY_Thursday' in feature_list:
         df_input['WEEKDAY_Thursday'][0] = 1
-    elif today_weekday == 4:
-        df_input['WEEKDAY_Friday'][0] = 1
-    elif today_weekday == 5:
+    elif today_weekday == 5 and 'WEEKDAY_Saturday' in feature_list:
         df_input['WEEKDAY_Saturday'][0] = 1
-    elif today_weekday == 6:
+    elif today_weekday == 6 and 'WEEKDAY_Sunday' in feature_list:
         df_input['WEEKDAY_Sunday'][0] = 1
 
     str_hour_column = 'HOUROFDAY_'+ str(requested_timestamp.hour)
@@ -273,29 +273,27 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weathe
         df_input[str_hour_column][0] = 1
 
     today_month = requested_timestamp.month
-    if today_month == 1:
+    if today_month == 1 and 'MONTHOFYEAR_January' in feature_list:
         df_input['MONTHOFYEAR_January'][0] = 1
-    elif today_month == 2:
+    elif today_month == 2 and 'MONTHOFYEAR_February' in feature_list:
         df_input['MONTHOFYEAR_February'][0] = 1
-    elif today_month == 3:
+    elif today_month == 3 and 'MONTHOFYEAR_March' in feature_list:
         df_input['MONTHOFYEAR_March'][0] = 1
-    elif today_month == 4:
-        df_input['MONTHOFYEAR_April'][0] = 1
-    elif today_month == 5:
+    elif today_month == 5 and 'MONTHOFYEAR_May' in feature_list:
         df_input['MONTHOFYEAR_May'][0] = 1
-    elif today_month == 6:
+    elif today_month == 6 and 'MONTHOFYEAR_June' in feature_list:
         df_input['MONTHOFYEAR_June'][0] = 1
-    elif today_month == 7:
+    elif today_month == 7 and 'MONTHOFYEAR_July' in feature_list:
         df_input['MONTHOFYEAR_July'][0] = 1
-    elif today_month == 8:
+    elif today_month == 8 and 'MONTHOFYEAR_August' in feature_list:
         df_input['MONTHOFYEAR_August'][0] = 1
-    elif today_month == 9:
+    elif today_month == 9 and 'MONTHOFYEAR_September' in feature_list:
         df_input['MONTHOFYEAR_September'][0] = 1
-    elif today_month == 10:
+    elif today_month == 10 and 'MONTHOFYEAR_October' in feature_list:
         df_input['MONTHOFYEAR_October'][0] = 1
-    elif today_month == 11:
+    elif today_month == 11 and 'MONTHOFYEAR_November' in feature_list:
         df_input['MONTHOFYEAR_November'][0] = 1
-    elif today_month == 12:
+    elif today_month == 12 and 'MONTHOFYEAR_December' in feature_list:
         df_input['MONTHOFYEAR_December'][0] = 1
 
     irish_holidays = holidays.Ireland()
