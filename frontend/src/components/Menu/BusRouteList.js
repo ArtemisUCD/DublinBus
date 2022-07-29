@@ -5,7 +5,7 @@ import { IconButton, Box, TextField, List, ListItem, ListItemText} from '@mui/ma
 import Autocomplete from '@mui/material/Autocomplete';
 import SearchIcon from '@mui/icons-material/Search';
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-
+import ReactLoading from "react-loading";
 
 const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlikeRoute }) => {
 
@@ -73,7 +73,7 @@ const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlike
                             option.concat_name === value.concat_name
                         }
                         onChange={(e,value) => {setValue(value.concat_name); setRouteId(value.route_id); setRouteSelected({"route_name": value.concat_name, "route_id": value.route_id})}}
-                        noOptionsText={"No result"}
+                        noOptionsText={<Box sx={{display:"flex",alignItems:"center"}}>Bus Routes loading<ReactLoading type="bubbles" color="#000000" height={50} width={50}/></Box>}
                         renderOption={(props, routeList) => (
                             <Box component="li" {...props} key={routeList.concat_name}>
                                 {routeList.concat_name}

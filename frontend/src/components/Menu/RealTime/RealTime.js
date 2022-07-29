@@ -12,6 +12,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import ReactLoading from "react-loading";
 
 
 const RealTime = (props) => {
@@ -105,7 +106,7 @@ const RealTime = (props) => {
                                         "stop_lon": value.stop_lon})
                             }}
                             
-                        noOptionsText={"Routes Loading..."}
+                        noOptionsText={<Box sx={{display:"flex",alignItems:"center"}}>Bus Stops loading<ReactLoading type="bubbles" color="#000000" height={50} width={50}/></Box>}
                         renderOption={(props, stopData) => (
                             <Box component="li" {...props} key={stopData.stop_name}>
                                 {stopData.stop_name}
