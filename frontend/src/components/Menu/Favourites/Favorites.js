@@ -14,6 +14,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useEffect, useState } from "react";
 
 const Favorites = (props) => {
@@ -98,22 +99,16 @@ const Favorites = (props) => {
 
     if(props.favoritesR && props.favoritesR.length>0 && showrouteUpdate===false){
     favouriteRoutes = <List>{props.favoritesR.map((item, index) => (
-        <ListItem key={index}>
-            <ListItemButton onClick={() => getRouteinfo(item)}>
-            <ListItemText primary={item.route_name} />
-            </ListItemButton>
+        <ListItem key={index} >
             <IconButton
-                size="large"
-                sx={{
-                "& svg": {
-                    color: "crimson",
-                    transition: "0.2s",
-                    transform: "translateX(0) rotate(0)"
-                }
-                }}
                 onClick={()=>toggleFavouriteRoute(item)}>
                 <FaHeart className={"heart full"}/>
             </IconButton>
+            <ListItemButton onClick={() => getRouteinfo(item)}>
+            <ListItemText  primary={item.route_name} />
+            <ArrowForwardIcon sx={{paddingLeft:"0.5rem"}}/>
+            </ListItemButton>
+
         </ListItem>
     ))}
     </List>
