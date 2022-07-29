@@ -61,7 +61,7 @@ const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlike
                 <Box sx={{height:"50%",display:"flex",marginTop:"1rem",
                 flexDirection:"column",}}>
                 
-                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
+                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"center"}}>
                     <Autocomplete
                         id="combo-box-demo"
                         getOptionLabel={(routeList) => 
