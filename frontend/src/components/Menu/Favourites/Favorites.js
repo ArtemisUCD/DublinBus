@@ -21,14 +21,15 @@ const Favorites = (props) => {
 
     const [stopinfo, setStopInfo] = useState([]);
     const [stopId, setStopId] = useState("8220DB000003");
-    const [showstoplist, setshowstoplist] = useState(true);
+    // const [showstoplist, setshowstoplist] = useState(true);
     const [showstopUpdate, setShowstopUpdata] = useState(false);
     const [routeId, setRouteId] = useState("60-X32-b12-1");
-    const [showroutelist, setshowroutelist] = useState(true);
+    // const [showroutelist, setshowroutelist] = useState(true);
     const [showrouteUpdate, setShowrouteUpdata] = useState(false);
     const [expanded, setExpanded] = useState('panel1');
 
     let favouriteRoutes;
+    let favouriteStops;
     
     const getStopinfo = (item) => {
         setStopInfo(item)
@@ -38,7 +39,7 @@ const Favorites = (props) => {
         props.getZoom(16)
         props.getData(null)
         props.getRouteShape([])
-        setshowstoplist(false)
+        // setshowstoplist(false)
         setShowstopUpdata(true)
     }
 
@@ -49,7 +50,7 @@ const Favorites = (props) => {
         props.getRouteShape(routeshape) 
         props.getCenter({lat: 53.306221, lng: -6.21914755});
         props.getZoom(11)
-        setshowroutelist(false)
+        // setshowroutelist(false)
         setShowrouteUpdata(true)
     }
 
@@ -91,9 +92,9 @@ const Favorites = (props) => {
 
     const backfav = () => {
         setShowstopUpdata(false);
-        setshowstoplist(true);
+        // setshowstoplist(true);
         setShowrouteUpdata(false);
-        setshowroutelist(true);
+        // setshowroutelist(true);
     }
 
 
@@ -114,7 +115,7 @@ const Favorites = (props) => {
     </List>
     }
     else if(props.favoritesR && props.favoritesR.length>0 && showrouteUpdate===true){
-        favouriteRoutes =         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
+        favouriteRoutes = <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
         <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
             <Box>
                 <Button onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
@@ -140,11 +141,38 @@ const Favorites = (props) => {
 </Box>
     }
     else{
-        console.log("favourite routes",props.favouritesR)
-        favouriteRoutes = <p>No favourite Routes</p>
+        favouriteRoutes = <Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite routes</strong></Box>
     }
 
-    
+    if(props.favouritesS && props.favouritesS.length>0 && showstopUpdate===false){
+        favouriteStops = <List>
+        {props.favouritesS && props.favouritesS.map((item, index) => (
+            <ListItem key={index} >
+                <IconButton
+                    onClick={()=>toggleFavourite(item)}>
+                    <FaHeart className={"heart full"}/>
+                </IconButton>
+                <ListItemButton onClick={() => getStopinfo(item)}>
+                <ListItemText primary={item.stop_name} />
+                <ArrowForwardIcon sx={{paddingLeft:"0.5rem"}}/>
+                </ListItemButton>
+            </ListItem>
+        ))}
+        </List>
+        }
+        else if(props.favouritesS && props.favouritesS.length>0 && showstopUpdate===true){
+            favouriteStops = <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
+            <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
+                <Box>
+                    <Button onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
+                </Box>
+            </Box> 
+    </Box>
+        }
+        else{
+            favouriteStops = <Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite stops</strong></Box>
+        }
+
 
     return (
         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",marginLeft:"1rem",borderRadius:"10px;", maxheight:"300px"}}>
@@ -153,7 +181,7 @@ const Favorites = (props) => {
                 <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start", maxheight:"300px",width:"100%"}}>
                     <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')} sx={{width:"100%"}}>
                         <AccordionSummary aria-controls="panel1d-content" id="panel1d-header" expandIcon={<ExpandMoreIcon />}>
-                            <Typography>Favorite Routes</Typography>
+                            <Typography>Favourite Routes</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                             {favouriteRoutes}
@@ -163,38 +191,16 @@ const Favorites = (props) => {
                 <Box sx={{display:"flex",justifyContent:"flex-start"}}>
                     <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')} sx={{width:"100%"}}>
                         <AccordionSummary aria-controls="panel2d-content" id="panel2d-header" expandIcon={<ExpandMoreIcon />}>
-                            <Typography>Favorite Stops</Typography>
+                            <Typography>Favourite Stops</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                        {showstoplist && (
-                        <List>
-                            {props.favouritesS && props.favouritesS.map((item, index) => (
-                                <ListItem key={index} >
-                                    <ListItemButton onClick={() => getStopinfo(item)}>
-                                    <ListItemText primary={item.stop_name} />
-                                    </ListItemButton>
-                                    <IconButton
-                                        size="large"
-                                        sx={{
-                                        "& svg": {
-                                            color: "crimson",
-                                            transition: "0.2s",
-                                            transform: "translateX(0) rotate(0)"
-                                        }
-                                        }}
-                                        onClick={()=>toggleFavourite(item)}>
-                                        <FaHeart className={"heart full"}/>
-                                    </IconButton>
-                                </ListItem>
-                            ))}
-                            </List>
-                        )}
-                        { showstopUpdate && (
+                        {favouriteStops}
+                        {showstopUpdate && (
                             <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
                                 <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
-                                    <Box>
+                                    {/* <Box>
                                         <Button onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
-                                    </Box>
+                                    </Box> */}
                                     <Box sx={{display:"flex", justifyContent:"flex-start", width:"100%"}}>
                         
                                         <TableContainer component={Paper}
