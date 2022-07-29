@@ -46,8 +46,8 @@ const HourlyForecast = (props) =>{
   
     return (
       <div className="hourly-forecast">
-        <h3>Hourly forecast (°C)</h3>
-        <div id="chartdiv" style={{ width: "100%", height: "370px" }}></div>
+        <h3 style={{margin:0}}>Hourly forecast (°C)</h3>
+        <div id="chartdiv" style={{ width: "100%", height: "350px" }}></div>
       </div>
     );
   }

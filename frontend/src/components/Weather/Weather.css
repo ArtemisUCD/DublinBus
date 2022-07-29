@@ -3,6 +3,7 @@
     display: flex;
     justify-content: space-between;
     width: 50%;
+    height:85%;
   }
 
 .current-detail {
@@ -68,4 +69,8 @@
 
 .Current-temperature .Celsius {
   color: #70757a;
+}
+
+#weather-title{
+  margin:0;
 }

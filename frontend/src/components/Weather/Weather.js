@@ -46,7 +46,7 @@ const Weather = () => {
     let weatherDetails;
     
     if(weatherData.length > 0){
-        weatherDetails= weatherData.map(day =>  <WeatherItem key ={day.date} title={day.date} temperature = {day.temperature} icon ={day.weather_icon}/>)
+        weatherDetails= weatherData.map(day =>  <WeatherItem sx ={{padding:"1rem"}} key ={day.date} title={day.date} temperature = {day.temperature} icon ={day.weather_icon}/>)
     }
     else{
         weatherDetails=<div><p>Weather Loading</p><ReactLoading type="bubbles" color="#000000"
@@ -97,7 +97,7 @@ const Weather = () => {
     
     return (
         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;", maxheight:"300px"}}>
-            <Box sx={{height:"50%",display:"flex",flexDirection:"column",}}>
+            <Box sx={{display:"flex",flexDirection:"column",}}>
             <div className="Current-weather">
                 <img src={icons[first?.weather_icon]} className="current-icon" alt="weather-icon"/>
                 <div className="Current-temperature">
@@ -115,8 +115,8 @@ const Weather = () => {
             </div>
             <HourlyForecast data={data} />
                 
-                <h3>Daily forecast</h3>
-                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start", maxheight:"300px"}}>
+                <h3 id="weather-title">Daily forecast</h3>
+                <Box sx={{display:"flex",paddingBottom:"2rem",justifyContent:"flex-start",overflowX:"auto"}}>
                     {weatherDetails}
                 </Box>
                 
