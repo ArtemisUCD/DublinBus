@@ -90,7 +90,7 @@ def getShape(request, route_id_requested):
     trips_set = Trips.objects.all()
 
     if route_id_requested is not None:
-        trips_set = trips_set.filter(route=route_id_requested)
+        trips_set = trips_set.filter(route_id=route_id_requested)
         first_trip = trips_set.first()
         first_trip_id = first_trip.shape_id
 
@@ -111,10 +111,10 @@ def getStopsForRoute(request, route_id_requested):
     # print(route_id_requested)
     ###################################
     
-    df_trips = pd.DataFrame(list(Trips.objects.all().values('route','trip_id')))
+    df_trips = pd.DataFrame(list(Trips.objects.all().values('route_id','trip_id')))
 
     if route_id_requested is not None:
-        first_trip_id = df_trips[df_trips['route'] == route_id_requested]['trip_id'].iloc[0]
+        first_trip_id = df_trips[df_trips['route_id'] == route_id_requested]['trip_id'].iloc[0]
       
     bus_route_stops_times = pd.DataFrame(list(StopTimes.objects.filter(trip_id=first_trip_id).values('stop_id')))#all stops on a route 
 

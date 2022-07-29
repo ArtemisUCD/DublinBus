@@ -43,8 +43,8 @@ class Calendar(models.Model):
 
 
 class CalendarDates(models.Model):
-    service = models.OneToOneField(Calendar, models.DO_NOTHING, primary_key=True)
-    date = models.IntegerField(blank=True, null=True)
+    service = models.ForeignKey(Calendar, models.DO_NOTHING, blank=True, null=True)
+    date = models.IntegerField(primary_key=True)
     exception_type = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -62,6 +62,7 @@ class Routes(models.Model):
         managed = False
         db_table = 'routes'
 
+
 class Shapes(models.Model):
     shape_id = models.CharField(max_length=20, blank=True, null=True)
     shape_pt_lat = models.FloatField(blank=True, null=True)
@@ -74,8 +75,9 @@ class Shapes(models.Model):
         db_table = 'shapes'
 
 
+
 class StopTimes(models.Model):
-    trip_id = models.CharField(max_length=40, blank=True, null=True)
+    trip = models.ForeignKey('Trips', models.DO_NOTHING, blank=True, null=True)
     arrival_time = models.CharField(max_length=40, blank=True, null=True)
     departure_time = models.CharField(max_length=40, blank=True, null=True)
     stop = models.ForeignKey('Stops', models.DO_NOTHING, blank=True, null=True)
@@ -89,6 +91,7 @@ class StopTimes(models.Model):
         managed = False
         db_table = 'stop_times'
 
+
 class Stops(models.Model):
     stop_id = models.CharField(primary_key=True, max_length=20)
     stop_name = models.CharField(max_length=40, blank=True, null=True)
@@ -100,25 +103,10 @@ class Stops(models.Model):
         db_table = 'stops'
 
 
-class Transfers(models.Model):
-    from_stop = models.ForeignKey(Stops, models.DO_NOTHING, blank=True, null=True , related_name='from_stop_FK')
-    to_stop = models.ForeignKey(Stops, models.DO_NOTHING, blank=True, null=True , related_name='to_stop_FK')
-    transfer_type = models.IntegerField(blank=True, null=True)
-    min_transfer_time = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'transfers'
-
-
 class Trips(models.Model):
-    route = models.ForeignKey(Routes, models.DO_NOTHING, blank=True, null=True)
-    # route_id = models.CharField(primary_key=True, max_length=20)
-    
+    route_id = models.CharField(max_length=20, blank=True, null=True)
     service = models.ForeignKey(Calendar, models.DO_NOTHING, blank=True, null=True)
-    # service_id = models.CharField(max_length=5, blank=True, null=True)
-
-    trip_id = models.CharField(max_length=50, blank=True, null=True)
+    trip_id = models.CharField(primary_key=True, max_length=50)
     shape_id = models.CharField(max_length=20, blank=True, null=True)
     trip_headsign = models.CharField(max_length=100, blank=True, null=True)
     direction_id = models.IntegerField(blank=True, null=True)
@@ -127,22 +115,43 @@ class Trips(models.Model):
         managed = False
         db_table = 'trips'
 
+# class DailyWeather(models.Model):
+#     date = models.CharField(primary_key=True, max_length=32)
+#     temperature = models.CharField(max_length=32, blank=True, null=True)
+#     weather_icon = models.CharField(max_length=32, blank=True, null=True)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'daily_weather'
 class DailyWeather(models.Model):
-    date = models.CharField(primary_key=True, max_length=32)
+    date = models.CharField(unique=True, max_length=32)
     temperature = models.CharField(max_length=32, blank=True, null=True)
     weather_icon = models.CharField(max_length=32, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'daily_weather'
+        unique_together = (('id', 'date'),)
+
+# class HourlyWeather(models.Model):
+#     date = models.IntegerField(primary_key=True)
+#     temperature = models.FloatField(max_length=32, blank=True, null=True)
+#     uvi = models.FloatField(max_length=32, blank=True, null=True)
+#     humidity = models.FloatField(max_length=32, blank=True, null=True)
+#     wind = models.FloatField(max_length=32, blank=True, null=True)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'hourly_weather'
 
 class HourlyWeather(models.Model):
-    date = models.IntegerField(primary_key=True)
-    temperature = models.FloatField(max_length=32, blank=True, null=True)
-    uvi = models.FloatField(max_length=32, blank=True, null=True)
-    humidity = models.FloatField(max_length=32, blank=True, null=True)
-    wind = models.FloatField(max_length=32, blank=True, null=True)
+    date = models.CharField(unique=True, max_length=32)
+    temperature = models.CharField(max_length=32, blank=True, null=True)
+    uvi = models.CharField(max_length=32, blank=True, null=True)
+    humidity = models.CharField(max_length=32, blank=True, null=True)
+    wind = models.CharField(max_length=32, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'hourly_weather'
+        unique_together = (('id', 'date'),)
