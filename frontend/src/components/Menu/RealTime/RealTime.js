@@ -143,9 +143,7 @@ const RealTime = (props) => {
                             <TableHead>
                             <TableRow>
                                 <TableCell>Bus Route</TableCell>
-                                <TableCell align="right">Plan</TableCell>
-                                <TableCell align="right">Estimate</TableCell>
-                                <TableCell align="right">Delay</TableCell>
+                                <TableCell align="left">Details</TableCell>
                             </TableRow>
                             </TableHead>
                             <TableBody>
@@ -154,12 +152,10 @@ const RealTime = (props) => {
                                 key={index}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
-                                <TableCell component="th" scope="row">
+                                <TableCell sx={{padding:"1rem 0.25rem 1rem 0.5rem"}} component="th" scope="row">
                                     {row.concat_name}
                                 </TableCell>
-                                <TableCell align="right">{row.planned_arrival_time}</TableCell>
-                                <TableCell align="right">{row.estimated_arrival_time}</TableCell>
-                                <TableCell align="right">{row.estimated_arrival_delay_min}</TableCell>
+                                <TableCell sx={{borderBottom:"1px solid rgba(224, 224, 224, 1)",padding:"1rem 0.25rem 1rem 0.5rem"}}align="left">Scheduled:<strong>{row.planned_arrival_time}</strong><br/>Actual:<strong>{row.estimated_arrival_delay_min}</strong></TableCell>
                                 </TableRow>
                             ))}
                             </TableBody>
