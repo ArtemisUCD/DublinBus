@@ -3,7 +3,7 @@ import Menu from './components/Menu/Menu'
 import Header from './components/Header/Header'
 import './App.css'
 import { useJsApiLoader} from '@react-google-maps/api'
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import NewMap from './components/Map/NewMap';
 import Geocode from "react-geocode";
 
@@ -39,17 +39,17 @@ function App() {
     }
   
 
-    const getData = (stopinfo) => {
+    const getData = useCallback((stopinfo) => {
       setMarkerinfo(stopinfo);
-    }
+    },[])
 
-    const getCenter = (center) => {
+    const getCenter = useCallback((center) => {
       setCenter(center)
-    }
+    },[])
 
-    const getZoom = (zoom) => {
+    const getZoom = useCallback((zoom) => {
       setZoom(zoom)
-    }
+    },[])
 
     const getRouteShape = (routeshape) => {
       setRouteShape(routeshape);

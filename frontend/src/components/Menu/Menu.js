@@ -1,6 +1,6 @@
 import './Menu.css'
 import RoutePlanner from "./RoutePlanner/RoutePlanner";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Box, Tab} from "@mui/material";
 import TabContext from '@mui/lab/TabContext';
 import Tabs from '@mui/material/Tabs';
@@ -17,9 +17,8 @@ import RouteItem from './RoutePlanner/RouteItem';
 import Weather from '../Weather/Weather';
 
 
-const Menu = (props) => {
+const Menu = ( {getData,directions,getRouteShape,getFavData,origin,getAddress,destination,calcRoute,map,clearDetails,swap,toggleDrawer,changeDirectionsRender,getCenter, getZoom,weather} ) => {
   let journeyDetails;
-  
 
   const [value, setValue] = useState('1');
 
@@ -34,11 +33,11 @@ const Menu = (props) => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    props.getData(null);
-    props.getRouteShape([]);
-    props.getFavData(null);
-    props.getCenter({lat: 53.306221, lng: -6.21914755});
-    props.getZoom(11)
+    getData(null);
+    getRouteShape([]);
+    getFavData(null);
+    getCenter({lat: 53.306221, lng: -6.21914755});
+    getZoom(11)
   };
 
   const cumulativeSum = (sum => value => sum += value);
@@ -57,7 +56,7 @@ const Menu = (props) => {
       const newRoutes=["H3","6"]
 
       const getModelValues = async (routeIndex,stepIndex,step)=>{
-        let weatherSummary = props.weather.filter(el=>el.date===weekday[startTime.getDay()])[0].weather_icon.slice(0,-1)
+        let weatherSummary = weather.filter(el=>el.date===weekday[startTime.getDay()])[0].weather_icon.slice(0,-1)
         let theanswer = await fetch("/buses/getEstimateTime/"+(Math.round((startTime.getTime()/1000)))+`/${step.transit.line.short_name}/${step.transit.headsign}/${step.transit.num_stops}/${weatherSummary}`)
     
         let response = await theanswer.json()
@@ -66,7 +65,7 @@ const Menu = (props) => {
       }
 
       const timesUpdated = async ()=>{
-        let modeltimings = props.directions.routes.map(route => route.legs[0].steps)
+        let modeltimings = directions.routes.map(route => route.legs[0].steps)
         for(const [routeIndex, route] of modeltimings.entries()){
           for(const [stepIndex, step]  of route.entries()){
             if(step.travel_mode==="TRANSIT"){
@@ -81,17 +80,17 @@ const Menu = (props) => {
         }
       }
 
-    if(props.directions!==null){
+    if(directions!==null){
           // get duration each step of the journey takes
     timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
-    setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={`route_${routeIndex}`} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}  changeDirectionsRender={props.changeDirectionsRender}/>));
+    setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={`route_${routeIndex}`} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}  changeDirectionsRender={changeDirectionsRender}/>));
 
     timesUpdated().then(()=>{
       console.log("updated times",timings);
       stepTimes = timings.map(route => route.map(cumulativeSum(0)));
       // get datetime objects for timings and add starttime as first element
       routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))))
-      setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={`route_${routeIndex}`} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings} changeDirectionsRender={props.changeDirectionsRender}/>));
+      setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={`route_${routeIndex}`} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings} changeDirectionsRender={changeDirectionsRender}/>));
     })
 
       }
@@ -99,7 +98,7 @@ const Menu = (props) => {
         console.log("no directions yet")
       }
       // eslint-disable-next-line 
-  },[props.directions,startTime,journeyDetails])
+  },[directions,startTime,journeyDetails])
   
 
     // update favourites in local storage when the state updates
@@ -113,42 +112,42 @@ const Menu = (props) => {
       }, [favouriteRoutes]);
   
 
-    const addFavouriteRoute = (newRoute) =>{
-      if(!favouriteRoutes.includes(newRoute)){
+    const addFavouriteRoute = useCallback((newRoute) =>{
+      if(favouriteRoutes.filter(route => route.route_name === newRoute.route_name).length===0){
       setFavouriteRoutes((prevFavouriteRoutes) =>{
         return [...prevFavouriteRoutes,newRoute]
       })
       }
-    }
+    },[favouriteRoutes])
   // function to remove bus route from list of favourites
-    const removeFavouriteRoute = (routenum) =>{
+    const removeFavouriteRoute = useCallback((routenum) =>{
       setFavouriteRoutes((prevFavouriteRoutes) =>{
         return prevFavouriteRoutes.filter(route => route.route_name!== routenum.route_name)
-      })}
+      })},[])
 
-    const addFavourite = (newStop) =>{
-        if(!favouriteStops.includes(newStop)){
+    const addFavourite = useCallback((newStop) =>{
+        if(favouriteStops.filter(stop => stop.stop_id === newStop.stop_id).length===0){
         setFavouriteStops((prevFavouriteStops) =>{
           return [...prevFavouriteStops,newStop]
         })
         }
-      }
+      },[favouriteStops])
       
     // function to remove bus route from list of favourites
-      const removeFavourite = (stopnum) =>{
-        console.log("favourite stops",favouriteStops)
+      const removeFavourite = useCallback((stopnum) =>{
+        console.log("favourites in function",favouriteStops)
         setFavouriteStops((prevFavouriteStops) =>{
-          return prevFavouriteStops.filter(stop => stop!== stopnum)
-        })}
+          return prevFavouriteStops.filter(stop => stop.stop_id!== stopnum.stop_id)
+        })},[favouriteStops])
 
   const getStartTime = (value) =>{
     setStartTime(value)
   }
 
-  if(props.directions)
+  if(directions)
 { 
 
-  journeyDetails = props.directions.routes.map(route => route.legs[0].steps.map((step)=>
+  journeyDetails = directions.routes.map(route => route.legs[0].steps.map((step)=>
   {if(step.travel_mode==="TRANSIT")
   {return {
       distance:step.distance.text,
@@ -183,11 +182,11 @@ return(
       </Tabs>
     </Box>
     <TabPanel sx={{padding:"0.5rem"}} value="1" >
-      <RoutePlanner directions={props.directions} origin={props.origin} originError={props.originError} getAddress ={props.getAddress}destination={props.destination} destinationError={props.destinationError} calcRoute={props.calcRoute} clearDetails={props.clearDetails} swap={props.swap} getStartTime = {getStartTime} toggleDrawer={props.toggleDrawer} />
+      <RoutePlanner directions={directions} origin={origin} getAddress ={getAddress}destination={destination} calcRoute={calcRoute} clearDetails={clearDetails} swap={swap} getStartTime = {getStartTime} toggleDrawer={toggleDrawer} />
   </TabPanel>
-    <TabPanel value="2"><BusRouteList getData={props.getData} getRouteShape={props.getRouteShape} onLikeRoute={addFavouriteRoute} onUnlikeRoute={removeFavouriteRoute} favouritesR={favouriteRoutes} /></TabPanel>
-    <TabPanel value="3"><RealTime getData={props.getData} getCenter={props.getCenter} getZoom={props.getZoom} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
-    <TabPanel value="4"><Favorites getData={props.getData} getRouteShape={props.getRouteShape} getCenter={props.getCenter} getZoom={props.getZoom} getFavData={props.getFavData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops} onLikeRoute={addFavouriteRoute} onUnLikeRoute={removeFavouriteRoute} favoritesR = {favouriteRoutes} /></TabPanel>
+    <TabPanel value="2"><BusRouteList getData={getData} getRouteShape={getRouteShape} onLikeRoute={addFavouriteRoute} onUnlikeRoute={removeFavouriteRoute} favouritesR={favouriteRoutes} /></TabPanel>
+    <TabPanel value="3"><RealTime getData={getData} getCenter={getCenter} getZoom={getZoom} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
+    <TabPanel value="4"><Favorites getData={getData} getRouteShape={getRouteShape} getCenter={getCenter} getZoom={getZoom} getFavData={getFavData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops} onLikeRoute={addFavouriteRoute} onUnLikeRoute={removeFavouriteRoute} favoritesR = {favouriteRoutes} /></TabPanel>
     <TabPanel value="5"><Weather /></TabPanel>
   </TabContext>
 </Box>

@@ -1,9 +1,7 @@
 import './BusRouteList.css'
-// import BusRouteItem from './BusRouteItem'
 import { useEffect, useState } from 'react';
-import { IconButton, Box, TextField, List, ListItem, ListItemText} from '@mui/material'
+import { Box, TextField, List, ListItem, ListItemText} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete';
-import SearchIcon from '@mui/icons-material/Search';
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import ReactLoading from "react-loading";
 
@@ -61,7 +59,7 @@ const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlike
                 <Box sx={{height:"50%",display:"flex",marginTop:"1rem",
                 flexDirection:"column",}}>
                 
-                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"center"}}>
+                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"center",alignItems:"center"}}>
                     <Autocomplete
                         id="combo-box-demo"
                         getOptionLabel={(routeList) => 
@@ -88,14 +86,8 @@ const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlike
                     )}
                     
                 </Box>
-                        
-                
                 {showinfo && (
                     <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
-                        {/* <Button onClick={backtoroute}variant="outlined" size="small" >Back to Search</Button> */}
-                        {/* <Box>
-                            {value}
-                        </Box> */}
                         <Box sx={{display:"flex", justifyContent:"flex-start", width:"100%"}}>
                          <List
                         sx={{

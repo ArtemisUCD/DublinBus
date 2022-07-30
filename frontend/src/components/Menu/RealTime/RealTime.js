@@ -1,10 +1,9 @@
 
 import { useEffect, useState } from 'react';
 import "./RealTime.css";
-import { IconButton, Box, TextField} from '@mui/material'
+import {  Box, TextField} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete';
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import SearchIcon from '@mui/icons-material/Search';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -15,25 +14,22 @@ import Paper from '@mui/material/Paper';
 import ReactLoading from "react-loading";
 
 
-const RealTime = (props) => {
+const RealTime = ({favouritesS,onLike,onUnlike,getData,getCenter,getZoom}) => {
 
-    const [stopData, setstopData] =useState([]);
+    const [stopList, setStopList] =useState([]);
     const [showinfo, setShowinfo] = useState(false);
     const [stopupdate, setStopupdate] = useState([]);
-    // const [showsearch, setShowsearch] = useState(true);
     const [value, setValue] = useState("");
     const [stopId, setStopId] = useState("8220DB000003");
-    const [stopinfo, setStopInfo] = useState([]);
-    const [favouriteinfo, setFavoriteinfo] = useState();
+    const [stopSelected, setStopSelected] = useState([]);
     const [showfavicon, setshowfavicon] = useState(false);
-    const [favouritedStops,setFavouritedStops] = useState(false);
     const [center, setCenter] = useState({lat: 53.306221, lng: -6.21914755});
     const [zoom, setZoom] = useState(11)
     
     useEffect(() => {
         fetch("/api/stop_")
         .then(response => response.json())
-        .then(data => setstopData(data))
+        .then(data => setStopList(data))
       },[]);
 
       useEffect(() => {
@@ -42,95 +38,80 @@ const RealTime = (props) => {
         .then(data => setStopupdate(data))
       },[stopId]);
 
-    const searchresult = ()=>{
-        if (value !== ""){
-            setShowinfo(true);
-            props.getData(stopinfo);
-            props.getCenter(center);
-            props.getZoom(zoom);
-            setshowfavicon(true);
-            console.log(favouriteinfo)
-            setFavouritedStops(props.favouritesS.some((v => v.stop_id === favouriteinfo.stop_id)))
-            console.log(favouritedStops)
-            console.log(stopId);
-            console.log(stopinfo)
-        }else{
-            setShowinfo(false);
-        }   
-    }
+      useEffect(()=>{
+        if(stopupdate!==undefined && stopSelected!==undefined&& value !== ""){
+        setShowinfo(true);
+        getData(stopSelected);
+        getCenter(center);
+        getZoom(zoom);
+        setshowfavicon(true);
+      }
+    },[stopupdate,stopSelected, favouritesS,getData,getCenter,getZoom,center,zoom,value])
+
 
     const toggleFavourite = (busStop) =>{
-        if(!favouritedStops){
-            props.onLike(busStop)
+        if(!favouritesS.some((v => v.stop_id === busStop.stop_id))){
+            onLike(busStop)
         }
         else{
-            props.onUnlike(busStop)
-        }
-        setFavouritedStops(!favouritedStops)
+            onUnlike(busStop)
+        } 
     }
 
-
-    // const backtoroute =() => {
-    //     setShowinfo(false);
-    // }
     return(
         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",marginLeft:"1rem", maxheight:"300px",
         borderRadius:"10px;"}}>
                 <Box sx={{height:"50%",display:"flex",marginTop:"1rem",
                 flexDirection:"column",}}>
                 
-                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
+                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"center",alignItems:"center"}}>
                     
                     <Autocomplete
                         id="combo-box-demo"
-                        getOptionLabel={(stopData) => 
-                            `${stopData.stop_name}`
+                        getOptionLabel={(stopList) => 
+                            `${stopList.stop_name}`
                         }
-                        options={stopData}
+                        options={stopList}
                         sx={{width:250}}
                         isOptionEqualToValue={(option, value) =>
                             option.stop_name === value.stop_name
                         }
                         onChange={(e,value) => {
                             setValue(value.stop_name); 
-                            setStopId(value.stop_id); 
-                            setStopInfo([{"stop_name": value.stop_name,
+                            setStopId(value.stop_id);
+                            setCenter({"lat": value.stop_lat, "lng": value.stop_lon})
+                            setZoom(16)
+                            setStopSelected([{"stop_name": value.stop_name,
                                         "stop_id": value.stop_id,
                                         "stop_lat": value.stop_lat,
                                         "stop_lon": value.stop_lon}])
-                            setCenter({"lat": value.stop_lat, "lng": value.stop_lon})
-                            setZoom(16)
-                            setFavoriteinfo({"stop_name": value.stop_name,
-                                        "stop_id": value.stop_id,
-                                        "stop_lat": value.stop_lat,
-                                        "stop_lon": value.stop_lon})
                             }}
                             
                         noOptionsText={<Box sx={{display:"flex",alignItems:"center"}}>Bus Stops loading<ReactLoading type="bubbles" color="#000000" height={50} width={50}/></Box>}
-                        renderOption={(props, stopData) => (
-                            <Box component="li" {...props} key={stopData.stop_name}>
-                                {stopData.stop_name}
+                        renderOption={(props, stopList) => (
+                            <Box component="li" {...props} key={stopList.stop_name}>
+                                {stopList.stop_name}
                             </Box>
                         )}
                         renderInput={(params)=><TextField {...params} label="Stop name/number" />}
                     />
-                    <IconButton size ="small" onClick={searchresult} sx={{border: "1px solid gray", borderRadius: 1, marginLeft: 2}}>
-                        <SearchIcon />
-                    </IconButton>
+ 
                     {showfavicon && (
                         <div>
-                         {favouritedStops ? <FaHeart className={"heart full"} onClick={()=>toggleFavourite(favouriteinfo)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavourite(favouriteinfo)}/>}
+                         {favouritesS.some((v => v.stop_id === stopSelected[0].stop_id)) ? <FaHeart className={"heart full"} onClick={()=>toggleFavourite(stopSelected[0])}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavourite(stopSelected[0])}/>}
                         </div>
                     )}
-                    
-                    
+
+
+{/* 
+                        {showfavicon && (
+                        <div>
+                         {favouritesR.some((v => v.route_id === routeSelected.route_id)) ? <FaHeart className={"heart full"} onClick={()=>toggleFavouriteRoute(routeSelected)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavouriteRoute(routeSelected)}/>}
+                        </div>
+                    )}   */}
                 </Box>
-                        
-                
                 {showinfo && (
-                    
                     <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
-                        {/* <Button onClick={backtoroute}variant="outlined" size="small" >Back to Search</Button> */}
                         <Box sx={{display:"flex", justifyContent:"flex-start", width:"100%"}}>
                    
                     <TableContainer component={Paper}
