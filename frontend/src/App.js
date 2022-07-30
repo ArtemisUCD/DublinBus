@@ -108,6 +108,7 @@ const getAddress = () =>{
   }
   datetime=Math.round((value.getTime()/1000))
   const directionsService = new window.google.maps.DirectionsService();
+  try{
   let results = await directionsService.route({
     origin: originRef.current.value,
     destination: destinationRef.current.value,
@@ -123,7 +124,10 @@ const getAddress = () =>{
 const notDublinBus = (el)=>el.transit.line.agencies[0].name!=="Dublin Bus";
 let filteredRoutes = results.routes.filter(route => !route.legs[0].steps.filter(step=>step.travel_mode==="TRANSIT").some(notDublinBus));
 results.routes = filteredRoutes;
-setDirections(results)
+setDirections(results)}
+catch{
+  alert("Invalid direction inputs")
+}
   }
 
   const clearDetails = () => {
