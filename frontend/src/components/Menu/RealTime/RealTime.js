@@ -80,7 +80,7 @@ const RealTime = ({favouritesS,onLike,onUnlike,getData,getCenter,getZoom}) => {
                             setValue(value.stop_name); 
                             setStopId(value.stop_id);
                             setCenter({"lat": value.stop_lat, "lng": value.stop_lon})
-                            setZoom(16)
+                            setZoom(13)
                             setStopSelected([{"stop_name": value.stop_name,
                                         "stop_id": value.stop_id,
                                         "stop_lat": value.stop_lat,
