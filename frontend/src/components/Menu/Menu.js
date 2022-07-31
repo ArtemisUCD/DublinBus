@@ -36,7 +36,8 @@ const Menu = ( {getData,directions,getRouteShape,getFavData,origin,getAddress,de
     getData(null);
     getRouteShape([]);
     getFavData(null);
-    getCenter({lat: 53.306221, lng: -6.21914755});
+    getCenter({lat: 53.348665, lng: -6.21914755});
+    
     getZoom(11)
   };
 
