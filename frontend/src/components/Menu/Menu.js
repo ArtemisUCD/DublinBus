@@ -10,11 +10,13 @@ import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import TwitterIcon from '@mui/icons-material/Twitter';
 import BusRouteList from './BusRouteList';
 import RealTime from './RealTime/RealTime';
 import Favorites from './Favourites/Favorites';
 import RouteItem from './RoutePlanner/RouteItem';
 import Weather from '../Weather/Weather';
+import Twitter from './Twitter';
 
 
 const Menu = ( {getData,directions,getRouteShape,getFavData,origin,getAddress,destination,calcRoute,map,clearDetails,swap,toggleDrawer,changeDirectionsRender,getCenter, getZoom,weather} ) => {
@@ -180,6 +182,7 @@ return(
         <Tab icon={<AccessTimeIcon />} label="Real Time Info" value="3" />
         <Tab icon={<FavoriteBorderIcon />} label="Favorite" value="4" />
         <Tab icon={<WbSunnyIcon />} label="Weather" value="5" />
+        <Tab icon={<TwitterIcon />} label="Twitter" value="6" />
       </Tabs>
     </Box>
     <TabPanel sx={{padding:"0.5rem"}} value="1" >
@@ -189,6 +192,7 @@ return(
     <TabPanel value="3"><RealTime getData={getData} getCenter={getCenter} getZoom={getZoom} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
     <TabPanel value="4"><Favorites getData={getData} getRouteShape={getRouteShape} getCenter={getCenter} getZoom={getZoom} getFavData={getFavData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops} onLikeRoute={addFavouriteRoute} onUnLikeRoute={removeFavouriteRoute} favoritesR = {favouriteRoutes} /></TabPanel>
     <TabPanel value="5"><Weather /></TabPanel>
+    <TabPanel value="6"><Twitter /></TabPanel>
   </TabContext>
 </Box>
 <Box sx={{zIndex:"1", backgroundColor:"white",borderRadius:"10px",overflowY:"auto"}}>
