@@ -15,91 +15,94 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import ReactLoading from "react-loading";
 
-const Favorites = (props) => {
+const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnlike, favouritesS, onUnLikeRoute, favoritesR}) => {
 
-    const [stopinfo, setStopInfo] = useState([]);
-    const [stopId, setStopId] = useState("8220DB000003");
-    // const [showstoplist, setshowstoplist] = useState(true);
-    const [showstopUpdate, setShowstopUpdata] = useState(false);
-    const [routeId, setRouteId] = useState("60-X32-b12-1");
-    // const [showroutelist, setshowroutelist] = useState(true);
+    const [realTimeData, setRealTimeData] = useState();
+    const [showRealTime, setShowRealTime] = useState(false);
+    const [routeId, setRouteId] = useState();
     const [showrouteUpdate, setShowrouteUpdata] = useState(false);
     const [expanded, setExpanded] = useState('panel1');
+    const [isLoading,setIsLoading]= useState(false);
 
     let favouriteRoutes;
-    let favouriteStops;
+    const [favouriteStops,setFavouriteRoutes] = useState();
     
-    const getStopinfo = (item) => {
-        setStopInfo(item)
-        setStopId(item.stop_id)
-        props.getFavData(item)
-        props.getCenter({"lat": item.stop_lat, "lng": item.stop_lon})
-        props.getZoom(16)
-        props.getData(null)
-        props.getRouteShape([])
-        // setshowstoplist(false)
-        setShowstopUpdata(true)
-    }
-
     const getRouteinfo = (item) => {
         setRouteId(item.route_id)
-        props.getData(routeList)
-        props.getFavData(null)
-        props.getRouteShape(routeshape) 
-        props.getCenter({lat: 53.306221, lng: -6.21914755});
-        props.getZoom(11)
-        // setshowroutelist(false)
+        getData(routeList)
+        getFavData(null)
+        getRouteShape(routeshape) 
+        getCenter({lat: 53.306221, lng: -6.21914755});
+        getZoom(11)
         setShowrouteUpdata(true)
     }
 
-    const [stopupdate, setStopupdate] = useState([]);
+        useEffect(()=>{
+            if(realTimeData!==undefined){
+            setIsLoading(false)
+            setShowRealTime(true)
+            }
+        },[realTimeData])
 
-      useEffect(() => {
-          fetch("/buses/getUpdatesForStop/"+stopId+"/")
-          .then(response => response.json())
-          .then(data => setStopupdate(data))
-        },[stopId]);
-    
+
     const [routeList, setRouteList] = useState([]);
         
     useEffect(() => {
+        if(routeId!==undefined){
         fetch("/buses/getStopsForRoute/"+routeId+"/")
         .then(response => response.json())
         .then(data => setRouteList(data))
-      },[routeId]);
+      }}
+   ,[routeId]);
 
     const [routeshape, setRouteShape] = useState([]);
 
     useEffect(() => {
+        if(routeId!==undefined){
         fetch("/buses/getShape/"+routeId+"/")
         .then(response => response.json())
         .then(data => setRouteShape(data))
-      },[routeId]);
+      }}
+       ,[routeId]);
 
     const handleChange = (panel) => (event, newExpanded) => {
         setExpanded(newExpanded ? panel : false);
       };
 
-    const toggleFavourite = (busRoute) =>{
-        props.onUnlike(busRoute)
-    }
-
     const toggleFavouriteRoute = (busRoute) =>{
-        props.onUnLikeRoute(busRoute)
+        onUnLikeRoute(busRoute)
     }
 
     const backfav = () => {
-        setShowstopUpdata(false);
-        // setshowstoplist(true);
         setShowrouteUpdata(false);
-        // setshowroutelist(true);
     }
 
+    const toggleFavourite = useCallback((busRoute) =>{
+        onUnlike(busRoute)
+    },[onUnlike])
 
-    if(props.favoritesR && props.favoritesR.length>0 && showrouteUpdate===false){
-    favouriteRoutes = <List>{props.favoritesR.map((item, index) => (
+    const backfav2 = () => {
+        setShowRealTime(false);
+    }
+
+    const getRealTime = useCallback((item) => {
+        setIsLoading(true)
+        fetch("/buses/getUpdatesForStop/"+item.stop_id+"/")
+        .then(response => response.json())
+        .then(data => setRealTimeData(data))
+        getFavData(item)
+        getCenter({"lat": item.stop_lat, "lng": item.stop_lon})
+        getZoom(16)
+        getData(null)
+        getRouteShape([])
+    },[getCenter,getData,getFavData,getRouteShape, getZoom])
+
+
+    if(favoritesR && favoritesR.length>0 && showrouteUpdate===false){
+    favouriteRoutes = <List>{favoritesR.map((item, index) => (
         <ListItem key={index} >
             <IconButton
                 onClick={()=>toggleFavouriteRoute(item)}>
@@ -109,12 +112,11 @@ const Favorites = (props) => {
             <ListItemText  primary={item.route_name} />
             <ArrowForwardIcon sx={{paddingLeft:"0.5rem"}}/>
             </ListItemButton>
-
         </ListItem>
     ))}
     </List>
     }
-    else if(props.favoritesR && props.favoritesR.length>0 && showrouteUpdate===true){
+    else if(favoritesR && favoritesR.length>0 && showrouteUpdate===true){
         favouriteRoutes = <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
         <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
             <Box>
@@ -144,34 +146,69 @@ const Favorites = (props) => {
         favouriteRoutes = <Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite routes</strong></Box>
     }
 
-    if(props.favouritesS && props.favouritesS.length>0 && showstopUpdate===false){
-        favouriteStops = <List>
-        {props.favouritesS && props.favouritesS.map((item, index) => (
-            <ListItem key={index} >
-                <IconButton
-                    onClick={()=>toggleFavourite(item)}>
-                    <FaHeart className={"heart full"}/>
-                </IconButton>
-                <ListItemButton sx={{borderRadius:"10px"}} onClick={() => getStopinfo(item)}>
-                <ListItemText primary={item.stop_name} />
-                <ArrowForwardIcon sx={{paddingLeft:"0.5rem"}}/>
-                </ListItemButton>
-            </ListItem>
-        ))}
-        </List>
+    useEffect(()=>{
+        if(favouritesS && showRealTime===false){
+            if(isLoading){
+                setFavouriteRoutes(<Box sx={{display:"flex",justifyContent:"center"}}><p>Fetching Real Time</p><ReactLoading type="bubbles" color="#000000" height={100} width={50}/></Box>)
+            }
+            else{
+                setFavouriteRoutes(<List>
+                    {favouritesS.map((item, index) => (
+                        <ListItem key={index} >
+                            <IconButton
+                                onClick={()=>toggleFavourite(item)}>
+                                <FaHeart className={"heart full"}/>
+                            </IconButton>
+                            <ListItemButton sx={{borderRadius:"10px"}} onClick={() => getRealTime(item)}>
+                            <ListItemText primary={item.stop_name} />
+                            <ArrowForwardIcon sx={{paddingLeft:"0.5rem"}}/>
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                    </List>)
+            }
+
         }
-        else if(props.favouritesS && props.favouritesS.length>0 && showstopUpdate===true){
-            favouriteStops = <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
-            <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
-                <Box>
-                    <Button onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
-                </Box>
-            </Box> 
+        else if(favouritesS && showRealTime===true){
+            setFavouriteRoutes(<Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
+<Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
+    <Box>
+        <Button onClick={backfav2}variant="outlined" size="small" >Back to Favorite List</Button>
     </Box>
+    <TableContainer component={Paper}
+                        sx={{maxHeight:400,}}>
+                        <Table sx={{width: '100%',
+                        maxWidth: 380,
+                        position: 'relative',
+                        overflow: 'auto',
+                        maxHeight: 300, }} aria-label="simple table" stickyHeader>
+                            <TableHead>
+                            <TableRow>
+                                <TableCell>Bus Route</TableCell>
+                                <TableCell align="left">Details</TableCell>
+                            </TableRow>
+                            </TableHead>
+                            <TableBody>
+                            {realTimeData.map((row, index) => (
+                                <TableRow
+                                key={index}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                <TableCell sx={{padding:"1rem 0.25rem 1rem 0.5rem"}} component="th" scope="row">
+                                    {row.concat_name}
+                                </TableCell>
+                                <TableCell sx={{borderBottom:"1px solid rgba(224, 224, 224, 1)",padding:"1rem 0.25rem 1rem 0.5rem"}}align="left">Scheduled:<strong>{row.planned_arrival_time}</strong><br/>Actual:<strong>{row.estimated_arrival_delay_min}</strong></TableCell>
+                                </TableRow>
+                            ))}
+                            </TableBody>
+                        </Table>
+                        </TableContainer>
+                </Box> 
+                </Box>)
         }
         else{
-            favouriteStops = <Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite stops</strong></Box>
-        }
+            setFavouriteRoutes(<Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite stops</strong></Box>)
+        }},[favouritesS,showRealTime,realTimeData, toggleFavourite, getRealTime,isLoading])
 
 
     return (
@@ -195,47 +232,6 @@ const Favorites = (props) => {
                         </AccordionSummary>
                         <AccordionDetails>
                         {favouriteStops}
-                        {showstopUpdate && (
-                            <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
-                                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
-                        {/* <Button onClick={backtoroute}variant="outlined" size="small" >Back to Search</Button> */}
-                        <Box sx={{display:"flex", justifyContent:"flex-start", width:"100%"}}>
-                   
-                    <TableContainer component={Paper}
-                        sx={{maxHeight:400,}}>
-                        <Table sx={{width: '100%',
-                        maxWidth: 380,
-                        position: 'relative',
-                        overflow: 'auto',
-                        maxHeight: 300, }} aria-label="simple table" stickyHeader>
-                            <TableHead>
-                            <TableRow>
-                                <TableCell>Bus Route</TableCell>
-                                <TableCell align="left">Details</TableCell>
-                            </TableRow>
-                            </TableHead>
-                            <TableBody>
-                            {stopupdate.map((row, index) => (
-                                <TableRow
-                                key={index}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                <TableCell sx={{padding:"1rem 0.25rem 1rem 0.5rem"}} component="th" scope="row">
-                                    {row.concat_name}
-                                </TableCell>
-                                <TableCell sx={{borderBottom:"1px solid rgba(224, 224, 224, 1)",padding:"1rem 0.25rem 1rem 0.5rem"}}align="left">Scheduled:<strong>{row.planned_arrival_time}</strong><br/>Actual:<strong>{row.estimated_arrival_delay_min}</strong></TableCell>
-                                </TableRow>
-                            ))}
-                            </TableBody>
-                        </Table>
-                        </TableContainer>
-                </Box> 
-                    </Box>
-                            </Box>
-
-                            
-                            
-                        )}
                         </AccordionDetails>
                     </Accordion>
                 </Box>

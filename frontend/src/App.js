@@ -51,13 +51,13 @@ function App() {
       setZoom(zoom)
     },[])
 
-    const getRouteShape = (routeshape) => {
+    const getRouteShape = useCallback((routeshape) => {
       setRouteShape(routeshape);
-    }
+    },[])
 
-    const getFavData = (favData) =>{
+    const getFavData = useCallback((favData) =>{
       setFavData(favData);
-    }
+    },[])
 
   Geocode.setApiKey("AIzaSyDYT7qeps8IqMpcUpBKG49UehWOG2J_qEA");
 
