@@ -95,10 +95,9 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
         .then(data => setRealTimeData(data))
         getFavData(item)
         getCenter({"lat": item.stop_lat, "lng": item.stop_lon})
-        getZoom(16)
+        getZoom(14)
         getData(null)
-        getRouteShape([])
-    },[getCenter,getData,getFavData,getRouteShape, getZoom])
+    },[getCenter,getData,getFavData, getZoom])
 
 
     if(favoritesR && favoritesR.length>0 && showrouteUpdate===false){
