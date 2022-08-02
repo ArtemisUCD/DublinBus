@@ -96,8 +96,7 @@ const Weather = () => {
     
     
     return (
-        <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;", maxheight:"300px"}}>
-            <Box sx={{display:"flex",flexDirection:"column",}}>
+            <Box sx={{display:"flex",flexDirection:"column",overflowY:"auto" ,zIndex:"1"}}>
             <div className="Current-weather">
                 <img src={icons[first?.weather_icon]} className="current-icon" alt="weather-icon"/>
                 <div className="Current-temperature">
@@ -114,14 +113,11 @@ const Weather = () => {
                 </div>
             </div>
             <HourlyForecast data={data} />
-                
                 <h3 id="weather-title">Daily forecast</h3>
                 <Box sx={{display:"flex",paddingBottom:"2rem",justifyContent:"flex-start",overflowX:"auto"}}>
                     {weatherDetails}
                 </Box>
-                
             </Box>
-        </Box>
     )
 
 }
