@@ -26,9 +26,9 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
     let favouriteRoutes;
     const [favouriteStops,setFavouriteRoutes] = useState();
 
-    const handleChange = (label) =>  {
-        setExpanded(label)
-    }
+    const handleChange = useCallback((value)=> {
+        setExpanded(value);
+      },[]);
     
     const getRouteinfo = (item) => {
         setRouteId(item.route_id)
