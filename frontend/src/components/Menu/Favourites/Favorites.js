@@ -1,10 +1,5 @@
 import './Favorites.css';
 import { Box, List, ListItem, ListItemButton, ListItemText, Button} from "@mui/material";
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
 import IconButton from "@mui/material/IconButton";
 import { FaHeart } from "react-icons/fa";
 import Table from '@mui/material/Table';
@@ -17,6 +12,7 @@ import Paper from '@mui/material/Paper';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useCallback, useEffect, useState } from "react";
 import ReactLoading from "react-loading";
+import FavouriteItem from './FavouriteItem'
 
 const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnlike, favouritesS, onUnLikeRoute, favoritesR}) => {
 
@@ -24,11 +20,15 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
     const [showRealTime, setShowRealTime] = useState(false);
     const [routeId, setRouteId] = useState();
     const [showrouteUpdate, setShowrouteUpdata] = useState(false);
-    const [expanded, setExpanded] = useState('panel1');
     const [isLoading,setIsLoading]= useState(false);
+    const [expanded, setExpanded] = useState('Favourite Routes');
 
     let favouriteRoutes;
     const [favouriteStops,setFavouriteRoutes] = useState();
+
+    const handleChange = (label) =>  {
+        setExpanded(label)
+    }
     
     const getRouteinfo = (item) => {
         setRouteId(item.route_id)
@@ -67,10 +67,6 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
         .then(data => setRouteShape(data))
       }}
        ,[routeId]);
-
-    const handleChange = (panel) => (event, newExpanded) => {
-        setExpanded(newExpanded ? panel : false);
-      };
 
     const toggleFavouriteRoute = (busRoute) =>{
         onUnLikeRoute(busRoute)
@@ -213,27 +209,8 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
     return (
         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",marginLeft:"1rem",borderRadius:"10px;", maxheight:"300px"}}>
             <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
-                
-                <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start", maxheight:"300px",width:"100%"}}>
-                    <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')} sx={{width:"100%"}}>
-                        <AccordionSummary aria-controls="panel1d-content" id="panel1d-header" expandIcon={<ExpandMoreIcon />}>
-                            <Typography>Favourite Routes</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            {favouriteRoutes}
-                        </AccordionDetails>
-                    </Accordion>
-                </Box>
-                <Box sx={{display:"flex",justifyContent:"flex-start"}}>
-                    <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')} sx={{width:"100%"}}>
-                        <AccordionSummary aria-controls="panel2d-content" id="panel2d-header" expandIcon={<ExpandMoreIcon />}>
-                            <Typography>Favourite Stops</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                        {favouriteStops}
-                        </AccordionDetails>
-                    </Accordion>
-                </Box>
+                <FavouriteItem label={"Favourite Routes"} favouriteContent={favouriteRoutes} handleChange={handleChange} expanded={expanded}/>
+                <FavouriteItem  label={"Favourite Stops"} favouriteContent={favouriteStops} handleChange={handleChange} expanded={expanded}/>
             </Box>
         </Box>
     )
