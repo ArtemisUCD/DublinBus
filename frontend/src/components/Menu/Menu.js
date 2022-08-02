@@ -25,6 +25,9 @@ const Menu = ( {getData,directions,getRouteShape,getFavData,origin,getAddress,de
   const [favouriteRoutes, setFavouriteRoutes] = useState(JSON.parse(localStorage.getItem('favouriteRoutes')) ?? []);
 
   const handleChange = (event, newValue) => {
+    if(directions){
+    clearDetails();
+    }
     setValue(newValue);
     getData(null);
     getRouteShape([]);
