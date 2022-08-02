@@ -17,15 +17,7 @@ import HourlyForecast from './HourlyForecast';
 
 
 
-const Weather = () => {
-
-    const [weatherData,setWeatherData] = useState([]);
-
-    useEffect(() => {
-        fetch("/api/forecast")
-        .then(response => response.json())
-        .then(data => setWeatherData(data))
-          },[]);
+const Weather = ({weatherData}) => {
 
           const icons = {
             "01d":clear_sky,

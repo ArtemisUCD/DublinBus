@@ -92,7 +92,7 @@ return(
     <TabPanel value="2"><BusRouteList getData={getData} getRouteShape={getRouteShape} onLikeRoute={addFavouriteRoute} onUnlikeRoute={removeFavouriteRoute} favouritesR={favouriteRoutes} /></TabPanel>
     <TabPanel value="3"><RealTime getData={getData} getCenter={getCenter} getZoom={getZoom} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops}/></TabPanel>
     <TabPanel value="4"><Favorites getData={getData} getRouteShape={getRouteShape} getCenter={getCenter} getZoom={getZoom} getFavData={getFavData} onLike={addFavourite} onUnlike={removeFavourite} favouritesS= {favouriteStops} onLikeRoute={addFavouriteRoute} onUnLikeRoute={removeFavouriteRoute} favoritesR = {favouriteRoutes} /></TabPanel>
-    <TabPanel  value="5"><Weather /></TabPanel>
+    <TabPanel  value="5"><Weather weatherData={weather} /></TabPanel>
     <TabPanel value="6"><Twitter /></TabPanel>
   </TabContext>
 </Box>
