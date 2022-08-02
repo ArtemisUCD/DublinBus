@@ -6,55 +6,62 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import {Autocomplete} from '@react-google-maps/api'
 import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './RoutePlanner.css'
 import FormControl from '@mui/material/FormControl';
+import RouteItem from './RouteItem';
 import addDays from 'date-fns/addDays';
 
 
-const RoutePlanner = (props) => {
+const RoutePlanner = ({origin,destination, 
+    swap, weather, directions,changeDirectionsRender,calcRoute,clearDetails}) => {
 
+    let journeyDetails;
     const [value,setValue] = useState(new Date())
     const [originError,setOriginError] = useState(false);
     const [destinationError,setDestinationError] = useState(false);
+    const [routeList,setRouteList] = useState()
+    const [startTime, setStartTime] = useState();
     const maxDate = addDays(new Date(),6)
+    const mapBounds = {componentRestrictions:{country:["ie"]}}
 
-    const calcRoute = () => {
-        if(props.origin.current.value === '' || props.destination.current.value === ''){
-            console.log("origin destination missing")
-            if(props.origin.current.value === ''&& props.destination.current.valu=== ''){
+    const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+    const calcRoutes = () => {
+        if(origin.current === '' || destination.current === ''){
+            if(origin.current === ''&& destination.current=== ''){
                 setOriginError(true)
                 setDestinationError(true)
             }
-            else if(props.origin.current.value === ''){
+            else if(origin.current === ''){
                 setOriginError(true)
             }
             else{
                 setDestinationError(true)
             }}
         else{
-        props.calcRoute(value)
-        props.getStartTime(value)
-        // fetch model results for particular route
-
-        // map over each of the routes
- 
-
+        calcRoute(value)
+        getStartTime(value)
         }
         }
+
+    const cumulativeSum = (sum => value => sum += value);
     
-
-    const clearDetails = () => {
-        props.clearDetails();
+    const clearDetail = () => {
+        clearDetails();
     }
 
     const getAddress = ()=>{
-        props.getAddress();
+        getAddress();
     }
 
     const swapInputFields = () => {
-        props.swap();
+        swap();
     }
+
+    const getStartTime = (value) =>{
+        setStartTime(value)
+      }
 
     const validCheck = (event) =>{
         if(event.target.value!==""){
@@ -70,13 +77,80 @@ const RoutePlanner = (props) => {
         }
     }
 
+    useEffect(()=>{
+        let timings;
+        let stepTimes;
+        let routeTimings;
+        const newRoutes=["H3","6","155"]
+  
+        const getModelValues = async (routeIndex,stepIndex,step)=>{
+          let weatherSummary = weather.filter(el=>el.date===weekday[startTime.getDay()])[0].weather_icon.slice(0,-1)
+          let theanswer = await fetch("/buses/getEstimateTime/"+(Math.round((startTime.getTime()/1000)))+`/${step.transit.line.short_name}/${step.transit.headsign}/${step.transit.num_stops}/${weatherSummary}`)
+          let response = await theanswer.json()
+          timings[routeIndex][stepIndex]=response
+          console.log(`model output for ${step.transit.line.short_name} loc ${routeIndex}${stepIndex}`,response)
+        }
+  
+        const timesUpdated = async ()=>{
+          let modeltimings = directions.routes.map(route => route.legs[0].steps)
+          for(const [routeIndex, route] of modeltimings.entries()){
+            for(const [stepIndex, step]  of route.entries()){
+              if(step.travel_mode==="TRANSIT"){
+              if(!newRoutes.includes(step.transit.line.short_name)){
+              await getModelValues(routeIndex,stepIndex,step)
+              }
+              else{
+                console.log(`${step.transit.line.short_name} does not have a model`)
+              }
+              }
+            }
+          }
+        }
+  
+      if(directions!==null){
+            // get duration each step of the journey takes
+      timings = journeyDetails.map(route => route.map(step => parseInt(step.duration.split(" ")[0])))
+      setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={`route_${routeIndex}`} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}  changeDirectionsRender={changeDirectionsRender}/>));
+  
+      timesUpdated().then(()=>{
+        console.log("updated times",timings);
+        stepTimes = timings.map(route => route.map(cumulativeSum(0)));
+        // get datetime objects for timings and add starttime as first element
+        routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))))
+        setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={`route_${routeIndex}`} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings} changeDirectionsRender={changeDirectionsRender}/>));
+      })
+  
+        }
+        else{
+          console.log("no directions yet")
+        }
+        // eslint-disable-next-line 
+    },[directions,startTime,journeyDetails])
 
-    const mapBounds = {componentRestrictions:{country:["ie"]}}
 
+    if(directions)
+{ 
+  journeyDetails = directions.routes.map(route => route.legs[0].steps.map((step)=>
+  {if(step.travel_mode==="TRANSIT")
+  {return {
+      distance:step.distance.text,
+      duration:step.duration.text,
+      mode:step.travel_mode,
+      busNumber:step.transit.line.short_name,
+      headsign:step.transit.headsign,
+      stopCount:step.transit.num_stops,
+      departure:step.transit.departure_stop.name,
+      arrival:step.transit.arrival_stop.name}}
+  else{
+  return {
+      distance:step.distance.text,
+      duration:step.duration.text,
+      mode:step.travel_mode}
+      }}))
+
+}
 
     return(
-
-
         <Box sx={{ padding:"0",display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",margin:"0 1rem",
 borderRadius:"10px"}}>
         <FormControl>
@@ -84,7 +158,7 @@ borderRadius:"10px"}}>
         flexDirection:"column",alignItems:"center"}}>
         <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
         <Autocomplete options={mapBounds}>
-        <TextField  id="origin" error={originError} onChange={validCheck} size="small"style={{minWidth:100,maxWidth:400,width:"90%"}} label="Origin" variant="outlined"  inputRef={props.origin} />
+        <TextField  id="origin" error={originError} onChange={validCheck} size="small"style={{minWidth:100,maxWidth:400,width:"90%"}} label="Origin" variant="outlined"  inputRef={origin} />
         </Autocomplete>
         <IconButton size="small" onClick={getAddress} sx={{border: "2px solid gray", borderRadius: 1}}>
         <MyLocationIcon/>
@@ -92,7 +166,7 @@ borderRadius:"10px"}}>
         </Box>
         <Box sx={{display:"flex",justifyContent:"flex-start"}}>
         <Autocomplete options={mapBounds}>
-        <TextField id="destination"error={destinationError} onChange={validCheck} size="small" sx={{ minWidth:100,maxWidth:400, width:"90%"}} label="Destination" variant="outlined" inputRef={props.destination}/>
+        <TextField id="destination"error={destinationError} onChange={validCheck} size="small" sx={{ minWidth:100,maxWidth:400, width:"90%"}} label="Destination" variant="outlined" inputRef={destination}/>
         </Autocomplete>
         <IconButton size ="small" onClick={swapInputFields} sx={{border: "2px solid gray", borderRadius: 1}}>
         <SwapHorizIcon/>
@@ -113,15 +187,16 @@ borderRadius:"10px"}}>
         </LocalizationProvider>
         </Box>
         <Box sx={{display:"flex",justifyContent:"space-around",width:"80%"}}>
-        <Button onClick={calcRoute}variant="contained" size="small" >Calculate Route</Button>
-        <Button onClick={clearDetails}variant="contained" size="small" color="error" >Clear</Button>
+        <Button onClick={calcRoutes}variant="contained" size="small" >Calculate Route</Button>
+        <Button onClick={clearDetail}variant="contained" size="small" color="error" >Clear</Button>
         </Box>        
         </Box>
         </FormControl>
+        <Box sx={{zIndex:"1", backgroundColor:"white",borderRadius:"10px"}}>
+        {journeyDetails ? routeList:null}
+        </Box>
 </Box>
-
     )
 }
-
 
 export default RoutePlanner;
