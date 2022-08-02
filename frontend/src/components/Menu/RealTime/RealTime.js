@@ -18,9 +18,9 @@ const RealTime = ({favouritesS,onLike,onUnlike,getData,getCenter,getZoom}) => {
 
     const [stopList, setStopList] =useState([]);
     const [showinfo, setShowinfo] = useState(false);
-    const [stopupdate, setStopupdate] = useState([]);
+    const [realTimeData, setRealTimeData] = useState([]);
     const [value, setValue] = useState("");
-    const [stopId, setStopId] = useState("8220DB000003");
+    const [stopId, setStopId] = useState();
     const [stopSelected, setStopSelected] = useState([]);
     const [showfavicon, setshowfavicon] = useState(false);
     const [center, setCenter] = useState({lat: 53.306221, lng: -6.21914755});
@@ -35,18 +35,18 @@ const RealTime = ({favouritesS,onLike,onUnlike,getData,getCenter,getZoom}) => {
       useEffect(() => {
         fetch("/buses/getUpdatesForStop/"+stopId+"/")
         .then(response => response.json())
-        .then(data => setStopupdate(data))
+        .then(data => setRealTimeData(data))
       },[stopId]);
 
       useEffect(()=>{
-        if(stopupdate!==undefined && stopSelected!==undefined&& value !== ""){
+        if(realTimeData!==undefined && stopSelected!==undefined&& value !== ""){
         setShowinfo(true);
         getData(stopSelected);
         getCenter(center);
         getZoom(zoom);
         setshowfavicon(true);
       }
-    },[stopupdate,stopSelected, favouritesS,getData,getCenter,getZoom,center,zoom,value])
+    },[realTimeData,stopSelected, favouritesS,getData,getCenter,getZoom,center,zoom,value])
 
 
     const toggleFavourite = (busStop) =>{
@@ -101,14 +101,6 @@ const RealTime = ({favouritesS,onLike,onUnlike,getData,getCenter,getZoom}) => {
                          {favouritesS.some((v => v.stop_id === stopSelected[0].stop_id)) ? <FaHeart className={"heart full"} onClick={()=>toggleFavourite(stopSelected[0])}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavourite(stopSelected[0])}/>}
                         </div>
                     )}
-
-
-{/* 
-                        {showfavicon && (
-                        <div>
-                         {favouritesR.some((v => v.route_id === routeSelected.route_id)) ? <FaHeart className={"heart full"} onClick={()=>toggleFavouriteRoute(routeSelected)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavouriteRoute(routeSelected)}/>}
-                        </div>
-                    )}   */}
                 </Box>
                 {showinfo && (
                     <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
@@ -128,7 +120,7 @@ const RealTime = ({favouritesS,onLike,onUnlike,getData,getCenter,getZoom}) => {
                             </TableRow>
                             </TableHead>
                             <TableBody>
-                            {stopupdate.map((row, index) => (
+                            {realTimeData.map((row, index) => (
                                 <TableRow
                                 key={index}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
