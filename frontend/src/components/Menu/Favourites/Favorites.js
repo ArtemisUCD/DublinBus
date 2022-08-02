@@ -119,7 +119,7 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
         favouriteRoutes = <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
         <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
             <Box>
-                <Button onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
+                <Button sx={{marginBottom:"1rem"}}onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
             </Box>
             <List
             sx={{
@@ -172,7 +172,7 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
             setFavouriteRoutes(<Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
 <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
     <Box>
-        <Button onClick={backfav2}variant="outlined" size="small" >Back to Favorite List</Button>
+        <Button sx={{marginBottom:"1rem"}} onClick={backfav2} variant="outlined" size="small" >Back to Favorite List</Button>
     </Box>
     <TableContainer component={Paper}
                         sx={{maxHeight:400,}}>
