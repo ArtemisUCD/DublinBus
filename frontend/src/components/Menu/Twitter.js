@@ -1,15 +1,14 @@
-import {
-    TwitterTimelineEmbed,
-  } from "react-twitter-embed";
+import {TwitterTimelineEmbed} from "react-twitter-embed";
+
   export default function Twitter() {
     return (
-      <div className="App">
+      <div className="twitter">
         <div className="centerContent">
           <div className="selfCenter standardWidth">
             <TwitterTimelineEmbed
               sourceType="timeline"
               screenName="dublinbusnews"
-              options={{ height: 600 }}
+              options={{ height: 400 }}
             />
           </div>
         </div>
