@@ -219,7 +219,7 @@ def getEstimateTime(request,timestamp,route_short_name,headsign,num_stops,weathe
         # print('not correct direction : ', direction)
     pickle_direction = direction + 1
 
-    pickle_name = 'C:\\Users\\elisebrard\\Downloads\\pickles\\pickles\\' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
+    pickle_name = './pickles/' + str(route_short_name) + '_' + str(pickle_direction) + '_model.pkl'
 
     # print(pickle_name)
 

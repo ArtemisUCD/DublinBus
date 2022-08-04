@@ -94,7 +94,7 @@ const RoutePlanner = ({origin,destination,
         const timesUpdated = async ()=>{
           let modeltimings = directions.routes.map(route => route.legs[0].steps)
           for(const [routeIndex, route] of modeltimings.entries()){
-            for(const [stepIndex, step]  of route.entries()){
+            for(const [stepIndex, step] of route.entries()){
               if(step.travel_mode==="TRANSIT"){
               if(!newRoutes.includes(step.transit.line.short_name)){
               await getModelValues(routeIndex,stepIndex,step)

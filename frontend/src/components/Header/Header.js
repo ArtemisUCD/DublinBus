@@ -18,7 +18,7 @@ const Header = (props) => {
   const [todayweather, setTodayWeather] = useState([]);
 
   useEffect(() => {
-    fetch("/api/forecast")
+    fetch("http://127.0.0.1/api/forecast")
     .then(response => response.json())
     .then(data => setTodayWeather(data))
   },[]);
