@@ -1,9 +1,11 @@
 .logo {
     padding-left: 10px;
-    width: 60%;
+    width: 20%;
     height: 70%;
-    min-height: 10px;
-    min-width: 100px;
+    min-height: 30px;
+    min-width: 120px;
+    max-height: 80px;
+    max-width: 180px;
   }
 
   

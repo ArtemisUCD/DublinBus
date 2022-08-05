@@ -27,7 +27,7 @@ function App() {
   const [weatherData,setWeatherData] = useState();
 
   useEffect(() => {
-      fetch("http://127.0.0.1/api/forecast")
+      fetch("/api/forecast")
       .then(response => response.json())
       .then(data => setWeatherData(data))
         },[]);

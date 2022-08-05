@@ -12,19 +12,21 @@ import snow from '../Weather/img/13d.png';
 import mist from '../Weather/img/50d.png';
 import {AppBar, Toolbar, Box} from '@mui/material'
 import { useEffect, useState } from 'react';
+import ReactLoading from "react-loading";
 
 const Header = (props) => {
 
   const [todayweather, setTodayWeather] = useState([]);
+  let weatherDetails;
 
   useEffect(() => {
-    fetch("http://127.0.0.1/api/forecast")
+    fetch("api/forecast")
     .then(response => response.json())
     .then(data => setTodayWeather(data))
   },[]);
 
   const first = todayweather[0];
-  console.log(todayweather);
+  console.log("today's weather",todayweather);
   console.log(first);
 
   const icons = {
@@ -39,25 +41,29 @@ const Header = (props) => {
     "50d":mist  
 }
 
-    return (
-    <AppBar id="header" role="heading" sx={{display:"flex",alignItems:"center",flexDirection:"row",position:"sticky",backgroundColor:"#070861"}}>
-    <Toolbar sx={{justifyContent:"space-between",alignItems:"center",minHeight:"10px",maxwidth:"70%"}}>
-      <Box sx={{display:"flex",alignItems:"center"}}>
-      <img src={logo} className="logo" alt="logo"/>
-      </Box>
-      <Box sx={{width:"50%"}}>
-      
-      </Box>
-    </Toolbar>
-    <Box sx={{ flexGrow: 1, width:"50%"}}>
-      <Box sx={{float:"right"}}>
-        <img src={icons[first?.weather_icon]} className="todayweather-icon" alt="weather-icon"/>
-      </Box>
-      <Box sx={{float:"right" }}>
-        <p>{Math.round(first?.temperature)}°C</p>
-      </Box>
+  if(first!==undefined){
+    weatherDetails = <Box sx={{ flexGrow: 1, width:"50%"}}>
+    <Box sx={{float:"right"}}>
+      <img src={icons[first?.weather_icon]} className="todayweather-icon" alt="weather-icon"/>
     </Box>
-      
+    <Box sx={{float:"right" }}>
+      <p>{Math.round(first?.temperature)}°C</p>
+    </Box>
+  </Box>
+
+  }
+  else{
+    weatherDetails= <Box sx={{display:"flex",alignItems:"center"}}>
+    <span>Weather Loading</span><ReactLoading type="bubbles" color="#FFFFFF" height={40} width={50}/ >
+  </Box>
+  }
+
+    return (
+    <AppBar id="header" role="heading" sx={{display:"flex",flexDirection:"row",position:"sticky",backgroundColor:"#070861"}}>
+    <Toolbar sx={{display:"flex",justifyContent:"space-between",alignItems:"center",minHeight:"10px",width:"90vw"}}>
+      <img src={logo} className="logo" alt="logo"/>
+      {weatherDetails}
+    </Toolbar>
     </AppBar>
     )
 }
