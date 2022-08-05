@@ -151,7 +151,7 @@ const RoutePlanner = ({origin,destination,
 }
 
     return(
-        <Box sx={{ padding:"0",display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",margin:"0 1rem",
+        <Box sx={{ padding:"0",display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",margin:"1rem 1rem 0 1rem",
 borderRadius:"10px"}}>
         <FormControl>
         <Box sx={{display:"flex",
@@ -176,7 +176,7 @@ borderRadius:"10px"}}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DesktopDateTimePicker
             disablePast
-            label="For desktop"
+            label="Departure Time"
             value={value}
             maxDate={maxDate}
             onChange={(newValue) => {
