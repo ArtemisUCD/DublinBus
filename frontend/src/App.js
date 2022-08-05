@@ -14,7 +14,6 @@ let datetime;
 function App() {
 
   const [map,setMap] = useState( /** @type google.maps.GoogleMap */ (null))
-  const [drawerOpen,setDrawerOpen]= useState(false);
   const [directions,setDirections] = useState(null);
   const originRef = useRef()
   const destinationRef = useRef()
@@ -98,10 +97,6 @@ const getAddress = () =>{
     return 'Loading'
   }
 
-  const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
-  }
-
   const calcRoute = async (value) => {
     if(originRef.current.value === '' || destinationRef.current.value === ''){
       return ;
@@ -148,9 +143,9 @@ catch{
 
   return (
       <Box sx={{display:"flex",flexDirection:"column"}}>
-      <Header toggleDrawer={toggleDrawer}/>
+      <Header weatherData={weatherData}/>
       <Box className="main-content" sx={{display:"flex",backgroundColor:"white"}}>
-          <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} toggleDrawer={toggleDrawer} changeDirectionsRender={changeDirectionsRender} getCenter={getCenter} getZoom={getZoom} weather ={weatherData} />
+          <Menu getData={getData} directions={directions} getRouteShape={getRouteShape} getFavData={getFavData} origin={originRef} getAddress ={getAddress}destination={destinationRef} calcRoute={calcRoute} map={{map}} clearDetails={clearDetails} swap={swapInputFields} changeDirectionsRender={changeDirectionsRender} getCenter={getCenter} getZoom={getZoom} weather ={weatherData} />
 
       <NewMap favmarker={favData} directions={directions} markerdetail={markerinfo} routeshape={routeshape} routeIndex={routeIndex} center={center} zoom={zoom}/>
 

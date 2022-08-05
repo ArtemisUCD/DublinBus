@@ -11,23 +11,11 @@ import thunderstorm from '../Weather/img/11d.png';
 import snow from '../Weather/img/13d.png';
 import mist from '../Weather/img/50d.png';
 import {AppBar, Toolbar, Box} from '@mui/material'
-import { useEffect, useState } from 'react';
 import ReactLoading from "react-loading";
 
-const Header = (props) => {
+const Header = ({weatherData}) => {
 
-  const [todayweather, setTodayWeather] = useState([]);
   let weatherDetails;
-
-  useEffect(() => {
-    fetch("api/forecast")
-    .then(response => response.json())
-    .then(data => setTodayWeather(data))
-  },[]);
-
-  const first = todayweather[0];
-  console.log("today's weather",todayweather);
-  console.log(first);
 
   const icons = {
     "01d":clear_sky,
@@ -41,20 +29,20 @@ const Header = (props) => {
     "50d":mist  
 }
 
-  if(first!==undefined){
+  if(weatherData!==undefined){
     weatherDetails = <Box sx={{ flexGrow: 1, width:"50%"}}>
     <Box sx={{float:"right"}}>
-      <img src={icons[first?.weather_icon]} className="todayweather-icon" alt="weather-icon"/>
+      <img src={icons[weatherData[0].weather_icon]} className="todayweather-icon" alt="weather-icon"/>
     </Box>
     <Box sx={{float:"right" }}>
-      <p>{Math.round(first?.temperature)}°C</p>
+      <p>{Math.round(weatherData[0].temperature)}°C</p>
     </Box>
   </Box>
 
   }
   else{
     weatherDetails= <Box sx={{display:"flex",alignItems:"center"}}>
-    <span>Weather Loading</span><ReactLoading type="bubbles" color="#FFFFFF" height={40} width={50}/ >
+    <span>Weather Loading</span><ReactLoading type="bubbles" color="#FFFFFF" height={40} width={50}/>
   </Box>
   }
 
