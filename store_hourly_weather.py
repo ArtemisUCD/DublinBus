@@ -78,4 +78,4 @@ while True :
     db_session.commit() # commit dataset when all entries have been parsed
     conn.close()
 
-    time.sleep(600) #10 minutes
+    time.sleep(3600) #1hour
