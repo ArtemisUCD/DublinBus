@@ -21,7 +21,6 @@ while True :
    ###########################
     # for windows
     USER = os.environ['MYSQL_USERNAME']
-<<<<<<< HEAD
     PASSWORD =(os.environ['DUBLIN_BUS_PASSWORD'])
     PORT = os.environ['MYSQL_PORT']
     URI= os.environ['DUBLIN_BUS_ENDPOINT']
@@ -32,12 +31,7 @@ while True :
     #PORT = os.getenv['MYSQL_PORT']
     #URI= os.getenv['DUBLIN_BUS_ENDPOINT']
     #DATABASE =  os.getenv['MYSQL_DATABASE']
-=======
-    PASSWORD = urllib.parse.quote_plus(os.environ['DUBLIN_BUS_PASSWORD'])
-    PORT = os.environ['MYSQL_PORT']
-    URI= os.environ['DUBLIN_BUS_ENDPOINT']
-    DATABASE =  os.environ['MYSQL_DATABASE']
->>>>>>> 78dd5c6d9b24a950233196e620ce195338111c6c
+
 
     engine = create_engine(f"mysql+pymysql://{USER}:{PASSWORD}@{URI}:{PORT}/{DATABASE}")
     conn = engine.connect()
