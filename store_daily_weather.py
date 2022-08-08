@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import urllib.parse
 from datetime import datetime
+import sys
 import os
 from dotenv import load_dotenv
 import time
@@ -17,11 +18,19 @@ while True :
     weather_data = getDailyWeather()
 
     # Database details from env file
-    USER = os.environ['MYSQL_USERNAME']
-    PASSWORD = urllib.parse.quote_plus(os.environ['DUBLIN_BUS_PASSWORD'])
-    PORT = os.environ['MYSQL_PORT']
-    URI= os.environ['DUBLIN_BUS_ENDPOINT']
-    DATABASE =  os.environ['MYSQL_DATABASE']
+   ###########################
+    # for windows
+    # USER = os.environ['MYSQL_USERNAME']
+    # PASSWORD = urllib.parse.quote_plus(os.environ['DUBLIN_BUS_PASSWORD'])
+    # PORT = os.environ['MYSQL_PORT']
+    # URI= os.environ['DUBLIN_BUS_ENDPOINT']
+    # DATABASE =  os.environ['MYSQL_DATABASE']
+
+    USER = os.getenv['MYSQL_USERNAME']
+    PASSWORD = urllib.parse.quote_plus(os.getenv['DUBLIN_BUS_PASSWORD'])
+    PORT = os.getenv['MYSQL_PORT']
+    URI= os.getenv['DUBLIN_BUS_ENDPOINT']
+    DATABASE =  os.getenv['MYSQL_DATABASE']
 
     engine = create_engine(f"mysql+pymysql://{USER}:{PASSWORD}@{URI}:{PORT}/{DATABASE}")
     conn = engine.connect()

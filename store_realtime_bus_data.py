@@ -2,6 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Boolean,TIMESTAMP
 from sqlalchemy.sql import select
 import urllib.request, json
+import sys
 import os
 import warnings
 import time
@@ -10,23 +11,26 @@ warnings.simplefilter(action='ignore', category=FutureWarning) # hide all warnin
 
 while True :
 
-    db_password = os.environ['DUBLIN_BUS_PASSWORD']
-    db_location = os.environ['DUBLIN_BUS_ENDPOINT']
+    USER = os.environ['MYSQL_USERNAME']
+    PASSWORD = urllib.parse.quote_plus(os.environ['DUBLIN_BUS_PASSWORD'])
+    PORT = os.environ['MYSQL_PORT']
+    URI= os.environ['DUBLIN_BUS_ENDPOINT']
+    DATABASE =  os.environ['MYSQL_DATABASE']
 
-    engine = create_engine('mysql+mysqlconnector://admin:'+db_password+'@'+db_location+':3306/artemis')
+    engine = create_engine(f"mysql+pymysql://{USER}:{PASSWORD}@{URI}:{PORT}/{DATABASE}")
     dbConnection = engine.connect()
 
 
     metadata = MetaData(dbConnection)
 
-    trips = Table('trips', metadata, autoload_with=engine)
-    # routes = Table('routes', metadata, autoload_with=engine)
+    # trips = Table('trips', metadata, autoload_with=engine)
+    routes = Table('routes', metadata, autoload_with=engine)
 
-    s = select([trips.c.trip_id]) # c to say it's a colun 
+    s = select([routes.c.route_id]) # c to say it's a colun 
     result = dbConnection.execute(s)
 
     trip_id_list = [r for r, in result]
-    print(len(trip_id_list))
+    print('len(trip_id_list)',len(trip_id_list))
 
     api_key = os.environ['GTFSR_API_KEY']
 
@@ -66,8 +70,8 @@ while True :
             current_trip = bus['TripUpdate']['Trip']
             RouteId = current_trip['RouteId']
             TripId = current_trip['TripId']
-            # print(RouteId,'\n\n')
-            if TripId in trip_id_list : #check if route is dublin bus 
+            # print('TripId',TripId,'RouteId',RouteId,'\n\n')
+            if RouteId in trip_id_list : #check if route is dublin bus 
                 # print(TripId,'in the list !! of db \n\n')
                 # TripId = current_trip['TripId']
                 StartTime = current_trip['StartTime']
@@ -134,7 +138,7 @@ while True :
                                         'stop_sequence':StopSequence,'stop_id':StopId,'arrival_delay':ArrivalDelay, 'arrival_time':ArrivalTime,
                                         'departure_delay':DepartureDelay,'departure_time':DepartureTime}, ignore_index=True )
         print('len of dublin bus buses',len(df_buses_updates))
-        print('fini')
+        # print('fini')
         
 
     except Exception as e:
