@@ -13,6 +13,7 @@ import time
 load_dotenv()
 
 while True :
+    print('start store_hourly_weather.py')
 
     # load weather data from openweather API
     weather_data = getHourlyWeather()
@@ -77,5 +78,5 @@ while True :
         db_session.add(row)
     db_session.commit() # commit dataset when all entries have been parsed
     conn.close()
-
+    print('finish store_hourly_weather.py && sleep for 1 hour ')
     time.sleep(3600) #1hour

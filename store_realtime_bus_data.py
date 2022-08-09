@@ -10,6 +10,7 @@ import time
 warnings.simplefilter(action='ignore', category=FutureWarning) # hide all warnings from panda future updates !
 
 while True :
+    print('start store_realtime_bus_data.py')
 
     USER = 'admin'
     PASSWORD = 'dublinBus55!'
@@ -38,8 +39,8 @@ while True :
     trip_id_list = [r for r, in result]
     print('len(trip_id_list)',len(trip_id_list))
 
-    api_key = os.environ['GTFSR_API_KEY']
-
+    # api_key = os.environ['GTFSR_API_KEY']
+    api_key = '0b8c0770b3ba49078a21b51306a66b75'
     try:
         url = "https://api.nationaltransport.ie/gtfsr/v1?format=json"
 
@@ -53,7 +54,7 @@ while True :
 
         req.get_method = lambda: 'GET'
         response = urllib.request.urlopen(req)
-        print(response.getcode())#make it is ok, if 200 no problem
+        # print(response.getcode())#make it is ok, if 200 no problem
         response_string = response.read().decode("utf-8")
         response_json = json.loads(response_string)
         # with open('json_data.json', 'w') as outfile:
@@ -78,7 +79,7 @@ while True :
             TripId = current_trip['TripId']
             # print('TripId',TripId,'RouteId',RouteId,'\n\n')
             if RouteId in trip_id_list : #check if route is dublin bus 
-                # print(TripId,'in the list !! of db \n\n')
+                print(TripId,'in the list !! of db ',RouteId,'\n')
                 # TripId = current_trip['TripId']
                 StartTime = current_trip['StartTime']
                 StartDate = current_trip['StartDate']
@@ -183,5 +184,5 @@ while True :
 
     finally:
         dbConnection.close()
-    print('time to sleep')
+    print('finish store_realtime_bus_data.py && sleep for 10 minutes ')
     time.sleep(600) #10 minutes

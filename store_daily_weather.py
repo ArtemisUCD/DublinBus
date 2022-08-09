@@ -13,7 +13,7 @@ import time
 while True :
     # load environment variable file
     load_dotenv()
-
+    print('start store_daily_weather.py')
     # load weather data from openweather API
     weather_data = getDailyWeather()
 
@@ -68,7 +68,7 @@ while True :
         db_session.add(row)
     db_session.commit() # commit dataset when all entries have been parsed
     conn.close()
-
+    print('finish store_daily_weather.py && sleep for 12 hours ')
     time.sleep(43200) # 12 hours
 
 
