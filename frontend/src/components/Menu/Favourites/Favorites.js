@@ -10,7 +10,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import ReactLoading from "react-loading";
 import FavouriteItem from './FavouriteItem'
 
@@ -18,62 +18,62 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
 
     const [realTimeData, setRealTimeData] = useState();
     const [showRealTime, setShowRealTime] = useState(false);
-    const [routeId, setRouteId] = useState();
-    const [showrouteUpdate, setShowrouteUpdata] = useState(false);
+    const [showRoute, setShowRoute] = useState(false);
     const [isLoading,setIsLoading]= useState(false);
     const [expanded, setExpanded] = useState('Favourite Routes');
+    const [routeList, setRouteList] = useState();
+    const [routeShape, setRouteShape] = useState();
 
-    let favouriteRoutes;
-    const [favouriteStops,setFavouriteRoutes] = useState();
+    const [favouriteRoutes,setFavouriteRoutes] = useState();
+    const [favouriteStops,setFavouriteStops] = useState();
+
+    const previousValues = useRef({ routeList, routeShape });
 
     const handleChange = useCallback((value)=> {
         setExpanded(value);
       },[]);
     
-    const getRouteinfo = (item) => {
-        setRouteId(item.route_id)
-        getData(routeList)
-        getFavData(null)
-        getRouteShape(routeshape) 
-        getCenter({lat: 53.306221, lng: -6.21914755});
-        getZoom(11)
-        setShowrouteUpdata(true)
-    }
-
-        useEffect(()=>{
-            if(realTimeData!==undefined){
-            setIsLoading(false)
-            setShowRealTime(true)
-            }
-        },[realTimeData])
-
-
-    const [routeList, setRouteList] = useState([]);
-        
-    useEffect(() => {
-        if(routeId!==undefined){
-        fetch("/buses/getStopsForRoute/"+routeId+"/")
+    const getRouteinfo = useCallback(async (item) => {
+        setIsLoading(true)
+        fetch("/buses/getStopsForRoute/"+item.route_id+"/")
         .then(response => response.json())
         .then(data => setRouteList(data))
-      }}
-   ,[routeId]);
-
-    const [routeshape, setRouteShape] = useState([]);
-
-    useEffect(() => {
-        if(routeId!==undefined){
-        fetch("/buses/getShape/"+routeId+"/")
+        fetch("/buses/getShape/"+item.route_id+"/")
         .then(response => response.json())
         .then(data => setRouteShape(data))
-      }}
-       ,[routeId]);
+        getCenter({lat: 53.306221, lng: -6.21914755});
+        getZoom(11)
+    },[getCenter,getZoom])
 
-    const toggleFavouriteRoute = (busRoute) =>{
+    useEffect(()=>{
+            if (
+                previousValues.current.routeShape !== routeShape &&
+                previousValues.current.routeList !== routeList
+              ) {
+                getData(routeList)
+                getFavData(null)
+                getRouteShape(routeShape) 
+                setIsLoading(false)
+                setShowRoute(true)
+                previousValues.current = { routeList, routeShape };
+              }
+        
+    },[routeList,routeShape,getData,getFavData,getRouteShape])
+
+    useEffect(()=>{
+        if(realTimeData!==undefined){
+        setIsLoading(false)
+        setShowRealTime(true)
+        }
+    },[realTimeData])
+        
+
+    const toggleFavouriteRoute = useCallback((busRoute) =>{
         onUnLikeRoute(busRoute)
-    }
+    },[onUnLikeRoute])
 
     const backfav = () => {
-        setShowrouteUpdata(false);
+        setShowRoute(false);
     }
 
     const toggleFavourite = useCallback((busRoute) =>{
@@ -95,9 +95,13 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
         getData(null)
     },[getCenter,getData,getFavData, getZoom])
 
-
-    if(favoritesR && favoritesR.length>0 && showrouteUpdate===false){
-    favouriteRoutes = <List>{favoritesR.map((item, index) => (
+useEffect(()=>{
+    if(favoritesR && showRoute===false){
+        if(isLoading){
+            setFavouriteRoutes(<Box sx={{display:"flex",justifyContent:"center"}}><p>Fetching Route Info</p><ReactLoading type="bubbles" color="#000000" height={100} width={50}/></Box>)
+        }
+        else(
+    setFavouriteRoutes(<List>{favoritesR.map((item, index) => (
         <ListItem key={index} >
             <IconButton
                 onClick={()=>toggleFavouriteRoute(item)}>
@@ -109,10 +113,10 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
             </ListItemButton>
         </ListItem>
     ))}
-    </List>
+    </List>))
     }
-    else if(favoritesR && favoritesR.length>0 && showrouteUpdate===true){
-        favouriteRoutes = <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
+    else if(favoritesR && showRoute===true){
+        setFavouriteRoutes(<Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
         <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
             <Box>
                 <Button sx={{marginBottom:"1rem"}}onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
@@ -135,19 +139,20 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
             ))}
             </List>
         </Box> 
-</Box>
+</Box>)
     }
     else{
-        favouriteRoutes = <Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite routes</strong></Box>
+       setFavouriteRoutes(<Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite routes</strong></Box>)
     }
+},[favoritesR, getRouteinfo,isLoading,routeList,showRoute,toggleFavouriteRoute])
 
     useEffect(()=>{
         if(favouritesS && showRealTime===false){
             if(isLoading){
-                setFavouriteRoutes(<Box sx={{display:"flex",justifyContent:"center"}}><p>Fetching Real Time</p><ReactLoading type="bubbles" color="#000000" height={100} width={50}/></Box>)
+                setFavouriteStops(<Box sx={{display:"flex",justifyContent:"center"}}><p>Fetching Real Time</p><ReactLoading type="bubbles" color="#000000" height={100} width={50}/></Box>)
             }
             else{
-                setFavouriteRoutes(<List>
+                setFavouriteStops(<List>
                     {favouritesS.map((item, index) => (
                         <ListItem key={index} >
                             <IconButton
@@ -165,7 +170,7 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
 
         }
         else if(favouritesS && showRealTime===true){
-            setFavouriteRoutes(<Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
+            setFavouriteStops(<Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
 <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
     <Box>
         <Button sx={{marginBottom:"1rem"}} onClick={backfav2} variant="outlined" size="small" >Back to Favorite List</Button>
@@ -202,8 +207,9 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
                 </Box>)
         }
         else{
-            setFavouriteRoutes(<Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite stops</strong></Box>)
+            setFavouriteStops(<Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite stops</strong></Box>)
         }},[favouritesS,showRealTime,realTimeData, toggleFavourite, getRealTime,isLoading])
+
 
 
     return (
