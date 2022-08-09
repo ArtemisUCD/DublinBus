@@ -30,10 +30,13 @@ const Weather = ({weatherData}) => {
             "13d":snow,
             "50d":mist  
         }
+    
+    const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
-    const first = weatherData[0];
-    console.log(weatherData);
-    console.log(first);
+    const dateToday = new Date();
+    let currentDay = weekday[dateToday.getDay()]
+    let weatherToday = weatherData.filter(weather=> weather.date===currentDay)
+    const first = weatherToday[0];
 
     let weatherDetails;
     
@@ -51,13 +54,10 @@ const Weather = ({weatherData}) => {
         .then((response) => response.json())
         .then(data => setData(data))
     },[])
-    console.log(data);
 
     let currentdetail;
     if(data.length > 0 ){
-        console.log(true)
         const first = data[0];
-        console.log(first)
         currentdetail = <div>
                             <div>
                                 Uvi: <span>{first.uvi}</span>
@@ -81,7 +81,6 @@ const Weather = ({weatherData}) => {
                                 Wind: <span>Loading...</span>
                             </div>
                         </div>
-        console.log(false)
     }
 
     
