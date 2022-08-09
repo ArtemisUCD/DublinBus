@@ -15,6 +15,8 @@ import ReactLoading from "react-loading";
 
 const Header = ({weatherData}) => {
 
+  const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
   let weatherDetails;
 
   const icons = {
@@ -29,13 +31,18 @@ const Header = ({weatherData}) => {
     "50d":mist  
 }
 
+
   if(weatherData!==undefined){
+// match the weather based on the current day
+const dateToday = new Date();
+let currentDay = weekday[dateToday.getDay()]
+let weatherToday = weatherData.filter(weather=> weather.date===currentDay)
     weatherDetails = <Box sx={{ flexGrow: 1, width:"50%"}}>
     <Box sx={{float:"right"}}>
-      <img src={icons[weatherData[0].weather_icon]} className="todayweather-icon" alt="weather-icon"/>
+      <img src={icons[weatherToday[0].weather_icon]} className="todayweather-icon" alt="weather-icon"/>
     </Box>
     <Box sx={{float:"right" }}>
-      <p>{Math.round(weatherData[0].temperature)}°C</p>
+      <p>{Math.round(weatherToday[0].temperature)}°C</p>
     </Box>
   </Box>
 

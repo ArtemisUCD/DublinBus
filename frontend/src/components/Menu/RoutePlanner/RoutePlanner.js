@@ -81,7 +81,7 @@ const RoutePlanner = ({origin,destination,
         let timings;
         let stepTimes;
         let routeTimings;
-        const newRoutes=["H3","6","155"]
+        const modelledRoutes= ['68', '45A', '25A', '14', '77A', '39', '16', '40D', '27B', '142', '83', '130', '15', '46A', '33', '7', '39A', '1', '41', '67X', '59', '9', '40', '239', '84', '53', '185', '151', '13', '15B', '65B', '29A', '61', '140', '123', '79A', '38A', '31', '69', '44', '42', '67', '184', '238', '145', '17A', '32', '27A', '17', '122', '54A', '66', '150', '56A', '37', '27', '15A', '65', '47', '76', '79', '83A', '63', '33B', '4', '120', '41C', '70', '84A', '220', '84X', '38', '102', '270', '33X', '75', '26', '66A', '31A', '49', '111', '18', '11', '114', '76A', '44B', '7A', '43', '25', '104', '33A', '31B', '66X', '39X', '41B', '25B', '25D', '40B', '66B', '38B', '7B', '41X', '40E']
   
         const getModelValues = async (routeIndex,stepIndex,step)=>{
           let weatherSummary = weather.filter(el=>el.date===weekday[startTime.getDay()])[0].weather_icon.slice(0,-1)
@@ -96,11 +96,8 @@ const RoutePlanner = ({origin,destination,
           for(const [routeIndex, route] of modeltimings.entries()){
             for(const [stepIndex, step] of route.entries()){
               if(step.travel_mode==="TRANSIT"){
-              if(!newRoutes.includes(step.transit.line.short_name)){
+              if(modelledRoutes.includes(step.transit.line.short_name)){
               await getModelValues(routeIndex,stepIndex,step)
-              }
-              else{
-                console.log(`${step.transit.line.short_name} does not have a model`)
               }
               }
             }
