@@ -22,17 +22,17 @@ while True :
     # Database details from env file
     ###########################
     # for windows
-    USER = os.environ['MYSQL_USERNAME']
-    PASSWORD = urllib.parse.quote_plus(os.environ['DUBLIN_BUS_PASSWORD'])
-    PORT = os.environ['MYSQL_PORT']
-    URI= os.environ['DUBLIN_BUS_ENDPOINT']
-    DATABASE =  os.environ['MYSQL_DATABASE']
+    USER = 'admin'
+    PASSWORD = 'dublinBus55!'
+    PORT = '3306'
+    URI= 'dublinbus.cgaizveb7ftf.us-east-1.rds.amazonaws.com'
+    DATABASE =  'artemis'
 
-    # USER = os.getenv['MYSQL_USERNAME']
-    # PASSWORD = urllib.parse.quote_plus(os.getenv['DUBLIN_BUS_PASSWORD'])
-    # PORT = os.getenv['MYSQL_PORT']
-    # URI= os.getenv['DUBLIN_BUS_ENDPOINT']
-    # DATABASE =  os.getenv['MYSQL_DATABASE']
+    # USER = os.environ['MYSQL_USERNAME']
+    # PASSWORD = urllib.parse.quote_plus(os.environ['DUBLIN_BUS_PASSWORD'])
+    # PORT = os.environ['MYSQL_PORT']
+    # URI= os.environ['DUBLIN_BUS_ENDPOINT']
+    # DATABASE =  os.environ['MYSQL_DATABASE']
 
     engine = create_engine(f"mysql+pymysql://{USER}:{PASSWORD}@{URI}:{PORT}/{DATABASE}")
     conn = engine.connect()
