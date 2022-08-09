@@ -1,5 +1,5 @@
 import './BusRouteList.css'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Box, TextField, List, ListItem, ListItemText} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete';
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -8,14 +8,12 @@ import ReactLoading from "react-loading";
 const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlikeRoute }) => {
 
     const [routeList, setRouteList] =useState([]);
-    const [showinfo, setShowinfo] = useState(false);
-    const [value, setValue] = useState("");
-    const [routeId, setRouteId] = useState("60-41-b12-1");
     const [busroute, setBusroute] = useState([]);
     const [routeSelected, setRouteSelected] = useState();
-    const [showfavicon, setshowfavicon] = useState(false);
-    const [routeshape, setRouteShape] = useState([]);
+    const [routeShape, setRouteShape] = useState([]);
+    const [fetchingData,setFetchingData] = useState(false)
 
+    const previousValues = useRef({ busroute, routeShape });
     
     useEffect(() => {
         fetch("/buses/getBusRouteList")
@@ -23,26 +21,32 @@ const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlike
         .then(data => setRouteList(data))
     },[]);
 
-    useEffect(() => {
-        fetch("/buses/getStopsForRoute/"+routeId+"/")
-        .then(response => response.json())
-        .then(data => setBusroute(data))
-      },[routeId]);
 
-      useEffect(() => {
-        fetch("/buses/getShape/"+routeId+"/")
-        .then(response => response.json())
-        .then(data => setRouteShape(data))
-      },[routeId]);
+    useEffect(() => {
+        if(routeSelected!==undefined){
+            setFetchingData(true)
+            fetch("/buses/getStopsForRoute/"+routeSelected.route_id+"/")
+            .then(response => response.json())
+            .then(data => setBusroute(data))
+            fetch("/buses/getShape/"+routeSelected.route_id+"/")
+            .then(response => response.json())
+            .then(data => setRouteShape(data))
+        }
+      },[routeSelected]);
+
+      console.log("fetching data?",fetchingData)
 
       useEffect(()=>{
-        if(busroute!==undefined && routeSelected!==undefined){
-        setShowinfo(true);
-        setshowfavicon(true);
+      if (
+        previousValues.current.routeShape !== routeShape &&
+        previousValues.current.busroute !== busroute
+      ) {
         getData(busroute);
-        getRouteShape(routeshape);
-      }
-    },[busroute,routeSelected, favouritesR, routeId, routeshape,getData,getRouteShape])
+        getRouteShape(routeShape);
+        setFetchingData(false)
+        previousValues.current = { busroute, routeShape };
+      } 
+    },[busroute, favouritesR, routeSelected, routeShape,getData,getRouteShape])
     
     let toggleFavouriteRoute = (busroute) =>{
         if(!favouritesR.some((v => v.route_id === busroute.route_id))){
@@ -70,7 +74,14 @@ const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlike
                         isOptionEqualToValue={(option, value) =>
                             option.concat_name === value.concat_name
                         }
-                        onChange={(e,value) => {setValue(value.concat_name); setRouteId(value.route_id); setRouteSelected({"route_name": value.concat_name, "route_id": value.route_id})}}
+                        onChange={(e,value) => {
+                        if(value!==null){
+                            setRouteSelected({"route_name": value.concat_name, "route_id": value.route_id})
+                        }
+                        else{
+                            setRouteSelected(undefined)
+                        }
+                        }}
                         noOptionsText={<Box sx={{display:"flex",alignItems:"center"}}>Bus Routes loading<ReactLoading type="bubbles" color="#000000" height={50} width={50}/></Box>}
                         renderOption={(props, routeList) => (
                             <Box component="li" {...props} key={routeList.concat_name}>
@@ -79,14 +90,11 @@ const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlike
                         )}
                         renderInput={(params)=><TextField {...params} label="Route name/number" />}
                     />
-                    {showfavicon && (
-                        <div>
+                    {routeSelected?  <div>
                          {favouritesR.some((v => v.route_id === routeSelected.route_id)) ? <FaHeart className={"heart full"} onClick={()=>toggleFavouriteRoute(routeSelected)}/> : <FaRegHeart className={"heart empty"} onClick={()=>toggleFavouriteRoute(routeSelected)}/>}
-                        </div>
-                    )}
-                    
+                        </div>:null}
                 </Box>
-                {showinfo && (
+                {routeSelected?fetchingData?<Box sx={{display:"flex",justifyContent:"center"}}><p>Fetching Route Info</p><ReactLoading type="bubbles" color="#000000" height={100} width={50}/></Box>:
                     <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
                         <Box sx={{display:"flex", justifyContent:"flex-start", width:"100%"}}>
                          <List
@@ -111,11 +119,9 @@ const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlike
                             
                     </List>
                 </Box> 
-                    </Box>
-                )}
+                    </Box>:null}
                 </Box>
                 <Box>
-                
                 </Box>
                 </Box>
     )
