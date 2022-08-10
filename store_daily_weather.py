@@ -19,11 +19,14 @@ while True :
 
     # Database details from env file
    ###########################
-    USER = 'admin'
-    PASSWORD = 'dublinBus55!'
-    PORT = '3306'
-    URI= 'dublinbus.cgaizveb7ftf.us-east-1.rds.amazonaws.com'
-    DATABASE =  'artemis'
+    f=open("keys.txt","r")
+    lines=f.read().splitlines()
+    USER = lines[0]
+    PASSWORD = lines[1]
+    PORT = lines[2]
+    URI= lines[3]
+    DATABASE =  lines[4]
+    f.close()
 
     # USER = os.environ['MYSQL_USERNAME']
     # PASSWORD = urllib.parse.quote_plus(os.environ['DUBLIN_BUS_PASSWORD'])

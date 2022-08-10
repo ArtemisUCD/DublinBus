@@ -4,8 +4,10 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
-api_key = '764413d2bba3ad04ad4bdc5a0e5a17ea'
+f=open("keys.txt","r")
+lines=f.read().splitlines()
+api_key = lines[6]
+f.close()
 # function to return historical weather data for Dublin
 def getHistoricalWeather():
     datapointCount = 10
