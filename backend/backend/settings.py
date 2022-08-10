@@ -26,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#a*3l93pzv9ei1!iw*b&o3_7w$)xt*w-btb1w^*_qmq&4p$l3*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["137.43.49.24"]
+ALLOWED_HOSTS = ["137.43.49.24", "localhost"]
 
 
 # Application definition
@@ -81,15 +81,24 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # # # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 # db_password = os.environ['DUBLIN_BUS_PASSWORD']
 # db_location = os.environ['DUBLIN_BUS_ENDPOINT']
+f=open(r"C:\Users\elisebrard\Desktop\keys.txt")
+lines=f.read().splitlines()
+USER = lines[0]
+PASSWORD = lines[1]
+PORT = lines[2]
+URI= lines[3]
+DATABASE =  lines[4]
+f.close()
 
 DATABASES = {
     'default': {
+        
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'artemis',
-        'USER': 'admin',
-        'PASSWORD': 'dublinBus55!',
-        'HOST': 'dublinbus.cgaizveb7ftf.us-east-1.rds.amazonaws.com',
-        'PORT': '3306',
+        'NAME': DATABASE,
+        'USER': USER,
+        'PASSWORD': PASSWORD,
+        'HOST': URI,
+        'PORT': PORT,
     }
 }
 

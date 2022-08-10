@@ -35,7 +35,7 @@ def getUpdatesForStop(request,stop_id_requested):
     # stop_id_selected = '8220DB000326' 
     df_trips = pd.DataFrame(list(Trips.objects.all().values()))
     df_route = pd.DataFrame(list(Routes.objects.all().values()))
-
+    print('in fnctuin')
     if stop_id_requested is not None:
         update_set = BusesUpdates.objects.filter(stop_id=stop_id_requested)     
    
@@ -146,7 +146,7 @@ def getBusRouteList(request):
         route_dict = {'route_id': route_id, 'concat_name': concat_name_str }
         routes.append(route_dict)
 
-    return Response(routes) #return the data 
+    return Response(routes) #return the data
 
 
 @api_view(['GET'])
