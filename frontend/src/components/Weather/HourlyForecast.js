@@ -4,8 +4,6 @@ import { useLayoutEffect, useRef } from "react";
 
 const HourlyForecast = (props) =>{
     const chart = useRef(null);
-
-    console.log(props.data);
   
     useLayoutEffect(() => {
       let x = am4core.create("chartdiv", am4charts.XYChart);

@@ -3,6 +3,7 @@ import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import { Box } from "@mui/material";
 import { useRef } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const RouteSummary = (props) => {
 
@@ -14,7 +15,7 @@ const RouteSummary = (props) => {
     }
 
     return(
-        <AccordionSummary expanded ={expanded} onClick = {handleClick} key={Math.random()}
+        <AccordionSummary  expandIcon={<ExpandMoreIcon />} expanded ={expanded} onClick = {handleClick} key={Math.random()}
         aria-controls="panel1a-content"
         sx={{width:"100%",display:"flex",paddingLeft:"2rem"}}
         >{props.routeObj.map((stepObj) =>{

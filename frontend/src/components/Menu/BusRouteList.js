@@ -34,8 +34,6 @@ const BusRouteList = ({ getData, getRouteShape, favouritesR,onLikeRoute,onUnlike
         }
       },[routeSelected]);
 
-      console.log("fetching data?",fetchingData)
-
       useEffect(()=>{
       if (
         previousValues.current.routeShape !== routeShape &&

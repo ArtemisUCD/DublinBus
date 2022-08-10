@@ -96,7 +96,7 @@ const Favorites = ({getData,getRouteShape, getCenter, getZoom, getFavData, onUnl
     },[getCenter,getData,getFavData, getZoom])
 
 useEffect(()=>{
-    if(favoritesR && showRoute===false){
+    if(favoritesR && favoritesR.length>0 && showRoute===false){
         if(isLoading){
             setFavouriteRoutes(<Box sx={{display:"flex",justifyContent:"center"}}><p>Fetching Route Info</p><ReactLoading type="bubbles" color="#000000" height={100} width={50}/></Box>)
         }
@@ -115,11 +115,11 @@ useEffect(()=>{
     ))}
     </List>))
     }
-    else if(favoritesR && showRoute===true){
+    else if(favoritesR && favoritesR.length>0 && showRoute===true){
         setFavouriteRoutes(<Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
         <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
             <Box>
-                <Button sx={{marginBottom:"1rem"}}onClick={backfav}variant="outlined" size="small" >Back to Favorite List</Button>
+                <Button sx={{marginBottom:"1rem"}}onClick={backfav}variant="outlined" size="small" >Back to Favourite List</Button>
             </Box>
             <List
             sx={{
@@ -147,7 +147,7 @@ useEffect(()=>{
 },[favoritesR, getRouteinfo,isLoading,routeList,showRoute,toggleFavouriteRoute])
 
     useEffect(()=>{
-        if(favouritesS && showRealTime===false){
+        if(favouritesS && favouritesS.length>0 && showRealTime===false){
             if(isLoading){
                 setFavouriteStops(<Box sx={{display:"flex",justifyContent:"center"}}><p>Fetching Real Time</p><ReactLoading type="bubbles" color="#000000" height={100} width={50}/></Box>)
             }
@@ -169,11 +169,11 @@ useEffect(()=>{
             }
 
         }
-        else if(favouritesS && showRealTime===true){
+        else if(favouritesS && favouritesS.length>0 && showRealTime===true){
             setFavouriteStops(<Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",borderRadius:"10px;"}}>
 <Box sx={{height:"50%",display:"flex",marginTop:"1rem",flexDirection:"column",}}>
     <Box>
-        <Button sx={{marginBottom:"1rem"}} onClick={backfav2} variant="outlined" size="small" >Back to Favorite List</Button>
+        <Button sx={{marginBottom:"1rem"}} onClick={backfav2} variant="outlined" size="small" >Back to Favourite List</Button>
     </Box>
     <TableContainer component={Paper}
                         sx={{maxHeight:400,}}>
@@ -209,8 +209,6 @@ useEffect(()=>{
         else{
             setFavouriteStops(<Box sx={{display:"flex",justifyContent:"center"}}><strong>No favourite stops</strong></Box>)
         }},[favouritesS,showRealTime,realTimeData, toggleFavourite, getRealTime,isLoading])
-
-
 
     return (
         <Box sx={{ display:'flex', flexDirection:"column",zIndex:"1",backgroundColor:"white",marginLeft:"1rem",borderRadius:"10px;", maxheight:"300px"}}>

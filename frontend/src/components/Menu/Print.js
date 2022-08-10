@@ -1,6 +1,5 @@
 function Print() {
     const download = e => {
-      console.log(e.target.href);
       fetch(e.target.href, {
         method: "GET",
         headers: {}
@@ -16,7 +15,6 @@ function Print() {
           });
         })
         .catch(err => {
-          console.log(err);
         });
     };
     return (

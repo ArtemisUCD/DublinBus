@@ -70,7 +70,6 @@ const Menu = ( {getData,directions,getRouteShape,getFavData,origin,getAddress,de
       
     // function to remove bus route from list of favourites
   const removeFavourite = useCallback((stopnum) =>{
-    console.log("favourites in function",favouriteStops)
     setFavouriteStops((prevFavouriteStops) =>{
       return prevFavouriteStops.filter(stop => stop.stop_id!== stopnum.stop_id)
     })},[favouriteStops])
@@ -84,7 +83,7 @@ return(
         <Tab icon={<DirectionsIcon />} label="Directions" value="1" />
         <Tab icon={<DirectionsBusIcon />} label="Bus Routes" value="2" />
         <Tab icon={<AccessTimeIcon />} label="Real Time Info" value="3" />
-        <Tab icon={<FavoriteBorderIcon />} label="Favorite" value="4" />
+        <Tab icon={<FavoriteBorderIcon />} label="Favourite" value="4" />
         <Tab icon={<WbSunnyIcon />} label="Weather" value="5" />
         <Tab icon={<TwitterIcon />} label="Twitter" value="6" />
       </Tabs>

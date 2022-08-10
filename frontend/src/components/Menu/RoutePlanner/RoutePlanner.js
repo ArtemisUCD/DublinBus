@@ -84,7 +84,7 @@ const RoutePlanner = ({origin,destination,
           let theanswer = await fetch("/buses/getEstimateTime/"+(Math.round((startTime.getTime()/1000)))+`/${step.transit.line.short_name}/${step.transit.headsign}/${step.transit.num_stops}/${weatherSummary}`)
           let response = await theanswer.json()
           timings[routeIndex][stepIndex]=response
-          console.log(`model output for ${step.transit.line.short_name} loc ${routeIndex}${stepIndex}`,response)
+
         }
   
         const timesUpdated = async ()=>{
@@ -106,16 +106,12 @@ const RoutePlanner = ({origin,destination,
       setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={`route_${routeIndex}`} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings}  changeDirectionsRender={changeDirectionsRender}/>));
   
       timesUpdated().then(()=>{
-        console.log("updated times",timings);
         stepTimes = timings.map(route => route.map(cumulativeSum(0)));
         // get datetime objects for timings and add starttime as first element
         routeTimings = stepTimes.map(route => [new Date(startTime.getTime())].concat(route.map(duration => new Date(startTime.getTime() + duration * 60000))))
         setRouteList(journeyDetails.map((routeObj,routeIndex)=> <RouteItem key={`route_${routeIndex}`} routeObj={routeObj} routeIndex={routeIndex} routeTimings={routeTimings} stepTimings={timings} changeDirectionsRender={changeDirectionsRender}/>));
       })
   
-        }
-        else{
-          console.log("no directions yet")
         }
         // eslint-disable-next-line 
     },[directions,startTime,journeyDetails])
@@ -188,7 +184,7 @@ borderRadius:"10px"}}>
         </Box>        
         </Box>
         </FormControl>
-        <Box sx={{zIndex:"1", backgroundColor:"white",borderRadius:"10px"}}>
+        <Box sx={{zIndex:"1", backgroundColor:"white",borderRadius:"10px",marginTop:"1rem"}}>
         {journeyDetails ? routeList:null}
         </Box>
 </Box>

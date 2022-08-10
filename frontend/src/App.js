@@ -69,11 +69,10 @@ function App() {
   Geocode.fromLatLng(geolocation.lat, geolocation.lng).then(
   (response) => {
     const address = response.results[0].formatted_address;
-    console.log(address);
     originRef.current.value=address;
   },
   (error) => {
-    console.error(error);
+    return ;
   }
   );
   }
@@ -82,8 +81,6 @@ const getAddress = () =>{
 
     if (navigator.geolocation) {
      navigator.geolocation.getCurrentPosition(showPosition);
-    } else {
-      console.log("Geolocation not enabled")
     }
 }
 
