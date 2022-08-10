@@ -27,8 +27,8 @@ const RoutePlanner = ({origin,destination,
     const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
     const calcRoutes = () => {
-        if(origin.current === '' || destination.current === ''){
-            if(origin.current === ''&& destination.current=== ''){
+        if(origin.current.value === '' || destination.current.value === ''){
+            if(origin.current.value === ''&& destination.current.value=== ''){
                 setOriginError(true)
                 setDestinationError(true)
             }
