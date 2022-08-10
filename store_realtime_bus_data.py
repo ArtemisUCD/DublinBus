@@ -12,11 +12,15 @@ warnings.simplefilter(action='ignore', category=FutureWarning) # hide all warnin
 while True :
     print('start store_realtime_bus_data.py')
 
-    USER = 'admin'
-    PASSWORD = 'dublinBus55!'
-    PORT = '3306'
-    URI= 'dublinbus.cgaizveb7ftf.us-east-1.rds.amazonaws.com'
-    DATABASE =  'artemis'
+    f=open("keys.txt","r")
+    lines=f.read().splitlines()
+    USER = lines[0]
+    PASSWORD = lines[1]
+    PORT = lines[2]
+    URI= lines[3]
+    DATABASE =  lines[4]
+    api_key = lines[5]
+    f.close()
 
     # USER = os.environ['MYSQL_USERNAME']
     # PASSWORD = urllib.parse.quote_plus(os.environ['DUBLIN_BUS_PASSWORD'])
@@ -25,6 +29,7 @@ while True :
     # DATABASE =  os.environ['MYSQL_DATABASE']
 
     engine = create_engine(f"mysql+pymysql://{USER}:{PASSWORD}@{URI}:{PORT}/{DATABASE}")
+
     dbConnection = engine.connect()
 
 
@@ -40,7 +45,7 @@ while True :
     print('len(trip_id_list)',len(trip_id_list))
 
     # api_key = os.environ['GTFSR_API_KEY']
-    api_key = '0b8c0770b3ba49078a21b51306a66b75'
+    # api_key = '0b8c0770b3ba49078a21b51306a66b75'
     try:
         url = "https://api.nationaltransport.ie/gtfsr/v1?format=json"
 
