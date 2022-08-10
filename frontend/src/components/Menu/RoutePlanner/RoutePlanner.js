@@ -1,8 +1,7 @@
 import { IconButton, Box, TextField, Button} from '@mui/material'
-import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
 import {Autocomplete} from '@react-google-maps/api'
 import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -51,9 +50,6 @@ const RoutePlanner = ({origin,destination,
         clearDetails();
     }
 
-    const getAddress = ()=>{
-        getAddress();
-    }
 
     const swapInputFields = () => {
         swap();
@@ -152,22 +148,25 @@ const RoutePlanner = ({origin,destination,
 borderRadius:"10px"}}>
         <FormControl>
         <Box sx={{display:"flex",
-        flexDirection:"column",alignItems:"center"}}>
+        flexDirection:"column",alignItems:"flex-start",margin:"auto"}}>
+        <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}>
+        <Box sx={{display:"flex",flexDirection:"column"}}>
         <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
         <Autocomplete options={mapBounds}>
-        <TextField  id="origin" error={originError} onChange={validCheck} size="small"style={{minWidth:100,maxWidth:400,width:"90%"}} label="Origin" variant="outlined"  inputRef={origin} />
+        <TextField  id="origin" error={originError} onChange={validCheck} size="small" label="Origin" variant="outlined"  inputRef={origin} />
         </Autocomplete>
-        <IconButton size="small" onClick={getAddress} sx={{border: "2px solid gray", borderRadius: 1}}>
-        <MyLocationIcon/>
-        </IconButton>
         </Box>
         <Box sx={{display:"flex",justifyContent:"flex-start"}}>
         <Autocomplete options={mapBounds}>
-        <TextField id="destination"error={destinationError} onChange={validCheck} size="small" sx={{ minWidth:100,maxWidth:400, width:"90%"}} label="Destination" variant="outlined" inputRef={destination}/>
+        <TextField id="destination"error={destinationError} onChange={validCheck} size="small"  label="Destination" variant="outlined" inputRef={destination}/>
         </Autocomplete>
-        <IconButton size ="small" onClick={swapInputFields} sx={{border: "2px solid gray", borderRadius: 1}}>
-        <SwapHorizIcon/>
+        </Box>
+        </Box>
+        <Box sx={{marginLeft:"1rem"}}>
+        <IconButton size ="small" onClick={swapInputFields} sx={{border: "2px solid gray", borderRadius: 1,color:"black"}}>
+        <SwapVertIcon/>
         </IconButton>
+        </Box>
         </Box>
         <Box sx={{padding:"1rem 0"}}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -183,7 +182,7 @@ borderRadius:"10px"}}>
             />
         </LocalizationProvider>
         </Box>
-        <Box sx={{display:"flex",justifyContent:"space-around",width:"80%"}}>
+        <Box sx={{display:"flex",justifyContent:"space-around",width:"100%"}}>
         <Button onClick={calcRoutes}variant="contained" size="small" >Calculate Route</Button>
         <Button onClick={clearDetail}variant="contained" size="small" color="error" >Clear</Button>
         </Box>        
