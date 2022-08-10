@@ -23,7 +23,7 @@ while True :
     # Database details from env file
     ###########################
     # for windows
-    f=open("keys.txt","r")
+    f=open("/home/student/keys.txt","r")
     lines=f.read().splitlines()
     USER = lines[0]
     PASSWORD = lines[1]

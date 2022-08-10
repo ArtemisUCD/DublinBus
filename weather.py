@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-f=open("keys.txt","r")
+f=open("/home/student/keys.txt","r")
 lines=f.read().splitlines()
 api_key = lines[6]
 f.close()

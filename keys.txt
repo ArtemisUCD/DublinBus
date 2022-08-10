@@ -1,7 +1,0 @@
-admin
-dublinBus55!
-3306
-dublinbus.cgaizveb7ftf.us-east-1.rds.amazonaws.com
-artemis
-0b8c0770b3ba49078a21b51306a66b75
-764413d2bba3ad04ad4bdc5a0e5a17ea
