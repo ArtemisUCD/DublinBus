@@ -41,6 +41,7 @@ def getUpdatesForStop(request,stop_id_requested):
     all_next_buses = []
     if not df_update_set.empty :
         list_seq = df_update_set['stop_sequence'].unique()
+ 
         now = dt.datetime.now().strftime("%H:%M")
         arr_planned = now.split(':')
         time_planned_min = int(arr_planned[0])*60 + int(arr_planned[1])
