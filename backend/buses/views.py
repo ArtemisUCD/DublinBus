@@ -59,6 +59,7 @@ def getUpdatesForStop(request,stop_id_requested):
     #################### OU ALORS DROIT ZU BUT ET JUST LES 7 PROCHAINS BUS QUE TU MATCH DANS L4ORDRE AVEC LES UPDATES 
     #maybe only keep the busesc concerned ? 
     ############ then check the calendar 
+    ### pourrait faire en sorte de au lieu de checker l'index verifier la route_id aussi ...
     weekday_int = dt.datetime.now().weekday()
     if weekday_int  in [0,1,2,3,4] :
         calendar = ['1','y1001']
