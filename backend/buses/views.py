@@ -28,7 +28,6 @@ class HourlyWeatherView(viewsets.ModelViewSet):
     serializer_class = HourlyWeatherForecastSerializer
     queryset = HourlyWeather.objects.all()
 
-
 @api_view(['GET'])
 def getUpdatesForStop(request,stop_id_requested):
     # route_id_selected = '60-46A-b12-1' # harcoded trips 
@@ -37,37 +36,86 @@ def getUpdatesForStop(request,stop_id_requested):
     df_route = pd.DataFrame(list(Routes.objects.all().values()))
     print('in fnctuin')
     if stop_id_requested is not None:
-        update_set = BusesUpdates.objects.filter(stop_id=stop_id_requested)     
+        df_update_set = pd.DataFrame(list(BusesUpdates.objects.filter(stop_id=stop_id_requested).values()))
    
+    print(df_update_set['stop_sequence'])
+    list_seq = df_update_set['stop_sequence'].unique()
+    print('list_seq',list_seq)
+    now = dt.datetime.now().strftime("%H:%M")
+    arr_planned = now.split(':')
+    time_planned_min = int(arr_planned[0])*60 + int(arr_planned[1])
+    print('timt in min',time_planned_min)
+    print(len(df_update_set))
+    # all the buses at a stop 
+    df_stopTime = pd.DataFrame(list(StopTimes.objects.filter(stop_id = stop_id_requested).values()))
+        #now need all the buses after the current time
+    df_stopTime['arrival_time'] = df_stopTime['arrival_time'].map(lambda arrival_time: int(arrival_time.split(':')[0])*60 + int(arrival_time.split(':')[1]) )
+    df_stopTime = df_stopTime.drop(df_stopTime[df_stopTime['arrival_time']<time_planned_min].index)
+    print('before removing not samr bus sequence',(df_stopTime.shape))
+    df_stopTime = df_stopTime.drop(df_stopTime[ ~df_stopTime['stop_sequence'].isin(list_seq)].index) #is not in list 
+    print('ater removing not samr bus sequence',(df_stopTime.shape))
+    
+    ##check all id the stop sequance don't match in the next buses, then need to find a way to distinct the trip id
+    #################### OU ALORS DROIT ZU BUT ET JUST LES 7 PROCHAINS BUS QUE TU MATCH DANS L4ORDRE AVEC LES UPDATES 
+    #maybe only keep the busesc concerned ? 
+    ############ then check the calendar 
+    weekday_int = dt.datetime.now().weekday()
+    if weekday_int  in [0,1,2,3,4] :
+        calendar = ['1','y1001']
+    elif weekday_int  == 6 :
+        calendar = ['2','y1002']
+    else :
+        calendar = ['3','y1003']
+    print('calendar,',calendar)
+    # df_stopTime['service_id'] = df_stopTime['trip_id'].apply(lambda x: x.split(':')[1]) 
+    df_stopTime["trip_id_split"]= df_stopTime["trip_id"].str.split(".", expand = False)
+    df_stopTime['service_id'] = df_stopTime['trip_id_split'].str[1]
+
+    df_stopTime = df_stopTime.drop(df_stopTime[ ~df_stopTime['service_id'].isin(calendar)].index) #is not in list 
+    
+
+    #sort times 
+    df_stopTime = df_stopTime.sort_values(by=['arrival_time'])
+
+    df_stopTime = df_stopTime.head(len(df_update_set)).reset_index(drop=True)
+
+    print(df_stopTime['arrival_time'])
     all_next_buses = []
 
-    for stop in update_set.iterator():
-        current_trip_id = stop.trip_id
-        current_trip  = df_trips[df_trips['trip_id'] == current_trip_id].iloc[0] #trips_set.filter(trip_id=current_trip_id)
+    print(len(df_stopTime))
+    for index, stop in df_stopTime.iterrows():
+        print(stop, 'index,',index)
+        print(stop.trip_id)
+        current_trip  = df_trips[df_trips['trip_id'] == stop.trip_id].iloc[0] #trips_set.filter(trip_id=current_trip_id) 
+        print(current_trip)
         current_trip_headsign = current_trip['trip_headsign']
+        print(current_trip_headsign)
         current_trip_destination = current_trip_headsign.split('-')[1]
-        current_route_id = stop.route_id
+        current_route_id = current_trip.route_id
+        print(current_route_id)
         current_route = df_route[df_route['route_id'] == current_route_id].iloc[0] #Routes.objects.filter(route_id=stop.route_id).first()
+        print(current_route)
         current_route_num = current_route['route_short_name']
-        current_stop_time = StopTimes.objects.filter(trip_id=current_trip_id, stop_sequence=stop.stop_sequence ).values('trip_id','stop_sequence','arrival_time').first()
-        planned_arrival_time = current_stop_time['arrival_time']
-        estimated_arrival_delay = stop.arrival_delay
-        
-        if estimated_arrival_delay != -1 :
+        print(current_route_num)
+        planned_arrival_time = stop.arrival_time
+        print(planned_arrival_time)
+        estimated_arrival_delay = df_update_set.iloc[[index]].arrival_delay
+        print(estimated_arrival_delay.iloc[0])
+        if estimated_arrival_delay.iloc[0] != -1 :
             estimated_arrival_delay_min = int(estimated_arrival_delay/60)
         else :
             estimated_arrival_delay_min = 0
         
         separator = ":"
-        arr_planned = planned_arrival_time.split(separator)
-        time_planned_min = int(arr_planned[0])*60 + int(arr_planned[1])
+        
+        time_planned_min = planned_arrival_time
         time_delayed_min = time_planned_min + estimated_arrival_delay_min
-
+        print('onestla')
         estimated_arrival_time ='{:02d}:{:02d}'.format(*divmod(time_delayed_min, 60))
 
         concat_name = current_route_num + " -" + current_trip_destination
     
-        planned_arrival_time = separator.join(arr_planned[:2])
+        planned_arrival_time = '{:02d}:{:02d}'.format(*divmod(time_planned_min, 60))
 
         if estimated_arrival_delay_min == 0 :
             concat_delay = 'On time'
@@ -83,6 +131,64 @@ def getUpdatesForStop(request,stop_id_requested):
     all_next_buses = sorted(all_next_buses, key=lambda d: d['time_planned_min']) 
     # print(connection.queries)
     return Response(all_next_buses) #return the data 
+
+    return Response(all_next_buses) #return the data 
+
+##old version with the trip ids... 
+# @api_view(['GET'])
+# def getUpdatesForStop(request,stop_id_requested):
+#     # route_id_selected = '60-46A-b12-1' # harcoded trips 
+#     # stop_id_selected = '8220DB000326' 
+#     df_trips = pd.DataFrame(list(Trips.objects.all().values()))
+#     df_route = pd.DataFrame(list(Routes.objects.all().values()))
+#     print('in fnctuin')
+#     if stop_id_requested is not None:
+#         update_set = BusesUpdates.objects.filter(stop_id=stop_id_requested)     
+   
+#     all_next_buses = []
+
+#     for stop in update_set.iterator():
+#         current_trip_id = stop.trip_id
+#         current_trip  = df_trips[df_trips['trip_id'] == current_trip_id].iloc[0] #trips_set.filter(trip_id=current_trip_id)
+#         current_trip_headsign = current_trip['trip_headsign']
+#         current_trip_destination = current_trip_headsign.split('-')[1]
+#         current_route_id = stop.route_id
+#         current_route = df_route[df_route['route_id'] == current_route_id].iloc[0] #Routes.objects.filter(route_id=stop.route_id).first()
+#         current_route_num = current_route['route_short_name']
+#         current_stop_time = StopTimes.objects.filter(trip_id=current_trip_id, stop_sequence=stop.stop_sequence ).values('trip_id','stop_sequence','arrival_time').first()
+#         planned_arrival_time = current_stop_time['arrival_time']
+#         estimated_arrival_delay = stop.arrival_delay
+        
+#         if estimated_arrival_delay != -1 :
+#             estimated_arrival_delay_min = int(estimated_arrival_delay/60)
+#         else :
+#             estimated_arrival_delay_min = 0
+        
+#         separator = ":"
+#         arr_planned = planned_arrival_time.split(separator)
+#         time_planned_min = int(arr_planned[0])*60 + int(arr_planned[1])
+#         time_delayed_min = time_planned_min + estimated_arrival_delay_min
+
+#         estimated_arrival_time ='{:02d}:{:02d}'.format(*divmod(time_delayed_min, 60))
+
+#         concat_name = current_route_num + " -" + current_trip_destination
+    
+#         planned_arrival_time = separator.join(arr_planned[:2])
+
+#         if estimated_arrival_delay_min == 0 :
+#             concat_delay = 'On time'
+#         elif estimated_arrival_delay_min < 0 : 
+#             concat_delay = str(abs(estimated_arrival_delay_min)) + ' min early'
+#         else:
+#             concat_delay = str(abs(estimated_arrival_delay_min)) + ' min late'
+
+#         current_dict = {'concat_name':concat_name, 'planned_arrival_time':planned_arrival_time,'estimated_arrival_delay_min':concat_delay ,
+#                             'estimated_arrival_time'  : estimated_arrival_time , 'time_planned_min':time_planned_min}
+#         all_next_buses.append(current_dict)  
+
+#     all_next_buses = sorted(all_next_buses, key=lambda d: d['time_planned_min']) 
+#     # print(connection.queries)
+#     return Response(all_next_buses) #return the data 
 
 
 @api_view(['GET'])
