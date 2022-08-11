@@ -58,11 +58,11 @@ def getUpdatesForStop(request,stop_id_requested):
         ### pourrait faire en sorte de au lieu de checker l'index verifier la route_id aussi ...
         weekday_int = dt.datetime.now().weekday()
         if weekday_int  in [0,1,2,3,4] :
-            calendar = ['1','y1001']
+            calendar = ['1']
         elif weekday_int  == 6 :
-            calendar = ['2','y1002']
+            calendar = ['2']
         else :
-            calendar = ['3','y1003']
+            calendar = ['3']
         # df_stopTime['service_id'] = df_stopTime['trip_id'].apply(lambda x: x.split(':')[1]) 
         df_stopTime["trip_id_split"]= df_stopTime["trip_id"].str.split(".", expand = False)
         df_stopTime['service_id'] = df_stopTime['trip_id_split'].str[1]
