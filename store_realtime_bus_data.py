@@ -12,7 +12,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning) # hide all warnin
 while True :
     print('start store_realtime_bus_data.py')
 
-    f=open("keys.txt","r")
+    f=open("/home/student/keys.txt","r")
     lines=f.read().splitlines()
     USER = lines[0]
     PASSWORD = lines[1]
