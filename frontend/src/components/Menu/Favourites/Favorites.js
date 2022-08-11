@@ -175,6 +175,8 @@ useEffect(()=>{
     <Box>
         <Button sx={{marginBottom:"1rem"}} onClick={backfav2} variant="outlined" size="small" >Back to Favourite List</Button>
     </Box>
+    <Box sx={{display:"flex", justifyContent:"center", width:"100%"}}>
+    {realTimeData.length>0?
     <TableContainer component={Paper}
                         sx={{maxHeight:400,}}>
                         <Table sx={{width: '100%',
@@ -202,7 +204,8 @@ useEffect(()=>{
                             ))}
                             </TableBody>
                         </Table>
-                        </TableContainer>
+                        </TableContainer>:<Box><strong>No buses due within next hour</strong></Box>}
+                        </Box>
                 </Box> 
                 </Box>)
         }

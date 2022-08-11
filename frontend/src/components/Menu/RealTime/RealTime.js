@@ -85,7 +85,8 @@ const RealTime = ({favouritesS,onLike,onUnlike,getData,getCenter,getZoom}) => {
         }
         else if(showinfo && !fetchingData){
             setRealTimeDetails(        <Box sx={{display:"flex",paddingBottom:"1rem",justifyContent:"flex-start"}}>
-            <Box sx={{display:"flex", justifyContent:"flex-start", width:"100%"}}>
+            <Box sx={{display:"flex", justifyContent:"center", width:"100%"}}>
+            {realTimeData.length>0?
         <TableContainer component={Paper}
             sx={{maxHeight:400,}}>
             <Table sx={{width: '100%',
@@ -113,7 +114,7 @@ const RealTime = ({favouritesS,onLike,onUnlike,getData,getCenter,getZoom}) => {
                 ))}
                 </TableBody>
             </Table>
-            </TableContainer>
+            </TableContainer>:<Box><strong>No buses due within next hour</strong></Box>}
     </Box> 
         </Box>)
         }
